@@ -1,0 +1,163 @@
+--- apply_authorized.before-review.py
++++ apply_authorized.py
+@@ -16,6 +16,7 @@
+ import ssl
+ import subprocess
+ import sys
++import tempfile
+ import time
+ import urllib.error
+ import urllib.request
+@@ -47,6 +48,14 @@
+     return hashlib.sha256(data).hexdigest()
+ 
+ 
++def sync_directory(path):
++    descriptor = os.open(path, os.O_RDONLY)
++    try:
++        os.fsync(descriptor)
++    finally:
++        os.close(descriptor)
++
++
+ def save(event=None, value=None):
+     if event:
+         state.setdefault("events", []).append({"at_utc": now(), "event": event, "value": value})
+@@ -58,6 +67,52 @@
+         f.flush()
+         os.fsync(f.fileno())
+     os.replace(temporary, STATE)
++    sync_directory(ROOT)
++
++
++def same_inode(path, identity):
++    if path.is_symlink() or not path.exists():
++        return False
++    metadata = path.stat()
++    return metadata.st_dev == identity["device"] and metadata.st_ino == identity["inode"]
++
++
++def install_new(relative, target):
++    """Publish complete bytes with an exclusive hard link; never overwrite."""
++    target = Path(target)
++    data = (PACKET / relative).read_bytes()
++    expected = manifest["files"][relative]["sha256"]
++    assert sha(data) == expected
++    descriptor, temporary_name = tempfile.mkstemp(prefix=".gis-https443-new-", dir=target.parent)
++    temporary = Path(temporary_name)
++    metadata = os.fstat(descriptor)
++    identity = {"temporary": str(temporary), "target": str(target),
++                "device": metadata.st_dev, "inode": metadata.st_ino, "sha256": expected}
++    try:
++        state.setdefault("install_temporary", {})[relative] = identity
++        save("temporary_created", identity)
++        with os.fdopen(descriptor, "wb") as output:
++            descriptor = None
++            output.write(data)
++            os.fchmod(output.fileno(), 0o644)
++            output.flush()
++            os.fsync(output.fileno())
++        assert same_inode(temporary, identity) and sha(temporary.read_bytes()) == expected
++        # Persist ownership before linking, so interruption after link is recoverable.
++        state.setdefault("install_prepared", {})[relative] = identity
++        save("exclusive_link_attempt", identity)
++        os.link(temporary, target, follow_symlinks=False)
++        sync_directory(target.parent)
++        assert same_inode(target, identity) and sha(target.read_bytes()) == expected
++        state["installed"][relative] = str(target)
++        save("installed_file", str(target))
++    finally:
++        if descriptor is not None:
++            os.close(descriptor)
++        if temporary.exists():
++            assert same_inode(temporary, identity), "TEMPORARY_IDENTITY_CHANGED"
++            temporary.unlink()
++            sync_directory(temporary.parent)
+ 
+ 
+ def run(args, *, required=True):
+@@ -137,10 +192,27 @@
+             replace(label, reverse=True)
+         elif current != entry["before_sha256"]:
+             conflicts.append(label + ": unknown current hash")
+-    for relative, name in state.get("installed", {}).items():
++    managed = dict(state.get("installed", {}))
++    # A complete target may have been linked before its completion journal write.
++    for relative, identity in state.get("install_prepared", {}).items():
++        path = Path(identity["target"])
++        if path.exists() or path.is_symlink():
++            if same_inode(path, identity) and sha(path.read_bytes()) == identity["sha256"]:
++                managed[relative] = str(path)
++            else:
++                conflicts.append(str(path) + ": not the exclusively linked file")
++    for relative, name in managed.items():
+         path = Path(name)
+         if path.exists() and (path.is_symlink() or sha(path.read_bytes()) != manifest["files"][relative]["sha256"]):
+             conflicts.append(name + ": changed installed file")
++    for identity in state.get("install_temporary", {}).values():
++        temporary = Path(identity["temporary"])
++        if temporary.exists() or temporary.is_symlink():
++            if same_inode(temporary, identity):
++                temporary.unlink()
++                sync_directory(temporary.parent)
++            else:
++                conflicts.append(str(temporary) + ": temporary identity changed")
+     if conflicts:
+         state["status"] = "ROLLBACK_CONFLICT"
+         state["rollback_conflicts"] = conflicts
+@@ -156,7 +228,7 @@
+         run(["systemctl", "stop", UNIT])
+     if state.get("proxy_enable_attempted"):
+         run(["systemctl", "disable", UNIT])
+-    for relative, name in state.get("installed", {}).items():
++    for relative, name in managed.items():
+         path = Path(name)
+         if path.exists():
+             assert not path.is_symlink() and sha(path.read_bytes()) == manifest["files"][relative]["sha256"]
+@@ -168,9 +240,27 @@
+         run(["systemctl", "daemon-reload"])
+     assert not run(["ss", "-H", "-ltn", "sport = :18080"])["stdout"]
+     runtime = fetch("http://100.99.54.93:8000/coordinate_converter%20Claude.html")
+-    assert runtime["sha256"] == RUNTIME_SHA
++    assert runtime["status"] == 200 and runtime["sha256"] == RUNTIME_SHA
+     state["rollback_runtime"] = runtime
+     state["rollback_services"] = services()
++    state["rollback_original_hashes"] = {}
++    for label, entry in manifest["baselines"].items():
++        path = Path(entry["target"])
++        assert str(path.resolve()) == state["targets"][label]["resolved"]
++        current = sha(path.read_bytes())
++        assert current == entry["before_sha256"], "ROLLBACK_HASH_NOT_ORIGINAL"
++        state["rollback_original_hashes"][label] = current
++    for name in ("nginx.service", "goi-ors-gateway.service", "goi-gis-app.service"):
++        assert state["rollback_services"][name]["ActiveState"] == "active", "ROLLBACK_SERVICE_NOT_ACTIVE"
++    expected = json.loads((ROOT / "preflight.json").read_text())["http"]
++    original_http = {"ors_old_origin": fetch(ORIGIN + "/ors/status", "http://100.99.54.93:8000")}
++    assert original_http["ors_old_origin"]["status"] == 200
++    assert original_http["ors_old_origin"]["allow_origin"] == "http://100.99.54.93:8000"
++    for label, path in (("catalogo", "/catalogo/"), ("vps", "/vps/"), ("root", "/")):
++        original_http[label] = fetch(ORIGIN + path)
++        for key in ("status", "bytes", "sha256", "content_type"):
++            assert original_http[label][key] == expected[label][key], "ROLLBACK_ENDPOINT_CHANGED:" + label
++    state["rollback_original_http"] = original_http
+     state["status"] = "ROLLED_BACK"
+     save("rollback_completed")
+ 
+@@ -209,16 +299,7 @@
+         save("directory_created", str(NEW_DIR))
+         state["installed"] = {}
+         for relative, target in INSTALL.items():
+-            data = (PACKET / relative).read_bytes()
+-            assert sha(data) == manifest["files"][relative]["sha256"]
+-            save("install_attempt", {"relative": relative, "target": target})
+-            with open(target, "xb") as output:
+-                os.fchmod(output.fileno(), 0o644)
+-                output.write(data)
+-                output.flush()
+-                os.fsync(output.fileno())
+-            state["installed"][relative] = target
+-            save("installed_file", target)
++            install_new(relative, target)
+         attempt("daemon_reload_attempted", ["systemctl", "daemon-reload"])
+         attempt("proxy_start_attempted", ["systemctl", "start", UNIT])
+         for index in range(12):

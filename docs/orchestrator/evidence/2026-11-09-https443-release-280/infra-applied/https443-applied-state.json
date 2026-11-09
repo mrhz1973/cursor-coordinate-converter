@@ -1,0 +1,967 @@
+{
+  "state": {
+    "status": "APPLIED_PASS",
+    "staged_at_utc": "2026-11-09T12:51:49.202340+00:00",
+    "events": [
+      {
+        "at_utc": "2026-11-09T12:57:19.240547+00:00",
+        "event": "parent_reviewed_helper",
+        "value": {
+          "before_sha256": "5e1f320594a38e2e197e86d52f62e0fa54e750eddef45d886739dde274d85286",
+          "after_sha256": "47343d09cc899a13c14916aab5d788225b8f76b6ad8eb2fee3200a9f73b7dd4f",
+          "review": "PASS"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.363056+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "/usr/bin/python3",
+            "-B",
+            "/var/backups/goi-gis-https443/20261109T124519Z/packet/verify_packet.py"
+          ],
+          "code": 0,
+          "stdout": "{\"result\": \"PASS\", \"files_checked\": 19, \"existing_nginx_bytes_identical_outside_insert\": true, \"gateway_only_one_exact_origin_added\": true, \"ors_no_loop_route_preserved\": true, \"network_or_mutations\": false}",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.370238+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "ss",
+            "-H",
+            "-ltn",
+            "sport = :18080"
+          ],
+          "code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.379575+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "show",
+            "goi-gis-https443-proxy",
+            "--property=LoadState"
+          ],
+          "code": 0,
+          "stdout": "LoadState=not-found",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.392366+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "show",
+            "nginx",
+            "goi-ors-gateway",
+            "goi-gis-app",
+            "goi-gis-https443-proxy",
+            "--property=Id,ActiveState,MainPID,LoadState,UnitFileState"
+          ],
+          "code": 0,
+          "stdout": "MainPID=209145\nId=nginx.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=1699002\nId=goi-ors-gateway.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=2243979\nId=goi-gis-app.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=0\nId=goi-gis-https443-proxy.service\nLoadState=not-found\nActiveState=inactive\nUnitFileState=",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.417291+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "ss",
+            "-H",
+            "-ltnp",
+            "( sport = :8989 or sport = :8089 or sport = :8099 or sport = :8000 )"
+          ],
+          "code": 0,
+          "stdout": "LISTEN 0      2048               127.0.0.1:8099 0.0.0.0:* users:((\"uvicorn\",pid=161207,fd=7)) \nLISTEN 0      5                  127.0.0.1:8089 0.0.0.0:* users:((\"python3\",pid=1699066,fd=3))\nLISTEN 0      5               100.99.54.93:8000 0.0.0.0:* users:((\"python3\",pid=2243979,fd=3))\nLISTEN 0      5                 172.20.0.1:8089 0.0.0.0:* users:((\"socat\",pid=107977,fd=5))   \nLISTEN 0      4096   [::ffff:100.99.54.93]:8989       *:* users:((\"java\",pid=4095839,fd=10))",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.419255+00:00",
+        "event": "backups_ready",
+        "value": {
+          "nginx": {
+            "path": "/etc/nginx/sites-available/goi-ors-gateway",
+            "resolved": "/etc/nginx/sites-available/goi-ors-gateway",
+            "uid": 0,
+            "gid": 0,
+            "mode": 420
+          },
+          "gateway-origin": {
+            "path": "/opt/goi-ors-gateway/current/goi_ors_gateway.py",
+            "resolved": "/opt/goi-ors-gateway/current/goi_ors_gateway.py",
+            "uid": 972,
+            "gid": 972,
+            "mode": 420
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.420138+00:00",
+        "event": "directory_created",
+        "value": "/opt/goi-gis-https443"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.421773+00:00",
+        "event": "temporary_created",
+        "value": {
+          "temporary": "/opt/goi-gis-https443/.gis-https443-new-p9sjognl",
+          "target": "/opt/goi-gis-https443/gis_same_origin_proxy.py",
+          "device": 64769,
+          "inode": 5255192,
+          "sha256": "ae32a22ac5b66fc4771e3d19d5fe7f89b34ce6ccfec0e1c02dc792a4165dc06d"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.423372+00:00",
+        "event": "exclusive_link_attempt",
+        "value": {
+          "temporary": "/opt/goi-gis-https443/.gis-https443-new-p9sjognl",
+          "target": "/opt/goi-gis-https443/gis_same_origin_proxy.py",
+          "device": 64769,
+          "inode": 5255192,
+          "sha256": "ae32a22ac5b66fc4771e3d19d5fe7f89b34ce6ccfec0e1c02dc792a4165dc06d"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.424346+00:00",
+        "event": "installed_file",
+        "value": "/opt/goi-gis-https443/gis_same_origin_proxy.py"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.425603+00:00",
+        "event": "temporary_created",
+        "value": {
+          "temporary": "/etc/nginx/snippets/.gis-https443-new-k346h9fk",
+          "target": "/etc/nginx/snippets/goi-gis-https443.common.conf",
+          "device": 64769,
+          "inode": 3407968,
+          "sha256": "35702da28f71a7ab59574784af6ed1dc430e60d80c26e4bd8f31f31284f0f5c5"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.426663+00:00",
+        "event": "exclusive_link_attempt",
+        "value": {
+          "temporary": "/etc/nginx/snippets/.gis-https443-new-k346h9fk",
+          "target": "/etc/nginx/snippets/goi-gis-https443.common.conf",
+          "device": 64769,
+          "inode": 3407968,
+          "sha256": "35702da28f71a7ab59574784af6ed1dc430e60d80c26e4bd8f31f31284f0f5c5"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.427577+00:00",
+        "event": "installed_file",
+        "value": "/etc/nginx/snippets/goi-gis-https443.common.conf"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.428534+00:00",
+        "event": "temporary_created",
+        "value": {
+          "temporary": "/etc/nginx/snippets/.gis-https443-new-pvu3iyt4",
+          "target": "/etc/nginx/snippets/goi-gis-https443.locations.conf",
+          "device": 64769,
+          "inode": 3407970,
+          "sha256": "f01bba43f03d3b90aa35da4f70cd60d9ef7b1e75b8b4084796197abf938e9ab6"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.429749+00:00",
+        "event": "exclusive_link_attempt",
+        "value": {
+          "temporary": "/etc/nginx/snippets/.gis-https443-new-pvu3iyt4",
+          "target": "/etc/nginx/snippets/goi-gis-https443.locations.conf",
+          "device": 64769,
+          "inode": 3407970,
+          "sha256": "f01bba43f03d3b90aa35da4f70cd60d9ef7b1e75b8b4084796197abf938e9ab6"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.430930+00:00",
+        "event": "installed_file",
+        "value": "/etc/nginx/snippets/goi-gis-https443.locations.conf"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.432447+00:00",
+        "event": "temporary_created",
+        "value": {
+          "temporary": "/etc/systemd/system/.gis-https443-new-h52shpr_",
+          "target": "/etc/systemd/system/goi-gis-https443-proxy.service",
+          "device": 64769,
+          "inode": 2511,
+          "sha256": "dcd667915070e02b61a8a0d88b90af4daf88b81c715f562aed6e0d068574b012"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.433852+00:00",
+        "event": "exclusive_link_attempt",
+        "value": {
+          "temporary": "/etc/systemd/system/.gis-https443-new-h52shpr_",
+          "target": "/etc/systemd/system/goi-gis-https443-proxy.service",
+          "device": 64769,
+          "inode": 2511,
+          "sha256": "dcd667915070e02b61a8a0d88b90af4daf88b81c715f562aed6e0d068574b012"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.434982+00:00",
+        "event": "installed_file",
+        "value": "/etc/systemd/system/goi-gis-https443-proxy.service"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.436138+00:00",
+        "event": "attempt",
+        "value": "daemon_reload_attempted"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.670239+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "daemon-reload"
+          ],
+          "code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.672182+00:00",
+        "event": "attempt",
+        "value": "proxy_start_attempted"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.692971+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "start",
+            "goi-gis-https443-proxy"
+          ],
+          "code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.956670+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "ss",
+            "-H",
+            "-ltn",
+            "sport = :18080"
+          ],
+          "code": 0,
+          "stdout": "LISTEN 0      5      127.0.0.1:18080 0.0.0.0:*",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.958826+00:00",
+        "event": "proxy_loopback_verified",
+        "value": {
+          "status": 200,
+          "bytes": 3435,
+          "sha256": "a54f22950475b2707e1895a746fdf878f6b16499bfcbb333ae10c4e2ae834de4"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.961751+00:00",
+        "event": "replace_attempt",
+        "value": {
+          "target": "nginx",
+          "reverse": false
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:19.999571+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "/usr/bin/python3",
+            "-B",
+            "/var/backups/goi-gis-https443/20261109T124519Z/packet/replace_if_hash.py",
+            "/etc/nginx/sites-available/goi-ors-gateway",
+            "/var/backups/goi-gis-https443/20261109T124519Z/packet/proposed/nginx.after.conf",
+            "ebdfcdcbbddf9c4ffcad20f7f8cab79c588bdb66eabd40a2dffd5f17b2aad4ca",
+            "b57501bb9306127c6aef551a4afd8ecc720922ccb4979d8ab5461303478f5fd5"
+          ],
+          "code": 0,
+          "stdout": "{\"target\": \"/etc/nginx/sites-available/goi-ors-gateway\", \"resolved_target\": \"/etc/nginx/sites-available/goi-ors-gateway\", \"before_sha256\": \"ebdfcdcbbddf9c4ffcad20f7f8cab79c588bdb66eabd40a2dffd5f17b2aad4ca\", \"after_sha256\": \"b57501bb9306127c6aef551a4afd8ecc720922ccb4979d8ab5461303478f5fd5\"}",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.001509+00:00",
+        "event": "replace_completed",
+        "value": {
+          "target": "nginx",
+          "reverse": false
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.003534+00:00",
+        "event": "replace_attempt",
+        "value": {
+          "target": "gateway-origin",
+          "reverse": false
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.046097+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "/usr/bin/python3",
+            "-B",
+            "/var/backups/goi-gis-https443/20261109T124519Z/packet/replace_if_hash.py",
+            "/opt/goi-ors-gateway/current/goi_ors_gateway.py",
+            "/var/backups/goi-gis-https443/20261109T124519Z/packet/proposed/goi_ors_gateway.after.py",
+            "dd329ce310bea97f4900a065ea91083d7853047173ba53ea2a6f092d07ae3625",
+            "e15a23f6b098b340b4c7f290c9ea96d4e01085bc4a5d9cc843ad32e9135089d8"
+          ],
+          "code": 0,
+          "stdout": "{\"target\": \"/opt/goi-ors-gateway/current/goi_ors_gateway.py\", \"resolved_target\": \"/opt/goi-ors-gateway/current/goi_ors_gateway.py\", \"before_sha256\": \"dd329ce310bea97f4900a065ea91083d7853047173ba53ea2a6f092d07ae3625\", \"after_sha256\": \"e15a23f6b098b340b4c7f290c9ea96d4e01085bc4a5d9cc843ad32e9135089d8\"}",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.048459+00:00",
+        "event": "replace_completed",
+        "value": {
+          "target": "gateway-origin",
+          "reverse": false
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.058967+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "nginx",
+            "-t"
+          ],
+          "code": 0,
+          "stdout": "",
+          "stderr": "nginx: the configuration file /etc/nginx/nginx.conf syntax is ok\nnginx: configuration file /etc/nginx/nginx.conf test is successful"
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.060531+00:00",
+        "event": "attempt",
+        "value": "ors_restart_attempted"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.096058+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "restart",
+            "goi-ors-gateway"
+          ],
+          "code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.386890+00:00",
+        "event": "attempt",
+        "value": "nginx_reload_attempted"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.414274+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "reload",
+            "nginx"
+          ],
+          "code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.804236+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "gis_https",
+          "result": {
+            "status": 200,
+            "bytes": 11082679,
+            "sha256": "bb6db0079ad5376e256191ef5a32c51b21c53fab8de653454c184d41f673f253",
+            "content_type": "text/html",
+            "allow_origin": null,
+            "content_length": "11082679"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.853865+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "runtime_http",
+          "result": {
+            "status": 200,
+            "bytes": 11082679,
+            "sha256": "bb6db0079ad5376e256191ef5a32c51b21c53fab8de653454c184d41f673f253",
+            "content_type": "text/html",
+            "allow_origin": null,
+            "content_length": "11082679"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.880921+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "gh_info",
+          "result": {
+            "status": 200,
+            "bytes": 3435,
+            "sha256": "a54f22950475b2707e1895a746fdf878f6b16499bfcbb333ae10c4e2ae834de4",
+            "content_type": "application/json",
+            "allow_origin": null,
+            "content_length": "3435"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.905992+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "ors_old_origin",
+          "result": {
+            "status": 200,
+            "bytes": 230,
+            "sha256": "407821fb5cb1c30fb59cb5fc45e0a51eb7d0b37d0511562de5fd44e63f1d36ed",
+            "content_type": "application/json; charset=utf-8",
+            "allow_origin": "http://100.99.54.93:8000",
+            "content_length": "230"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.933671+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "ors_new_origin",
+          "result": {
+            "status": 200,
+            "bytes": 230,
+            "sha256": "407821fb5cb1c30fb59cb5fc45e0a51eb7d0b37d0511562de5fd44e63f1d36ed",
+            "content_type": "application/json; charset=utf-8",
+            "allow_origin": "https://ionos-n8n-new.tailc01234.ts.net",
+            "content_length": "230"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.965879+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "ors_foreign_origin",
+          "result": {
+            "status": 403,
+            "bytes": 57,
+            "sha256": "dec75c81417b08d07c019f79b6f22c30c1925a5ea15911093410be6dc5da1529",
+            "content_type": "application/json; charset=utf-8",
+            "allow_origin": null,
+            "content_length": "57"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:20.995591+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "catalogo",
+          "result": {
+            "status": 200,
+            "bytes": 101746,
+            "sha256": "bf2502655f2d31149351e73a1eeefb96a47ddb488bff2e8c306bfd6d1b8bc8b7",
+            "content_type": "text/html; charset=utf-8",
+            "allow_origin": null,
+            "content_length": "101746"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.025460+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "vps",
+          "result": {
+            "status": 200,
+            "bytes": 3404,
+            "sha256": "d4fe43443a0c4e8a73fb56b9e6a782e27f07667b9c23d05ba47202d80dc10fd3",
+            "content_type": "text/html; charset=utf-8",
+            "allow_origin": null,
+            "content_length": "3404"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.056216+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "root",
+          "result": {
+            "status": 404,
+            "bytes": 45,
+            "sha256": "ff8de22dcfc848726255ab059ff25aeb8c957768999e90ebddb99360077b9261",
+            "content_type": "application/json",
+            "allow_origin": null,
+            "content_length": "45"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.087609+00:00",
+        "event": "postcheck",
+        "value": {
+          "label": "gh_unknown_path",
+          "result": {
+            "status": 404,
+            "bytes": 29,
+            "sha256": "a357c81d6d53ef782a73dfbfccb0c5ab5216988c7e2e7174b6d2b25f90018a3a",
+            "content_type": "application/json",
+            "allow_origin": null,
+            "content_length": "29"
+          }
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.155936+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "ss",
+            "-H",
+            "-ltnp",
+            "( sport = :8989 or sport = :8089 or sport = :8099 or sport = :8000 )"
+          ],
+          "code": 0,
+          "stdout": "LISTEN 0      2048               127.0.0.1:8099 0.0.0.0:* users:((\"uvicorn\",pid=161207,fd=7)) \nLISTEN 0      5                  127.0.0.1:8089 0.0.0.0:* users:((\"python3\",pid=1699066,fd=3))\nLISTEN 0      5               100.99.54.93:8000 0.0.0.0:* users:((\"python3\",pid=2243979,fd=3))\nLISTEN 0      5                 172.20.0.1:8089 0.0.0.0:* users:((\"socat\",pid=107977,fd=5))   \nLISTEN 0      4096   [::ffff:100.99.54.93]:8989       *:* users:((\"java\",pid=4095839,fd=10))",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.177801+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "show",
+            "nginx",
+            "goi-ors-gateway",
+            "goi-gis-app",
+            "goi-gis-https443-proxy",
+            "--property=Id,ActiveState,MainPID,LoadState,UnitFileState"
+          ],
+          "code": 0,
+          "stdout": "MainPID=209145\nId=nginx.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=1780876\nId=goi-ors-gateway.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=2243979\nId=goi-gis-app.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=1780843\nId=goi-gis-https443-proxy.service\nLoadState=loaded\nActiveState=active\nUnitFileState=disabled",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.180451+00:00",
+        "event": "attempt",
+        "value": "proxy_enable_attempted"
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.445192+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "enable",
+            "goi-gis-https443-proxy"
+          ],
+          "code": 0,
+          "stdout": "",
+          "stderr": "Created symlink /etc/systemd/system/multi-user.target.wants/goi-gis-https443-proxy.service \u2192 /etc/systemd/system/goi-gis-https443-proxy.service."
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.461764+00:00",
+        "event": "command",
+        "value": {
+          "argv": [
+            "systemctl",
+            "show",
+            "nginx",
+            "goi-ors-gateway",
+            "goi-gis-app",
+            "goi-gis-https443-proxy",
+            "--property=Id,ActiveState,MainPID,LoadState,UnitFileState"
+          ],
+          "code": 0,
+          "stdout": "MainPID=209145\nId=nginx.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=1780876\nId=goi-ors-gateway.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=2243979\nId=goi-gis-app.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled\n\nMainPID=1780843\nId=goi-gis-https443-proxy.service\nLoadState=loaded\nActiveState=active\nUnitFileState=enabled",
+          "stderr": ""
+        }
+      },
+      {
+        "at_utc": "2026-11-09T12:57:21.463788+00:00",
+        "event": "apply_completed",
+        "value": null
+      }
+    ],
+    "installed": {
+      "proxy/gis_same_origin_proxy.py": "/opt/goi-gis-https443/gis_same_origin_proxy.py",
+      "nginx/goi-gis-https443.common.conf": "/etc/nginx/snippets/goi-gis-https443.common.conf",
+      "nginx/goi-gis-https443.locations.conf": "/etc/nginx/snippets/goi-gis-https443.locations.conf",
+      "systemd/goi-gis-https443-proxy.service": "/etc/systemd/system/goi-gis-https443-proxy.service"
+    },
+    "targets": {
+      "nginx": {
+        "path": "/etc/nginx/sites-available/goi-ors-gateway",
+        "resolved": "/etc/nginx/sites-available/goi-ors-gateway",
+        "uid": 0,
+        "gid": 0,
+        "mode": 420
+      },
+      "gateway-origin": {
+        "path": "/opt/goi-ors-gateway/current/goi_ors_gateway.py",
+        "resolved": "/opt/goi-ors-gateway/current/goi_ors_gateway.py",
+        "uid": 972,
+        "gid": 972,
+        "mode": 420
+      }
+    },
+    "services_before": {
+      "nginx.service": {
+        "MainPID": "209145",
+        "Id": "nginx.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "UnitFileState": "enabled"
+      },
+      "goi-ors-gateway.service": {
+        "MainPID": "1699002",
+        "Id": "goi-ors-gateway.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "UnitFileState": "enabled"
+      },
+      "goi-gis-app.service": {
+        "MainPID": "2243979",
+        "Id": "goi-gis-app.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "UnitFileState": "enabled"
+      },
+      "goi-gis-https443-proxy.service": {
+        "MainPID": "0",
+        "Id": "goi-gis-https443-proxy.service",
+        "LoadState": "not-found",
+        "ActiveState": "inactive",
+        "UnitFileState": ""
+      }
+    },
+    "shared_listeners_before": [
+      {
+        "address": "100.99.54.93:8000",
+        "pids": [
+          "2243979"
+        ]
+      },
+      {
+        "address": "127.0.0.1:8089",
+        "pids": [
+          "1699066"
+        ]
+      },
+      {
+        "address": "127.0.0.1:8099",
+        "pids": [
+          "161207"
+        ]
+      },
+      {
+        "address": "172.20.0.1:8089",
+        "pids": [
+          "107977"
+        ]
+      },
+      {
+        "address": "[::ffff:100.99.54.93]:8989",
+        "pids": [
+          "4095839"
+        ]
+      }
+    ],
+    "directory_created": true,
+    "install_temporary": {
+      "proxy/gis_same_origin_proxy.py": {
+        "temporary": "/opt/goi-gis-https443/.gis-https443-new-p9sjognl",
+        "target": "/opt/goi-gis-https443/gis_same_origin_proxy.py",
+        "device": 64769,
+        "inode": 5255192,
+        "sha256": "ae32a22ac5b66fc4771e3d19d5fe7f89b34ce6ccfec0e1c02dc792a4165dc06d"
+      },
+      "nginx/goi-gis-https443.common.conf": {
+        "temporary": "/etc/nginx/snippets/.gis-https443-new-k346h9fk",
+        "target": "/etc/nginx/snippets/goi-gis-https443.common.conf",
+        "device": 64769,
+        "inode": 3407968,
+        "sha256": "35702da28f71a7ab59574784af6ed1dc430e60d80c26e4bd8f31f31284f0f5c5"
+      },
+      "nginx/goi-gis-https443.locations.conf": {
+        "temporary": "/etc/nginx/snippets/.gis-https443-new-pvu3iyt4",
+        "target": "/etc/nginx/snippets/goi-gis-https443.locations.conf",
+        "device": 64769,
+        "inode": 3407970,
+        "sha256": "f01bba43f03d3b90aa35da4f70cd60d9ef7b1e75b8b4084796197abf938e9ab6"
+      },
+      "systemd/goi-gis-https443-proxy.service": {
+        "temporary": "/etc/systemd/system/.gis-https443-new-h52shpr_",
+        "target": "/etc/systemd/system/goi-gis-https443-proxy.service",
+        "device": 64769,
+        "inode": 2511,
+        "sha256": "dcd667915070e02b61a8a0d88b90af4daf88b81c715f562aed6e0d068574b012"
+      }
+    },
+    "install_prepared": {
+      "proxy/gis_same_origin_proxy.py": {
+        "temporary": "/opt/goi-gis-https443/.gis-https443-new-p9sjognl",
+        "target": "/opt/goi-gis-https443/gis_same_origin_proxy.py",
+        "device": 64769,
+        "inode": 5255192,
+        "sha256": "ae32a22ac5b66fc4771e3d19d5fe7f89b34ce6ccfec0e1c02dc792a4165dc06d"
+      },
+      "nginx/goi-gis-https443.common.conf": {
+        "temporary": "/etc/nginx/snippets/.gis-https443-new-k346h9fk",
+        "target": "/etc/nginx/snippets/goi-gis-https443.common.conf",
+        "device": 64769,
+        "inode": 3407968,
+        "sha256": "35702da28f71a7ab59574784af6ed1dc430e60d80c26e4bd8f31f31284f0f5c5"
+      },
+      "nginx/goi-gis-https443.locations.conf": {
+        "temporary": "/etc/nginx/snippets/.gis-https443-new-pvu3iyt4",
+        "target": "/etc/nginx/snippets/goi-gis-https443.locations.conf",
+        "device": 64769,
+        "inode": 3407970,
+        "sha256": "f01bba43f03d3b90aa35da4f70cd60d9ef7b1e75b8b4084796197abf938e9ab6"
+      },
+      "systemd/goi-gis-https443-proxy.service": {
+        "temporary": "/etc/systemd/system/.gis-https443-new-h52shpr_",
+        "target": "/etc/systemd/system/goi-gis-https443-proxy.service",
+        "device": 64769,
+        "inode": 2511,
+        "sha256": "dcd667915070e02b61a8a0d88b90af4daf88b81c715f562aed6e0d068574b012"
+      }
+    },
+    "daemon_reload_attempted": true,
+    "proxy_start_attempted": true,
+    "loopback_info": {
+      "status": 200,
+      "bytes": 3435,
+      "sha256": "a54f22950475b2707e1895a746fdf878f6b16499bfcbb333ae10c4e2ae834de4"
+    },
+    "ors_restart_attempted": true,
+    "gateway_restart_health": {
+      "status": 200,
+      "bytes": 230,
+      "sha256": "407821fb5cb1c30fb59cb5fc45e0a51eb7d0b37d0511562de5fd44e63f1d36ed",
+      "content_type": "application/json; charset=utf-8",
+      "allow_origin": "https://ionos-n8n-new.tailc01234.ts.net",
+      "content_length": "230"
+    },
+    "nginx_reload_attempted": true,
+    "tls": {
+      "hostname_verified": "ionos-n8n-new.tailc01234.ts.net",
+      "protocol": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "not_before": "Nov  6 06:51:12 2026 GMT",
+      "not_after": "Feb  4 06:51:11 2027 GMT",
+      "san": [
+        [
+          "DNS",
+          "ionos-n8n-new.tailc01234.ts.net"
+        ]
+      ]
+    },
+    "http_after": {
+      "gis_https": {
+        "status": 200,
+        "bytes": 11082679,
+        "sha256": "bb6db0079ad5376e256191ef5a32c51b21c53fab8de653454c184d41f673f253",
+        "content_type": "text/html",
+        "allow_origin": null,
+        "content_length": "11082679"
+      },
+      "runtime_http": {
+        "status": 200,
+        "bytes": 11082679,
+        "sha256": "bb6db0079ad5376e256191ef5a32c51b21c53fab8de653454c184d41f673f253",
+        "content_type": "text/html",
+        "allow_origin": null,
+        "content_length": "11082679"
+      },
+      "gh_info": {
+        "status": 200,
+        "bytes": 3435,
+        "sha256": "a54f22950475b2707e1895a746fdf878f6b16499bfcbb333ae10c4e2ae834de4",
+        "content_type": "application/json",
+        "allow_origin": null,
+        "content_length": "3435"
+      },
+      "ors_old_origin": {
+        "status": 200,
+        "bytes": 230,
+        "sha256": "407821fb5cb1c30fb59cb5fc45e0a51eb7d0b37d0511562de5fd44e63f1d36ed",
+        "content_type": "application/json; charset=utf-8",
+        "allow_origin": "http://100.99.54.93:8000",
+        "content_length": "230"
+      },
+      "ors_new_origin": {
+        "status": 200,
+        "bytes": 230,
+        "sha256": "407821fb5cb1c30fb59cb5fc45e0a51eb7d0b37d0511562de5fd44e63f1d36ed",
+        "content_type": "application/json; charset=utf-8",
+        "allow_origin": "https://ionos-n8n-new.tailc01234.ts.net",
+        "content_length": "230"
+      },
+      "ors_foreign_origin": {
+        "status": 403,
+        "bytes": 57,
+        "sha256": "dec75c81417b08d07c019f79b6f22c30c1925a5ea15911093410be6dc5da1529",
+        "content_type": "application/json; charset=utf-8",
+        "allow_origin": null,
+        "content_length": "57"
+      },
+      "catalogo": {
+        "status": 200,
+        "bytes": 101746,
+        "sha256": "bf2502655f2d31149351e73a1eeefb96a47ddb488bff2e8c306bfd6d1b8bc8b7",
+        "content_type": "text/html; charset=utf-8",
+        "allow_origin": null,
+        "content_length": "101746"
+      },
+      "vps": {
+        "status": 200,
+        "bytes": 3404,
+        "sha256": "d4fe43443a0c4e8a73fb56b9e6a782e27f07667b9c23d05ba47202d80dc10fd3",
+        "content_type": "text/html; charset=utf-8",
+        "allow_origin": null,
+        "content_length": "3404"
+      },
+      "root": {
+        "status": 404,
+        "bytes": 45,
+        "sha256": "ff8de22dcfc848726255ab059ff25aeb8c957768999e90ebddb99360077b9261",
+        "content_type": "application/json",
+        "allow_origin": null,
+        "content_length": "45"
+      },
+      "gh_unknown_path": {
+        "status": 404,
+        "bytes": 29,
+        "sha256": "a357c81d6d53ef782a73dfbfccb0c5ab5216988c7e2e7174b6d2b25f90018a3a",
+        "content_type": "application/json",
+        "allow_origin": null,
+        "content_length": "29"
+      },
+      "gis_head": {
+        "status": 200,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "content_type": "text/html",
+        "allow_origin": null,
+        "content_length": "0"
+      }
+    },
+    "shared_listeners_after": [
+      {
+        "address": "100.99.54.93:8000",
+        "pids": [
+          "2243979"
+        ]
+      },
+      {
+        "address": "127.0.0.1:8089",
+        "pids": [
+          "1699066"
+        ]
+      },
+      {
+        "address": "127.0.0.1:8099",
+        "pids": [
+          "161207"
+        ]
+      },
+      {
+        "address": "172.20.0.1:8089",
+        "pids": [
+          "107977"
+        ]
+      },
+      {
+        "address": "[::ffff:100.99.54.93]:8989",
+        "pids": [
+          "4095839"
+        ]
+      }
+    ],
+    "proxy_enable_attempted": true,
+    "services_after": {
+      "nginx.service": {
+        "MainPID": "209145",
+        "Id": "nginx.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "UnitFileState": "enabled"
+      },
+      "goi-ors-gateway.service": {
+        "MainPID": "1780876",
+        "Id": "goi-ors-gateway.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "UnitFileState": "enabled"
+      },
+      "goi-gis-app.service": {
+        "MainPID": "2243979",
+        "Id": "goi-gis-app.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "UnitFileState": "enabled"
+      },
+      "goi-gis-https443-proxy.service": {
+        "MainPID": "1780843",
+        "Id": "goi-gis-https443-proxy.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "UnitFileState": "enabled"
+      }
+    },
+    "completed_at_utc": "2026-11-09T12:57:21.463779+00:00"
+  },
+  "stdout": "{\"status\": \"APPLIED_PASS\", \"backup_directory\": \"/var/backups/goi-gis-https443/20261109T124519Z\", \"apply_error\": null, \"rollback_error\": null}\n",
+  "stderr": "",
+  "current_hashes": {
+    "nginx": "b57501bb9306127c6aef551a4afd8ecc720922ccb4979d8ab5461303478f5fd5",
+    "gateway": "e15a23f6b098b340b4c7f290c9ea96d4e01085bc4a5d9cc843ad32e9135089d8"
+  }
+}

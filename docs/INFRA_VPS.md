@@ -1,3 +1,19 @@
+> **Aggiornamento HTTPS/GIS verificato — 2026-11-09, 14:32:47 Europe/Rome.** Nodo corrente: `31.70.139.73`, tailnet `100.99.54.93`, nome `ionos-n8n-new.tailc01234.ts.net`. Build **280** distribuita dal commit runtime `c33f58c956e9630b03f9ff86eb35eccd35879a4a`; file VPS, HTTP e HTTPS concordi: **11.108.654 byte**, SHA-256 `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde`. Il deploy runtime ha riavviato soltanto `goi-gis-app`; infrastruttura HTTPS già attiva e servizi condivisi preservati. [Evidenze e limiti](orchestrator/evidence/2026-11-09-https443-release-280/REPORT.md). Le verifiche datate riportate sotto restano storico.
+
+| Accesso GIS/routing verificato il 9 novembre 2026 | URL o bind |
+| --- | --- |
+| GIS HTTPS, accesso tailnet | `https://ionos-n8n-new.tailc01234.ts.net/gis` |
+| GIS HTTP precedente, conservato | `http://100.99.54.93:8000/coordinate_converter%20Claude.html` |
+| GraphHopper same-origin | `https://ionos-n8n-new.tailc01234.ts.net/_routing/gh` |
+| ORS same-origin, inoltro diretto al gateway 8020 | `https://ionos-n8n-new.tailc01234.ts.net/ors` |
+| Nuovo servizio `goi-gis-https443-proxy` | `127.0.0.1:18080`, attivo/abilitato, DynamicUser e sandbox effettivi verificati |
+
+**Applicazione HTTPS autorizzata specificamente dall'operatore il 9 novembre:** include Nginx aggiuntivo, proxy loopback e un solo Origin ORS aggiunto. Il vecchio Origin HTTP resta ammesso. Nessuna modifica a DNS, certificati, firewall, Tailscale Serve/Funnel o listener pubblici. Backup/registro infra: `/var/backups/goi-gis-https443/20261109T124519Z`; backup runtime: `/var/backups/goi-gis-runtime/20261109T133117Z`. Per ripristino usare la procedura e le guardie del pacchetto collegato nel rapporto, senza dedurre il risultato dal solo HTTP GIS.
+
+**Dati browser:** HTTP e HTTPS hanno archivi separati; nessun redirect o migrazione automatica. Le esportazioni esistenti non costituiscono un backup completo. La precedente copia Firebase resta un deployment distinto e non è stata aggiornata in questo pass.
+
+---
+
 > **Aggiornamento verificato — 2026-10-28 (orchestratore, preflight nodo migrato).** Nodo corrente: IP pubblico `31.70.139.73`, Tailscale `100.99.54.93`, DNS tailnet `ionos-n8n-new.tailc01234.ts.net`. Il vecchio alias SSH locale `ionos-n8n` punta ancora a `217.160.71.145`: **non usarlo per il nodo corrente**. Nel preflight risultano quattro servizi controllati `active`; i percorsi dei servizi sono invariati. Questa nota registra la migrazione già verificata e non applica modifiche infrastrutturali. **Tutti i dati host e indirizzi del 2026-08-21 conservati sotto sono storici, non lo stato corrente.**
 
 > **Verifica runtime — 2026-11-03:** il GIS sul tailnet risponde `HTTP 200` a `http://100.99.54.93:8000/coordinate_converter%20Claude.html`; SHA-256 servito `51a3e9821d0f70c57ad23adb7f10bd66ee6214065ce0e0c7abc9870cc681a11d` (Build 268). La copia pubblica `https://gistoolmarty-33cf8.web.app/` è un deployment Firebase separato (HTTP 200, ultimo aggiornamento 2026-05-27), non una seconda directory pubblica del VPS. Da questo client `http://31.70.139.73/gis/` reindirizza a HTTPS ma il TLS non completa; il vecchio IP `217.160.71.145` rifiuta la connessione. Non è quindi verificata una copia GIS accessibile pubblicamente sul VPS.
