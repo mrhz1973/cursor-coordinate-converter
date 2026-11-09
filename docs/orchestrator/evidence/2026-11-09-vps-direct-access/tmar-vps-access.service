@@ -1,0 +1,58 @@
+[Unit]
+Description=TMAR GIS dedicated remote workspace access
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=900
+StartLimitBurst=3
+
+[Service]
+Type=simple
+DynamicUser=yes
+User=tmar-vps-access
+StateDirectory=tmar-vps-access
+StateDirectoryMode=0700
+CacheDirectory=tmar-vps-access
+CacheDirectoryMode=0700
+WorkingDirectory=/var/lib/tmar-vps-access/workspace
+Environment=HOME=/var/lib/tmar-vps-access
+Environment=NODE_ENV=production
+Environment=npm_config_cache=/var/cache/tmar-vps-access
+ExecStart=/usr/bin/node /var/lib/tmar-vps-access/app/node_modules/@wonderwhy-er/desktop-commander/dist/index.js remote --disable-no-sleep
+# First pairing: do not replace an expired verification code automatically.
+# Enable and verify Restart=on-failure after the device has been paired.
+Restart=no
+TimeoutStopSec=25
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+ReadOnlyPaths=/var/lib/tmar-vps-access/app
+InaccessiblePaths=-/run/docker.sock -/var/run/docker.sock
+MemoryHigh=512M
+MemoryMax=1G
+CPUQuota=100%
+TasksMax=256
+Nice=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tmar-vps-access
+
+[Install]
+WantedBy=multi-user.target
