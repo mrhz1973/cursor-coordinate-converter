@@ -4,17 +4,31 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Routing terrestre senza traghetti |
-| **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
-| **BLOCCO ATTIVO** | `ROUTING-LAND-ONLY-NO-FERRY-A` |
-| **STATO BLOCCO** | Build 280 live con difese no-ferry, validazione metadati/snap/anchor, deadline ORS e correzioni UI alternative/Compare. Gate tecnici e browser live PASS; validazione operatore e review esterna post-hoc ancora aperte. |
-| **GATE CORRENTE** | QA operatore residua sul territorio e telefono reale, con i soli 3 casi collegati sotto; review esterna post-hoc pendente secondo REVIEW GPT-SOSTITUTIVA. Nessun PASS operatore o FINITO attribuito. |
-| **RUNTIME LIVE** | Build 280 · SHA-256 `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde` · 11.108.654 byte · file VPS, HTTP, HTTPS e documento browser concordi; deploy 2026-11-09 14:32:47 Europe/Rome |
-| **RUNTIME CANDIDATE** | Nessun candidato ulteriore per questo pass. Il definitivo 70553e52… è distribuito; il precedente 1e6c11cf… resta l'identità delle prove iniziali sui componenti invariati. |
-| **NEXT** | Raccogliere i 3 esiti di QA operatore già preparati e completare la review esterna post-hoc; poi applicare il gate canonico pertinente. Nessuna nuova approvazione richiesta per quanto già eseguito. Altri workstream non avviati. |
-| **EVIDENCE** | [Rilascio HTTPS/Build 280](orchestrator/evidence/2026-11-09-https443-release-280/REPORT.md) · [QA operatore residua](orchestrator/evidence/2026-11-09-https443-release-280/QA-OPERATORE.md) · [Prove iniziali e pacchetto](orchestrator/evidence/2026-11-09-gpt-routing-280/REPORT.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Proxy loopback 18080 attivo/abilitato, Nginx e Origin ORS applicati dopo approvazione specifica. Deploy runtime: restart solo GIS, configurazioni e servizi condivisi preservati. Non usare il vecchio alias SSH. |
-| **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
+| **WORKSTREAM ATTIVO** | Audit uniformità finestre GIS |
+| **WU ATTIVA** | — (audit a livello blocco; nessuna WU runtime in esecuzione) |
+| **BLOCCO ATTIVO** | `GIS-WINDOW-UNIFORMITY-AUDIT-A` |
+| **STATO BLOCCO** | Audit in sola lettura avviato: inventario HTML/CSS, lifecycle JavaScript e riproduzione browser delle anomalie candidate. Nessun nuovo candidato runtime o PASS visivo generale. |
+| **GATE CORRENTE** | Distinguere scostamenti statici e comportamenti intenzionali dai difetti riprodotti attraverso i comandi reali dell'interfaccia. |
+| **RUNTIME LIVE** | Build 280 · SHA-256 `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde` · 11.108.654 byte · prove file/HTTP/HTTPS/browser del 2026-11-09; deploy 14:32:47 e Automated Browser QA conclusa 14:36:46 Europe/Rome |
+| **RUNTIME CANDIDATE** | Nessuno. La chiusura operatore e l'audit non modificano il monolite distribuito. |
+| **ULTIMO BLOCCO CHIUSO** | `ROUTING-LAND-ONLY-NO-FERRY-A` · PASS operatore aggregato sui tre casi residui, dichiarato il 2026-11-09. REVIEW GPT-SOSTITUTIVA loggata, deploy e Automated Browser QA PASS; chiusura secondo OM Regola H. |
+| **NEXT** | Completare la matrice mirata delle finestre raggiungibili via UI; per ciascun difetto riprodotto definire una correzione circoscritta con i gate lifecycle pertinenti. Non uniformare indiscriminatamente dialoghi di conferma o rinomina intenzionalmente modali. |
+| **FOLLOW-UP REVIEW** | Review AI esterna del bundle routing 280 non eseguita: backstop post-hoc quando disponibile secondo OM Regole B/H7; non sostituita da un agente GPT interno e non bloccante per questa chiusura sul percorso sostitutivo già loggato. |
+| **EVIDENCE** | [Attestazione e chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Rilascio e prove tecniche](orchestrator/evidence/2026-11-09-https443-release-280/REPORT.md) |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Nessuna operazione server nel pass di chiusura/audit; valgono le prove di deploy del 2026-11-09. Non usare il vecchio alias SSH. |
+| **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità ATAK, nei limiti del backlog e del freeze esistente. Nessuna nuova funzionalità Oggetti GIS attivata da questo audit. |
+
+## Checkpoint 2026-11-09 — QA operatore acquisita e prosecuzione
+
+L'operatore ha risposto: «Okay, i tre casi sono perfetti, andiamo avanti.» Nel contesto diretto dei tre casi appena richiesti, la conferma è registrata come `QA ROUTING-LAND-ONLY-NO-FERRY-A PASS operatore`, in forma aggregata. La riga canonica è una normalizzazione dell'orchestratore, non la citazione letterale dell'utente. Browser, dispositivo e località non sono stati specificati. Non sono stati rieseguiti test né dedotte misurazioni mancanti.
+
+La Regola H7 consente la chiusura dopo review GPT sostitutiva loggata, deploy/Automated Browser QA PASS e QA operatore PASS. Il backstop esterno resta distinto e non viene dichiarato completato. La precedente indicazione congiunta dei due punti aperti è riconciliata con questa regola, senza modificarla. Pubblicazione della chiusura e autosync seguono F3; gli artefatti precedenti rimangono immutabili.
+
+L'audit di uniformità delle finestre era già richiesto in FRONTIER. Si applica il contratto esistente: altezza utile, header e azioni raggiungibili, scroll interno, compatibilità con minimize/restore, desktop e viewport stretti/touch. Perimetro iniziale in sola lettura; alert/confirm/prompt nativi esclusi. Le diagnosi statiche sono candidate, non FAIL browser. Nessuna nuova approvazione richiesta per proseguire nel lavoro già autorizzato.
+
+---
+
+Le sezioni seguenti sono **storico datato**, non lo stato corrente della tabella.
 
 ## Checkpoint 2026-11-09 — HTTPS applicato e Build 280 live
 
