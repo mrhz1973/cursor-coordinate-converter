@@ -1,193 +1,111 @@
-# RIEPILOGO — ripresa GPT e routing Build 280
+# RIEPILOGO — HTTPS 443 e Build 280 live
 
-Data evidenza Git: `2026-11-09T12:08:11.664581+00:00`. Autore operativo: GPT. Il nome canonico `LAST_CURSOR_REPORT.md` non implica un'esecuzione Cursor: **Cursor e Codex non eseguiti**.
+Data evidenza Git: `2026-11-09T13:48:27.373358+00:00` (2026-11-09 14:48:27 Europe/Rome). Autore operativo: **GPT**. Il nome canonico `LAST_CURSOR_REPORT.md` non implica un'esecuzione Cursor: **Cursor e Codex NOT_RUN**.
 
 ## A. Header sintetico
 
 | Campo | Stato |
 | --- | --- |
 | BLOCK | `ROUTING-LAND-ONLY-NO-FERRY-A` |
-| GATE | Approvazione infrastruttura HTTPS 443; successivamente QA reale UI/TLS/provider e gate runtime |
-| NEXT | Applicare il pacchetto revisionato soltanto dopo l'approvazione infrastrutturale; completare prove reali sul candidato prima della pubblicazione |
-| Runtime LIVE | Build 279, `GIS-CONVERT-VIEWPORT-A`, 11.082.679 byte, SHA-256 `bb6db0079ad5376e256191ef5a32c51b21c53fab8de653454c184d41f673f253` |
-| RUNTIME_CANDIDATE_SHA | `1e6c11cf0825d5c76dd06147cec2378f023a4c323ba4dfcdb623cdce2a57576a` |
-| Candidate build / blob / deploy | Build 280, 11.108.273 byte; blob Git non creato; staging Windows, non committato né distribuito |
-| Result Cursor | `NOT_RUN`; esecuzione e QA della ripresa effettuate da GPT |
+| WU attiva | Nessuna |
+| GATE | QA operatore residua sul territorio e telefono reale; review esterna post-hoc pendente. Gate tecnici prepubblicazione, deploy e Automated Browser QA live PASS. |
+| NEXT | Raccogliere i 3 casi umani preparati e completare il backstop esterno secondo metodo; nessun FINITO o PASS operatore anticipato. |
+| Runtime LIVE | Build 280, 11.108.654 byte, SHA-256 `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde` |
+| Commit runtime / blob | `c33f58c956e9630b03f9ff86eb35eccd35879a4a` / `d2ec773205da2a6d4bf954f635765eb872ec646c` |
+| Deploy | VPS `main` pulito al commit runtime; 9 novembre 2026 14:32:47 Europe/Rome; solo GIS riavviato |
+| Automated Browser QA | PASS sul documento live, 14:36:32–14:36:46 Europe/Rome; tre SHA documento verificati, due POST reali |
+| Runtime candidato ulteriore | Nessuno per questo pass; il precedente 1e6c11cf… resta storico delle prove iniziali |
 | Working tree al momento dell'evidenza Git | Pulito, prima della scrittura dei tre file autosync |
-| REMOTE_HEAD_AT_EVIDENCE_TIME | `b8da23141cc8a38cc32a1079139da43d675a5557` |
-| real_task_commit | `b8da23141cc8a38cc32a1079139da43d675a5557` — checkpoint documentale/evidenze già pushato |
+| REMOTE_HEAD_AT_EVIDENCE_TIME | `fcca5cdf53e355c397a365fb15d77d729691bcf7` |
+| real_task_commit | `fcca5cdf53e355c397a365fb15d77d729691bcf7` — checkpoint documentale/evidenze già pubblicato |
 | current_report_container | `PENDING_SELF_REFERENCE` |
-| Esito del proprio autosync / HEAD finale | `EXTERNAL_ONLY` — verificato fuori da questo contenitore dopo il push |
+| Esito del proprio autosync / HEAD finale | `EXTERNAL_ONLY` — verifica esterna dopo il push, nessun terzo commit di autocitazione |
 
-FRONTIER è l'unica LIVE STATE. Questo file è EVIDENCE/HANDOFF. Il [rapporto completo](../orchestrator/evidence/2026-11-09-gpt-routing-280/REPORT.md) contiene provenienza, scarti, limiti e istruzioni di ripresa. Nessuna chiusura FINITO o PASS operatore.
+FRONTIER è l'unica LIVE STATE. Questo file è EVIDENCE/HANDOFF. [Rapporto completo](../orchestrator/evidence/2026-11-09-https443-release-280/REPORT.md), [manifest delle evidenze](../orchestrator/evidence/2026-11-09-https443-release-280/evidence-manifest.json) e [QA operatore](../orchestrator/evidence/2026-11-09-https443-release-280/QA-OPERATORE.md). Nessuna nuova autorizzazione richiesta per le azioni già autorizzate ed eseguite.
 
 ## B. RIEPILOGO COMPLETO
 
-### Autosync e commit
+### Esito e autorizzazioni
 
-Il commit task `b8da23141cc8a38cc32a1079139da43d675a5557` ha aggiornato FRONTIER e pubblicato le evidenze della ripresa e il pacchetto infrastrutturale proposto. Il monolite canonico non è modificato. Il push diretto dall'ambiente cloud è fallito per assenza di credenziali; il medesimo commit è stato trasferito come Git bundle verificato e pubblicato usando Git Credential Manager già configurato sul PC, da un repository bare nuovo e isolato. Nessun force push e nessuna modifica ai checkout preesistenti. Un successivo `git fetch origin` e `git ls-remote` dal cloud hanno confermato il commit.
+L'approvazione specifica «Okay, autorizzato.» ha consentito l'applicazione del pacchetto HTTPS 443 preparato: proxy loopback 18080, include Nginx e un solo Origin aggiuntivo per ORS. `APPLIED_PASS` alle 13:57:21 Europe/Rome. Vecchio Origin HTTP mantenuto; nessuna modifica a DNS, certificati, firewall, Tailscale Serve/Funnel o listener pubblici. La standing authorization del 3 novembre resta riferita al runtime, senza estensione automatica a futura infrastruttura.
 
-Il contenitore corrente modifica esclusivamente `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-11-09_1208_gpt-routing-280-handoff.md` e `docs/runtime/LAST_CURSOR_REPORT.md`. Il suo esito commit/push è `EXTERNAL_ONLY`, senza commit ulteriore di autocitazione. Nessun commit runtime creato in questo pass.
+La Build 280 è stata poi pubblicata e distribuita dopo i gate pertinenti. File VPS, HTTP8000, HTTPS /gis e documento browser corrispondono allo SHA definitivo. Il deploy runtime ha riavviato solo GIS; Nginx, ORS, proxy HTTPS, configurazioni e listener condivisi sono rimasti invariati. Backup e registri delle due operazioni sono descritti nel rapporto. Nessun rollback necessario.
 
-### Git status e diff stat
+### Runtime e correzioni
 
-Prima dell'autosync: `git status --short` vuoto; branch `main`; HEAD locale, origin/main e ls-remote concordi. Diff del task precedente: `69 files changed, 58152 insertions(+), 7 deletions(-)`. Sono documenti, harness, dati di prova e proposta server sotto `docs/`; non file attivati in produzione.
+Il bundle aggiunge difese no-ferry, copertura dei metadati terrestri, guardia snap entro 50 m e anchor verificati/confermati; usa percorsi same-origin sull'HTTPS esatto, deadline ORS complessiva di 20 secondi e corretta distinzione fra 404 generico e assenza di collegamento terrestre. Il riferimento Roma–Abidjan del self-check è corretto senza modificare gli algoritmi geodetici.
 
-La verifica dei 67 artefatti del manifest contro i blob effettivamente staged è PASS. Il check whitespace dei 60 file non archivistici è PASS; nove file preservati sono patch/diff con spazi di contesto o l'harness originale con riga finale vuota. Il check generale segnala questi formati e non è presentato come PASS indiscriminato. I byte degli originali restano identici ai manifest.
+La prima QA reale ha isolato due difetti UI: il compare vuoto intercettava i click sulle alternative e il pulsante Compare poteva restare disabilitato dopo un cambio di punti/profilo. Il definitivo corregge `routingWireAlternativesRowOnce` e `routingCompareOnInputInvalidated`, più una sola nota di rilascio. Tutti gli altri byte sono identici al candidato iniziale 1e6c11cf…; review compositiva e prova di ricostruzione esatta pubblicate. Lo staging intermedio 68fb2dbc… non è stato eseguito nel browser.
 
-### Cosa è stato fatto e regioni
+Singolo HTML standalone con CSS/JS inline e vanilla JS conservato. Nessun cambio di storage, GPS, canonicità di `state.mapWaypoints[]`, MGRS/Converti o aree estranee. Tre nuove etichette IT; freeze EN/FR rispettato. La compatibilità condizionale 8443 non attiva alcun listener né fallback da 443.
 
-Recuperato lo staging originale Build 277 dalla macchina corretta, verificato il suo hash contro FRONTIER e recuperato il riallineamento Build 279/HTTPS 443. Creato un candidato isolato Build 280 sulla base canonica 279, mantenendo le difese no-ferry, i metadati completi dei segmenti e la guardia snap di 50 m. Il confronto usa l'anchor confermato senza sovrascrivere le coordinate originali.
+### QA e limiti
 
-Aggiunta una deadline totale di 20.000 ms al confronto ORS, con cancellazione e cleanup corretti e mantenimento di GH valido. Il contratto reale del gateway rende ambiguo `ors_not_found`: rimosso il falso significato di assenza di connessione terrestre dai 404 ORS; conservata la diagnosi specifica GH. Corretto soltanto il riferimento del self-check Roma–Abidjan, non l'algoritmo geodetico. L'origine HTTPS esatta autorizzata usa percorsi same-origin; origin HTTPS estranei restano chiusi.
+| Prova | Esito e attribuzione |
+| --- | --- |
+| Review | REVIEW GPT-SOSTITUTIVA, intero bundle iniziale + delta finale immutabile; nessun blocker di codice residuo |
+| Sintassi definitiva | 2/2 PASS |
+| Alternative e persistenza | 8/8 PASS, 9 salvataggi/reload/riaperture; fixture ORS reale riprodotta offline |
+| Compare e osservatore | Regressione offline PASS, nessuna sincronizzazione UI manuale e nessuna chiamata reale |
+| Provider reali prima del deploy | 6 scenari, 7 profili, 7 POST PASS; 15 selezioni e 7 salvataggi/riaperture |
+| Dopo il deploy | Documento live senza sostituzione HTML, 3 caricamenti con SHA esatto; confronto MTB GH/ORS con 2 POST, 2 salvataggi/riaperture PASS |
+| Offline e OPSEC sul live | Messaggi corretti in entrambe le card, zero tentativi provider |
+| Suite precedenti acquisite | 54 routing mock, 15 timeout, 2.112 controlli geografici, 96 invalidi e 24 UI PASS sullo SHA1e6; componenti invariati, non nuove esecuzioni sul file definitivo |
 
-Funzioni centrali interessate: `routingCompareRunOrs`, `routingLandNoConnection`, `routingLandErrorKey`, `routingValidateGraphhopperResponse`, `routingValidateOrsResponse`, `routingCompareFingerprint`, `routingCompareLiveFingerprint`, `routingCompareStart`, `routingPostOrsDirections`, oltre ai resolver/gate degli endpoint e al self-check. Le regioni complete sono nella [mappa del delta](../orchestrator/evidence/2026-11-09-gpt-routing-280/runtime-scope.json).
+I tentativi falliti restano distinti: 1 POST sul primo candidato con difetti UI; 0 POST nel primo postdeploy fermato dal buffer DevTools. Quest'ultimo non dimostrava un mismatch del runtime: corretto soltanto il buffer dell'harness, poi gate SHA e matrice live PASS. Il totale reale del pass è 10 POST. Una favicon 404 appartiene alla QA prepubblicazione; nel postdeploy le tre favicon sono bloccate prima del server. Zero page error e trasporto provider fallito; i 616 messaggi console del postdeploy sono blocchi intenzionali di risorse accessorie, non una console vuota.
 
-I18N: tre nuove etichette IT; nuove EN/FR provenienti dallo staging rimosse per L10N-FREEZE, traduzioni esistenti conservate. Build e release notes aggiornate soltanto nel candidato.
+TLS di produzione verificato dal VPS; il browser Windows usa normalmente ESET SSL Filter CA e TLS1.3, senza bypass. Tile e altre risorse esterne bloccate durante la QA: gli screenshot verificano routing e policy, non la qualità della cartografia. Nessun profilo utente reale aperto. Nessun PASS Safari/iPhone fisico o operatore e nessuna review attribuita a un provider esterno.
 
-### Ambiti preservati
+### Dati, stato residuo e handoff
 
-Singolo HTML standalone, CSS/JS inline e vanilla JS; nessun framework o dipendenza runtime. Nessun cambio agli algoritmi MGRS/Converti, schema di storage, GPS o canonicità di `state.mapWaypoints[]`. Conservati i byte di cronologia estranei al task, compresi i CR isolati preesistenti. Runtime canonico e pubblico restano Build 279.
+Il vecchio URL HTTP e HTTPS servono la stessa Build 280, ma hanno archivi browser distinti. I dati preesistenti restano sul vecchio Origin dello stesso browser/dispositivo; nessuna migrazione automatica. Le esportazioni sessione/GIS non sono un backup completo o una migrazione senza perdita. La review storage ne documenta i limiti senza cambiare codice o dati.
 
-### QA corrente e limiti
+La QA umana residua riguarda tre casi: plausibilità di un percorso a piedi conosciuto, plausibilità MTB sul territorio e leggibilità/tocchi sul telefono reale. L'URL con cachebuster e le etichette UI sono nel documento collegato. Review esterna post-hoc pendente. Nessuna automazione Goal trasferita o modificata; altri workstream restano in FRONTIER.
 
-| Suite | Esito | Perimetro |
-| --- | --- | --- |
-| Sintassi | 2/2 PASS | Script inline compilati con Node |
-| Timeout ORS | 15/15 PASS | Funzioni effettive, fetch sintetico, deadline di prova ridotta a 25 ms |
-| Routing browser | 54/54 PASS | 38 generali + 4 transizioni policy + 9 anchor + 3 origin estranei; zero page error |
-| Geodesia/parser | 2.112/2.112 PASS | 72 punti, riferimenti indipendenti PROJ/GEOTRANS |
-| Input invalidi | 96/96 rifiutati | Campione degli harness recuperati |
-| UI geografica | 24/24 PASS | 12 punti, desktop/mobile Chromium; zero page error; rete esterna bloccata |
-| Roma–Abidjan | PASS | GeographicLib 2.1; errore 0,000001293 m; tolleranza 0,01 m |
-| HTTPS infrastruttura | 10 gruppi PASS | Nginx reale isolato, 14 casi GH negativi, upstream mock e TLS di test verificato |
-| Integrità pacchetto infra | 19/19 PASS | Hash, preservazione Nginx e singola modifica Origin gateway |
+### Commit, integrità e autosync
 
-I 13 casi anchor storici non sono dichiarati riprodotti: i runner recuperati ne eseguono 9. Nessun vecchio test provider reale è conteggiato come QA della Build 280. Nessun PASS Safari/iPhone fisico o operatore. Non è dichiarata un'esecuzione del selftest globale o dell'ABQA storico: valgono esclusivamente le suite attuali indicate. Il campione geografico non certifica tutto il mondo, tutti i datum o UPS.
+Commit runtime `c33f58c956e9630b03f9ff86eb35eccd35879a4a` già pubblicato e distribuito. Il commit task documentale `fcca5cdf53e355c397a365fb15d77d729691bcf7` aggiorna FRONTIER, il prefisso corrente di INFRA_VPS e il nuovo checkpoint di evidenze: `105 files changed, 32042 insertions(+), 10 deletions(-)`. Non modifica il runtime. Le 91 copie originali coincidono con le fonti; 102 artefatti del manifest sono stati verificati contro i blob staged. Il check whitespace generale segnala CRLF originali e spazi di contesto dei tre diff/delta archiviati: controllo con CRLF riconosciuti PASS per tutti gli altri file, senza riscrivere gli originali.
 
-### Infrastruttura, review e autorizzazione
+La pubblicazione usa Git bundle verificati e Git Credential Manager già configurato nel repository bare Windows isolato. Push normali, nessun force push o modifica ai checkout preesistenti. Fetch e ls-remote indipendenti dal cloud hanno confermato il task documentale. Il clone VPS resta sul commit runtime, distinto dalla successiva HEAD documentale.
 
-Il [pacchetto proposto](../orchestrator/evidence/2026-11-09-gpt-routing-280/infra/README.md) aggiunge un proxy v7 su loopback, un include Nginx e il solo Origin `https://ionos-n8n-new.tailc01234.ts.net` nella allowlist ORS. Percorsi esistenti ORS/catalogo/VPS, TLS, listener e limiti globali conservati byte per byte. ORS resta diretto al gateway 8020, senza loop attraverso il proxy.
-
-La review GPT separata ha corretto il fallback GH estraneo e il rollback per applicazioni parziali. Test locale del rollback parziale PASS, nessun blocker residuo della procedura. La standing authorization del 3 novembre esclude questa modifica infrastrutturale: si attende la decisione dell'utente su avvio proxy, reload Nginx e restart del gateway ORS. Nessuna configurazione live applicata. La verifica isolata non dimostra ancora TLS di produzione, avvio reale del sandbox systemd o disponibilità dei provider.
-
-Hash/configurazioni, HTTP Build 279 e PID dei servizi reali sono identici prima/dopo il collaudo temporaneo. Il clone VPS osservato è pulito a `7a2c88b1b292ff0b46a2f90b1115143673fe72f1`, distinto dalla HEAD GitHub. Il runtime servito è verificato attraverso i byte HTTP, non dedotto dal clone.
-
-### Evidenze e ripresa
-
-- [Rapporto principale](../orchestrator/evidence/2026-11-09-gpt-routing-280/REPORT.md) e [manifest complessivo](../orchestrator/evidence/2026-11-09-gpt-routing-280/evidence-manifest.json).
-- [Routing browser](../orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/REPORT.md) e [timeout](../orchestrator/evidence/2026-11-09-gpt-routing-280/routing/timeout-results.json).
-- [Esecuzione geografica](../orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/execution-manifest.json) e [scarti](../orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/summary.json).
-- [Applicazione e rollback infra](../orchestrator/evidence/2026-11-09-gpt-routing-280/infra/README.md), [test server](../orchestrator/evidence/2026-11-09-gpt-routing-280/infra/evidence/vps-isolated-result.json), [review](../orchestrator/evidence/2026-11-09-gpt-routing-280/infra/evidence/independent-review.txt).
-
-Staging candidato: `C:\Users\Utente\Downloads\Documents\ChatGPT\TMART GIS Tool\work\gpt-resume-20261109\candidate-280-1e6c11cf.html`. Verificare lo SHA completo prima di usarlo; non presumere persistente la copia cloud. Il pacchetto di QA routing completo è disponibile nella medesima directory Windows e le evidenze sono pubblicate nel repository.
-
-Dopo approvazione infra: controllare precondizioni/hash, applicare con registro delle fasi e rollback, verificare endpoint/TLS, eseguire provider/UI reali sul candidato esatto, poi gate runtime e deploy già autorizzato. Il nuovo origin HTTPS ha storage/cache separati da HTTP; nessuna migrazione automatica eseguita. Altri workstream restano in FRONTIER, senza modifiche estranee in questo pass.
-
-### File modificati nel commit task
-
-- `docs/FRONTIER.md`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/.gitattributes`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/REPORT.md`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/evidence-manifest.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/ADAPTATION-MANIFEST.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/actual.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/analyze.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/cases.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/execution-manifest.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/measurements.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/mgrs-278-regression-fixtures.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/reference.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/roma-abidjan.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/run.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/summary.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/world-ui.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/geodesy/world-ui.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/README.md`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/baseline/goi_ors_gateway.before.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/baseline/nginx.before.conf`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/build_packet.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/evidence/atomic-helper-local.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/evidence/independent-review.txt`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/evidence/vps-isolated-result.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/manifest.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/nginx/goi-gis-https443.common.conf`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/nginx/goi-gis-https443.locations.conf`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/patches/gateway-origin.patch`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/patches/nginx.patch`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/proposed/goi_ors_gateway.after.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/proposed/nginx.after.conf`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/proxy/gis_same_origin_proxy.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/proxy/test_gis_same_origin_proxy.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/qa_integration.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/replace_if_hash.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/systemd/goi-gis-https443-proxy.service`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/infra/verify_packet.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/REPORT.md`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/adapt-routing-harnesses.py`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/adaptation-manifest.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/artifact-manifest.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/general-38.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/origin-guard-280.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/origin-guard-280.cjs.diff`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/origin-guard-3.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/originals/qa-compare-snap-anchor-277.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/originals/qa-compare-snap-guard-277.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/originals/qa-snap-anchor-277.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/originals/run-279.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/originals/transitions-279.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-compare-snap-anchor-280-results.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-compare-snap-anchor-280.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-compare-snap-anchor-280.cjs.diff`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-compare-snap-guard-280-results.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-compare-snap-guard-280.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-compare-snap-guard-280.cjs.diff`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-snap-anchor-280-results.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-snap-anchor-280.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/qa-snap-anchor-280.cjs.diff`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/results-manifest.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/run-280.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/run-280.cjs.diff`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/transitions-280.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/transitions-280.cjs.diff`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/browser/transitions-4.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/ors-compare-timeout.test.cjs`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/routing/timeout-results.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/runtime-scope.json`
-- `docs/orchestrator/evidence/2026-11-09-gpt-routing-280/syntax.json`
+Il contenitore corrente modifica esclusivamente i tre file autosync: `docs/orchestrator/latest.md`, questa inbox e `docs/runtime/LAST_CURSOR_REPORT.md`. Il suo esito commit/push è `EXTERNAL_ONLY`; `current_report_container=PENDING_SELF_REFERENCE`. Nessun ulteriore commit per registrare l'hash del contenitore stesso.
 
 ### STATO FRESCO DA CURSOR — campi canonici, fonte GPT
 
 ```text
 Cursor: NOT_RUN
-origin/main HEAD al momento dell'evidenza: b8da23141cc8a38cc32a1079139da43d675a5557
+origin/main al momento dell'evidenza: fcca5cdf53e355c397a365fb15d77d729691bcf7
 working tree prima dell'autosync: clean
-ultimo blocco PASS: QA scoped descritta sopra; blocco routing complessivo ancora aperto
-prossimo candidato: Build 280 / 1e6c11cf0825d5c76dd06147cec2378f023a4c323ba4dfcdb623cdce2a57576a
-note operative: attendere approvazione infra; QA reale e deploy candidati non eseguiti
+ultimo gate tecnico PASS: Automated Browser QA live sulla Build 280
+runtime LIVE: Build 280 / 70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde
+prossimo passo: QA operatore residua e review esterna post-hoc
+stato del blocco complessivo: aperto; nessun FINITO
 HEAD finale e stato del contenitore corrente: EXTERNAL_ONLY
 ```
 
-## C. OUTPUT GIT prima del commit contenitore
+## C. OUTPUT GIT prima del contenitore
 
-`git fetch --no-tags origin` completato prima dello snapshot. Il clone è shallow: il comando log -5 restituisce i due commit attualmente disponibili. L'indicazione «output vuoto» esplicita l'assenza di righe, non è output prodotto da Git.
+`git fetch --no-tags origin` completato prima dello snapshot. L'indicazione «output vuoto» descrive l'assenza di righe.
 
 ```text
 $ git log --oneline -5
+fcca5cd docs(gis): record HTTPS443 and Build280 verified release
+c33f58c fix(gis): validate land-only routes and enable approved HTTPS routing
+e94d26a docs(gis): autosync GPT routing handoff and pending infrastructure gate
 b8da231 docs(gis): checkpoint GPT routing 280 and HTTPS proposal
 8415439 Record build 279 deployment
 
 $ git rev-parse HEAD
-b8da23141cc8a38cc32a1079139da43d675a5557
+fcca5cdf53e355c397a365fb15d77d729691bcf7
 
 $ git rev-parse origin/main
-b8da23141cc8a38cc32a1079139da43d675a5557
+fcca5cdf53e355c397a365fb15d77d729691bcf7
 
 $ git branch --show-current
 main
 
 $ git ls-remote origin refs/heads/main
-b8da23141cc8a38cc32a1079139da43d675a5557	refs/heads/main
+fcca5cdf53e355c397a365fb15d77d729691bcf7	refs/heads/main
 
 $ git status --short
 (output vuoto)
