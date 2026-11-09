@@ -7,14 +7,20 @@
 | **WORKSTREAM ATTIVO** | Routing terrestre senza traghetti |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
 | **BLOCCO ATTIVO** | `ROUTING-LAND-ONLY-NO-FERRY-A` |
-| **STATO BLOCCO** | La Build 279 live non contiene le difese no-ferry presenti nel candidato Build 269; non garantisce percorsi senza traghetti. Il candidato richiede integrazione e QA sul runtime corrente. |
-| **GATE CORRENTE** | Build 277: operatore conferma su iPhone zoom a due dita, pan, pulsanti e stabilità in verticale e orizzontale (2026-11-05). Routing: validazione candidato e prove provider/browser ancora aperte. |
-| **RUNTIME LIVE** | Build 279 · SHA-256 `bb6db0079ad5376e256191ef5a32c51b21c53fab8de653454c184d41f673f253` · file e HTTP VPS concordano |
-| **RUNTIME CANDIDATE** | Staging routing sulla Build 277: SHA `8bada07bf241118fe4e32ecfd3aa214521803ab7092018e98866adfa81414116`; non distribuito. Suite mock 38+4 e 13 QA compare PASS, review indipendente senza blocker; ORS reale e UI completa restano aperti. |
-| **NEXT** | Risolvere origine HTTPS e CORS ORS preservando i servizi VPS; completare test UI con provider reali e QA geodetica prima di distribuire il candidato. |
-| **EVIDENCE** | [Build 276](orchestrator/evidence/2026-11-04-mobile-portrait-276/REPORT.md) · [Routing indipendente](orchestrator/evidence/2026-10-30-routing-live-independent/REPORT.md) · [Ferry profiles](orchestrator/evidence/2026-10-30-routing-ferry-profiles/report.md) · [Caso isolato](orchestrator/evidence/2026-10-30-routing-island-probe/report.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; Build 279 verificata via HTTP, altri servizi invariati. Non usare il vecchio alias SSH. |
+| **STATO BLOCCO** | Difese no-ferry e HTTPS integrate nel candidato Build 280 sulla base 279; QA isolata PASS. La Build 279 live resta priva di tali difese e non garantisce percorsi senza traghetti. |
+| **GATE CORRENTE** | Approvazione della modifica infrastrutturale HTTPS 443, esclusa dalla standing authorization runtime. Pacchetto e rollback pronti, collaudo isolato PASS. UI/provider reali, TLS reale e avvio del nuovo servizio ancora NON_VERIFICATI. |
+| **RUNTIME LIVE** | Build 279 · SHA-256 `bb6db0079ad5376e256191ef5a32c51b21c53fab8de653454c184d41f673f253` · 11.082.679 byte · file e HTTP VPS concordano, verificati 2026-11-09 |
+| **RUNTIME CANDIDATE** | Build 280 · SHA-256 `1e6c11cf0825d5c76dd06147cec2378f023a4c323ba4dfcdb623cdce2a57576a` · 11.108.273 byte · staging Windows, non committato né distribuito. QA: routing browser 54/54, timeout 15/15, geodesia 2.112/2.112 + 96 invalidi, UI geografica 24/24, sintassi 2/2 PASS. |
+| **NEXT** | Ottenere approvazione del pacchetto HTTPS 443 già revisionabile; quindi applicarlo con guardie hash, verificare UI/provider reali sul candidato e completare i gate prima di pubblicare/distribuire Build 280. Nessuna nuova approvazione richiesta per il solo runtime quando i gate saranno PASS. |
+| **EVIDENCE** | [Ripresa GPT Build 280](orchestrator/evidence/2026-11-09-gpt-routing-280/REPORT.md) · [Pacchetto HTTPS 443](orchestrator/evidence/2026-11-09-gpt-routing-280/infra/README.md) · [Build 276](orchestrator/evidence/2026-11-04-mobile-portrait-276/REPORT.md) · [Routing indipendente](orchestrator/evidence/2026-10-30-routing-live-independent/REPORT.md) · [Ferry profiles](orchestrator/evidence/2026-10-30-routing-ferry-profiles/report.md) |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; verifica 2026-11-09: HTTP Build 279, hash configurazioni e PID servizi invariati pre/post collaudo isolato. Nessun reload/restart live eseguito. Non usare il vecchio alias SSH. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
+
+## Checkpoint 2026-11-09 — ripresa GPT e routing Build 280
+
+Recuperato lo staging originale e riallineato il routing alla Build 279. Il candidato Build 280 aggiunge anche una deadline complessiva al confronto ORS e corregge la falsa classificazione dei 404 ORS come assenza di percorso terrestre. Corretto il riferimento del self-check Roma–Abidjan; algoritmi MGRS/Converti invariati. Le prove correnti sono sullo SHA completo indicato nella tabella: 54 casi browser con provider simulati, 15 timeout, 2.112 controlli geografici su 72 punti, 96 invalidi e 24 casi UI. I 13 casi compare storici non sono dichiarati riprodotti: gli harness recuperati ne coprono 9, inclusi nei 54.
+
+Il pacchetto HTTPS propone un proxy loopback, un include Nginx e un solo Origin aggiuntivo nel gateway ORS. Dieci gruppi di collaudo, compresi 14 negativi GH, sono PASS in ambiente temporaneo sul VPS; i servizi live non sono stati modificati. Applicazione e rollback sono documentati. La decisione residua è l'approvazione dell'infrastruttura, poi QA reale e gate runtime. La precedente conferma iPhone del 5 novembre riguarda la Build 277 e resta storico; non è PASS operatore della Build 280.
 
 ## Ripresa — 2026-11-03
 

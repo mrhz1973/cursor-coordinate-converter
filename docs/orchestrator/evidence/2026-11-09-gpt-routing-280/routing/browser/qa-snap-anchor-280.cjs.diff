@@ -1,0 +1,59 @@
+--- original/qa-snap-anchor-277.cjs
++++ adapted/qa-snap-anchor-280.cjs
+@@ -2,8 +2,9 @@
+ const crypto = require('crypto');
+ const { chromium } = require('C:/goi-pw-probe/node_modules/playwright');
+ 
+-const app = 'C:/Users/Utente/Downloads/Documents/ChatGPT/TMART GIS Tool/work/routing-merge-276/routing-candidate-277.html';
+-const expectedSha = 'ed7d91fc990c0e3ae0e77ce28135aa6a56cb3bfc32859dae5ca4730072db21da';
++const app = 'C:/Users/Utente/Downloads/Documents/ChatGPT/TMART GIS Tool/work/gpt-resume-20261109/candidate-280-1e6c11cf.html';
++const expectedSha = '1e6c11cf0825d5c76dd06147cec2378f023a4c323ba4dfcdb623cdce2a57576a';
++const APP_URL = 'https://ionos-n8n-new.tailc01234.ts.net/';
+ const bytes = fs.readFileSync(app);
+ const sha = crypto.createHash('sha256').update(bytes).digest('hex');
+ if (sha !== expectedSha) throw new Error(`Unexpected candidate SHA: ${sha}`);
+@@ -35,13 +36,13 @@
+ }
+ 
+ async function runScenario(browser, scenario) {
+-  const context = await browser.newContext();
++  const context = await browser.newContext({ serviceWorkers: 'block' });
+   const records = [];
+   let phase = 'startup';
+   await context.route('**/*', async route => {
+     const request = route.request();
+     const url = request.url();
+-    if (url === 'https://app.invalid/') {
++    if (url === APP_URL) {
+       return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: bytes });
+     }
+     if (url.endsWith('/info')) {
+@@ -71,7 +72,7 @@
+   const pageErrors = [];
+   page.on('pageerror', error => pageErrors.push(String(error)));
+   try {
+-    await page.goto('https://app.invalid/', { waitUntil: 'domcontentloaded', timeout: 60000 });
++    await page.goto(APP_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
+     await page.evaluate(() => openRoutingPlannerPanel('graphhopper'));
+     await page.waitForSelector('#routingPlannerPanel[open]');
+     await page.locator('#routingProfileSelect').selectOption('hiking');
+@@ -148,8 +149,8 @@
+ }
+ 
+ (async () => {
+-  const channel = process.env.QA_BROWSER_CHANNEL || 'msedge';
+-  const browser = await chromium.launch({ headless: true, channel });
++  const channel = 'chromium-1234';
++  const browser = await chromium.launch({ headless: true, executablePath: 'C:/Users/Utente/AppData/Local/ms-playwright/chromium-1234/chrome-win64/chrome.exe' });
+   try {
+     const results = [];
+     results.push(await runScenario(browser, 'valid'));
+@@ -161,7 +162,7 @@
+       policy: 'The HTML and every network request were intercepted; only deterministic mock responses were used.',
+       results
+     };
+-    fs.writeFileSync(__dirname + '/qa-snap-anchor-277-results.json', json(output, null, 2));
++    fs.writeFileSync(__dirname + '/qa-snap-anchor-280-results.json', json(output, null, 2));
+     console.log(json(results.map(({ scenario, passed, postedPointsLonLat, originalCoordinatesPreserved, anchorPreserved, preview, routeError, responseSnapDistanceFromS_m, pageErrors }) => ({
+       scenario, passed, postedPointsLonLat, originalCoordinatesPreserved, anchorPreserved, preview, routeError, responseSnapDistanceFromS_m, pageErrors
+     })), null, 2));

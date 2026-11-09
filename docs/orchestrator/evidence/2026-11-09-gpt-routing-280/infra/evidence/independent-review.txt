@@ -1,0 +1,24 @@
+REVIEW INDIPENDENTE — PACCHETTO HTTPS443
+Data: 9 novembre 2026
+Reviewer: /root/recover_staging/review_infra_design
+Tipo: revisione statica di disegno, configurazione, unità, helper e procedure.
+
+Disegno: Nginx diretto raggiungerebbe same-origin ma non conserverebbe tutte le
+guardie semantiche del v7; confermata la scelta v7 per GIS/GH, ORS invariato.
+
+Finding 1: path GH fuori contratto potevano ricadere nel fallback con access log.
+Correzione: due location silenziosi del solo namespace GH. Review della correzione
+positiva; il parent dell'agent reviewer ha eseguito i test integrati separati.
+
+Finding 2: rollback inizialmente descritto solo per entrambi i file già modificati.
+Correzione: gestione per-file/per-fase, Prima→skip, Dopo→restore, altro→conflitto;
+cleanup solo degli elementi effettivamente installati e identificati. Il helper
+non viene presentato come transazione dei due target.
+
+Esito finale del reviewer: «Blocker risolto. I paragrafi aggiornati gestiscono
+correttamente l'applicazione parziale: verifica e ripristino per singolo target,
+tracciamento delle fasi, cleanup dei soli elementi installati e identificati,
+nessun reload/restart su configurazioni in conflitto.»
+
+Nessun ulteriore blocker nei paragrafi modificati. Il reviewer non ha rieseguito
+test, avviato servizi o attestato il collaudo di produzione.

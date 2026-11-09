@@ -1,0 +1,52 @@
+--- original/transitions-279.cjs
++++ adapted/transitions-280.cjs
+@@ -1,8 +1,8 @@
+ const fs=require('fs'), crypto=require('crypto');
+ const {chromium}=require('C:/goi-pw-probe/node_modules/playwright');
+-const app='C:/Users/Utente/Downloads/Documents/ChatGPT/TMART GIS Tool/work/routing-merge-276/routing-candidate-279-routing-8bada07.html';
++const app = 'C:/Users/Utente/Downloads/Documents/ChatGPT/TMART GIS Tool/work/gpt-resume-20261109/candidate-280-1e6c11cf.html';
+ const out=__dirname, bytes=fs.readFileSync(app), sha=crypto.createHash('sha256').update(bytes).digest('hex');
+-if(!process.env.EXPECTED_SHA || sha!==process.env.EXPECTED_SHA) throw Error('unexpected candidate');
++if(sha!=='1e6c11cf0825d5c76dd06147cec2378f023a4c323ba4dfcdb623cdce2a57576a') throw Error('unexpected candidate');
+ const J=JSON.stringify, results=[], requests=[]; let scenario;
+ function reply(service,b,kind){
+  let pts=(service==='gh'?b.points:b.coordinates)||[];
+@@ -21,10 +21,10 @@
+  const browser=await chromium.launch({headless:true,executablePath:'C:/Users/Utente/AppData/Local/ms-playwright/chromium-1234/chrome-win64/chrome.exe'});
+  try {
+  for(const s of ['graphhopper','ors'].flatMap(service=>['strict','offline'].map(transition=>({name:service+' transition '+transition,service,transition})))){
+- scenario=s; const ctx=await browser.newContext(); const records=[]; let phase='startup', before=[];
++ scenario=s; const documentUrl=s.gate==='origin'?'https://app.invalid/':s.fallback?'http://31.70.139.73/gis/':'https://ionos-n8n-new.tailc01234.ts.net/'; const ctx=await browser.newContext({serviceWorkers:'block'}); const records=[]; let phase='startup', before=[];
+  await ctx.route('**/*',async route=>{
+    const q=route.request(), u=q.url(), record={phase,method:q.method(),type:q.resourceType(),url:u};
+-   if(u==='https://app.invalid/') return route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:bytes});
++   if(u===documentUrl) return route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:bytes});
+    let service=u.includes('/ors/v2/directions/')?'ors':u.includes('/route')?'gh':null;
+    if(service&&q.method()==='POST'){
+      record.service=service; try{record.body=JSON.parse(q.postData())}catch{};records.push(record);
+@@ -42,7 +42,7 @@
+  });
+  const page=await ctx.newPage(); page.setDefaultTimeout(12000);let errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  try{
+-  await page.goto('https://app.invalid/',{waitUntil:'domcontentloaded',timeout:60000}); await page.waitForTimeout(300);
++  await page.goto(documentUrl,{waitUntil:'domcontentloaded',timeout:60000}); await page.waitForTimeout(300);
+   phase='setup'; await page.evaluate(svc=>openRoutingPlannerPanel(svc),s.service); await page.waitForSelector('#routingPlannerPanel[open]');
+   await page.locator('#routingProfileSelect').selectOption(s.profile||(s.service==='ors'?'foot-hiking':'hiking'));
+   await page.evaluate(({avoid,gate,fallback})=>{let r=state._routing; [[9.8236,44.1024],[9.829,44.107]].forEach(([lon,lat],i)=>routingSetPointCoordinates(r.points[i].id,lat,lon,'map')); if(avoid){_routingAvoidSession.areas=[{id:'qa',enabled:true,vertices:[{lat:44.11,lon:9.82},{lat:44.11,lon:9.83},{lat:44.12,lon:9.83}]}];routingSyncAvoidAreasUi();} if(fallback)r.provider='auto'; if(gate==='strict') state.opsecStrict=true; if(gate==='offline') state.forceOffline=true; routingSyncCalculateBtnUi();routingSyncCompareUi();},{avoid:s.avoid,gate:s.gate,fallback:s.fallback});
+@@ -50,7 +50,7 @@
+   if(s.compare){await page.locator('#routingCompareBtn').click();await page.waitForFunction(()=>!_routingCompareSession.loading,null,{timeout:30000});}
+   else {const pending = s.transition ? page.waitForRequest(q=>q.method()==='POST'&&(q.url().includes('/route')||q.url().includes('/ors/v2/directions/')), {timeout:12000}) : null; await page.locator('#routingCalculateBtn').click(); if(pending){await pending; for(let i=0;i<100&&!records.some(x=>x.service);i++) await new Promise(resolve=>setTimeout(resolve,10)); if(!records.some(x=>x.service)) throw Error('intercepted request not observed'); phase='after-policy'; await page.evaluate(t=>{if(t==='strict')state.opsecStrict=true; else state.forceOffline=true; routingOnNetworkPolicyChange();},s.transition); await page.waitForTimeout(2000);} await page.waitForFunction(()=>!state._routing.requestLoading&&!state._routing.infoLoading,null,{timeout:30000});}
+   await page.waitForTimeout(100);
+-  let ui=await page.evaluate(()=>({preview:!!state._routing.previewCoordinates,saveDisabled:document.querySelector('#routingSaveAsTrackBtn').disabled,cardHidden:document.querySelector('#routingResultCard').hidden,status:document.querySelector('#routingPlannerStatus').innerText,compare:{gh:_routingCompareSession.gh?.status||null,ors:_routingCompareSession.ors?.status||null,chooseGh:document.querySelector('#routingCompareChooseGh').disabled,chooseOrs:document.querySelector('#routingCompareChooseOrs').disabled}}));
++  let ui=await page.evaluate(()=>({preview:!!state._routing.previewCoordinates,routeError:state._routing.routeError||null,saveDisabled:document.querySelector('#routingSaveAsTrackBtn').disabled,cardHidden:document.querySelector('#routingResultCard').hidden,status:document.querySelector('#routingPlannerStatus').innerText,compare:{gh:_routingCompareSession.gh?.status||null,ors:_routingCompareSession.ors?.status||null,chooseGh:document.querySelector('#routingCompareChooseGh').disabled,chooseOrs:document.querySelector('#routingCompareChooseOrs').disabled}}));
+   let saved=null;
+   if(s.choose){await page.locator(s.choose==='gh'?'#routingCompareChooseGh':'#routingCompareChooseOrs').click(); await page.locator('#routingSaveAsTrackBtn').click(); await page.locator('#routingSaveAsTrackName').fill('QA Synthetic'); await page.locator('#routingSaveAsTrackConfirmBtn').click(); await page.waitForTimeout(300); saved=await page.evaluate(()=>({status:document.querySelector('#routingPlannerStatus').innerText,feedback:document.querySelector('#routingSaveAsTrackFeedback').innerText,preview:!!state._routing.previewCoordinates}));}
+   const posts=records.filter(x=>x.service), constrained=posts.every(filters), avoidOk=!s.avoid||posts.every(x=>x.service==='gh'?!!x.body.custom_model?.areas&&x.body.custom_model.priority.some(p=>p.if.startsWith('in_')):!!x.body.options?.avoid_polygons);
+@@ -68,6 +68,6 @@
+  }
+  }finally{await browser.close()}
+  if(results.some(x=>!x.passed))process.exitCode=1;
+- fs.writeFileSync(out+'/'+(process.env.QA_OUTPUT||'transitions.json'),J({sha,policy:'All browser requests intercepted, app fulfilled directly from bytes, mocks or abort; no server and no real network.',results},null,2));
++ fs.writeFileSync(out+'/'+(process.env.QA_OUTPUT||'transitions-4.json'),J({sha,policy:'All browser requests intercepted, app fulfilled directly from bytes, mocks or abort; no server and no real network.',results},null,2));
+  console.log(J(results.map(x=>({name:x.name,passed:x.passed,posts:x.posts?.length,pre:x.preActionRoutingPosts,status:x.ui?.status,compare:x.ui?.compare,saved:x.saved,error:x.error})),null,2));
+ })().catch(e=>{console.error(e);process.exitCode=1});

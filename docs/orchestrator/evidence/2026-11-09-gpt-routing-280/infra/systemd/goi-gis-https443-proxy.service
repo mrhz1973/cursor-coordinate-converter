@@ -1,0 +1,34 @@
+[Unit]
+Description=TMAR GIS HTTPS443 fixed GIS and GraphHopper proxy
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+DynamicUser=yes
+Environment=GIS_HTTPS_ORIGIN=https://ionos-n8n-new.tailc01234.ts.net
+Environment=GIS_PROXY_PORT=18080
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 -B /opt/goi-gis-https443/gis_same_origin_proxy.py
+Restart=on-failure
+RestartSec=2
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+LockPersonality=yes
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target
