@@ -1,23 +1,27 @@
 # LAST_CURSOR_REPORT — checkpoint operativo GPT
 
-Il percorso canonico è mantenuto durante il passaggio autorizzato da Codex a GPT. Questo pass è stato eseguito da GPT; nessuna esecuzione Cursor o Codex viene attribuita al lavoro.
+Percorso canonico mantenuto durante il passaggio autorizzato da Codex a GPT; nessuna esecuzione Cursor o Codex è attribuita a questo pass.
 
-## Accesso autonomo VPS richiesto dall'operatore
+## Stato corrente del collegamento
 
-Preparazione tecnica PASS il 9 novembre 2026 alle 19:14:06 Europe/Rome. Remote Desktop Commander 0.3.1 installato da identità systemd dinamica non-root, home e workspace persistenti dedicati, filesystem protetto e capacità vuote. Review indipendente GPT PASS. Il tunnel ASUS è stato usato per il bootstrap iniziale; il nuovo accesso diretto non è ancora collaudato.
+L’operatore ha scelto esplicitamente il proprio TMAR Desktop Commander Win tramite OpenAI Secure MCP Tunnel. Il plugin risponde su ASUSDESKTOP, Windows, versione 0.3.1. Il servizio hosted tmar-vps-access predisposto sul VPS è fermo e disabilitato: MainPID=0, UnitFileState=disabled; lo stato systemd failed residuo non indica un processo attivo. Il precedente pairing non va ripreso.
 
-**NEXT / WAIT:** avvio di associazione, codice effettivo approvato nel browser, identificazione del nuovo device ID Linux, prove sul workspace/confini, politica ordinaria on-failure e riconnessione dopo riavvio della sola unit. Il checkpoint documenta PREPARED_NOT_STARTED. Nessuna credenziale privata o codice temporaneo è pubblicato. Non dichiarare autonomia né deploy privilegiato disponibili prima dei rispettivi gate.
+Stop registrato alle 23:01:30 Europe/Rome e confermato dall’osservazione salvata alle 23:05:53 del 9 novembre 2026. Pacchetto e stato del servizio disabilitato sono conservati. Non è stata eseguita una revoca remota; il file di sessione risultava assente e nessun token è stato letto.
+
+## NEXT / WAIT
+
+Usare il plugin TMAR selezionato. L’autonomia dal PC resta aperta: il percorso coerente richiede un tunnel OpenAI dedicato al VPS, credenziale runtime configurata privatamente e relativo collegamento ChatGPT verificato. Non duplicare la stessa identità stdio su Windows e VPS, non ripuntare il plugin Windows e non riattivare il servizio hosted precedente. Nessun nuovo tunnel, trasferimento di credenziali o modifica del plugin è stato eseguito.
+
+Gli strumenti di aggiornamento degli archivi App-backed non possono modificare il binding MCP. Un eventuale collegamento TMAR VPS deve seguire il flusso ufficiale di gestione tunnel e registrazione ChatGPT; disponibilità sul medesimo App ID non verificata.
 
 ## Stato applicativo
 
-Build 281 invariata: source commit0c0f6785654dbba279774bb8569788088f0762e9, blob3dcff61081a2f461f8841953986ced17b058eab1, SHA-256e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62, 11.108.861 byte. Il checkout VPS resta al checkpoint cee1c9a1e71a38fc36ba33ab717870730d70036b. Runtime/HEAD/stato Git, quattro PID e listener TCP invariati durante l'installazione del nuovo agente.
+Build 281 invariata, source commit 0c0f6785654dbba279774bb8569788088f0762e9, blob 3dcff61081a2f461f8841953986ced17b058eab1, SHA-256 e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62. GIS-WINDOW-CONTROLS-A resta aperto per la QA operatore Astro su telefono. La preferenza sul connettore non è un PASS di quella QA.
 
-Deploy e ABQA della 281 già PASS nel proprio dossier. `GIS-WINDOW-CONTROLS-A` resta aperto per il solo riscontro operatore Astro su telefono. Routing precedente chiuso; reviewer AI esterno backstop non eseguito.
-
-[FRONTIER](../FRONTIER.md) · [Rapporto accesso VPS](../orchestrator/evidence/2026-11-09-vps-direct-access/REPORT.md) · [Inbox](../orchestrator/inbox/2026-11-09_1921_vps-access-prepared.md) · [Rilascio 281](../orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md).
+[FRONTIER](../FRONTIER.md) · [Correzione e fonti](../orchestrator/evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md) · [Inbox](../orchestrator/inbox/2026-11-09_2320_tmar-tunnel-choice.md).
 
 ## F3
 
-`real_task_commit = 2137bbbecb869236cfaade368b43d329c4742cd6`; `current_report_container = PENDING_SELF_REFERENCE`; esito del proprio autosync e HEAD finale `EXTERNAL_ONLY`.
+`real_task_commit = a3bc2b189d2ad4cc8dfe26fe5d71ab4f64b3bf62`; `current_report_container = PENDING_SELF_REFERENCE`; proprio push e HEAD finale `EXTERNAL_ONLY`.
 
-Task reale pubblicato e verificato il 2026-11-09T19:20:15.957038+01:00. Il risultato del proprio push/final HEAD è esterno; nessun commit aggiuntivo di auto-riferimento.
+La verifica indipendente della HEAD finale rimane esterna. Non aggiungere un commit di auto-riferimento.
