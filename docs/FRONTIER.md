@@ -4,19 +4,31 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Audit uniformità finestre GIS |
-| **WU ATTIVA** | — (audit a livello blocco; nessuna WU runtime in esecuzione) |
-| **BLOCCO ATTIVO** | `GIS-WINDOW-UNIFORMITY-AUDIT-A` |
-| **STATO BLOCCO** | Audit in sola lettura avviato: inventario HTML/CSS, lifecycle JavaScript e riproduzione browser delle anomalie candidate. Nessun nuovo candidato runtime o PASS visivo generale. |
-| **GATE CORRENTE** | Distinguere scostamenti statici e comportamenti intenzionali dai difetti riprodotti attraverso i comandi reali dell'interfaccia. |
-| **RUNTIME LIVE** | Build 280 · SHA-256 `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde` · 11.108.654 byte · prove file/HTTP/HTTPS/browser del 2026-11-09; deploy 14:32:47 e Automated Browser QA conclusa 14:36:46 Europe/Rome |
-| **RUNTIME CANDIDATE** | Nessuno. La chiusura operatore e l'audit non modificano il monolite distribuito. |
-| **ULTIMO BLOCCO CHIUSO** | `ROUTING-LAND-ONLY-NO-FERRY-A` · PASS operatore aggregato sui tre casi residui, dichiarato il 2026-11-09. REVIEW GPT-SOSTITUTIVA loggata, deploy e Automated Browser QA PASS; chiusura secondo OM Regola H. |
-| **NEXT** | Completare la matrice mirata delle finestre raggiungibili via UI; per ciascun difetto riprodotto definire una correzione circoscritta con i gate lifecycle pertinenti. Non uniformare indiscriminatamente dialoghi di conferma o rinomina intenzionalmente modali. |
-| **FOLLOW-UP REVIEW** | Review AI esterna del bundle routing 280 non eseguita: backstop post-hoc quando disponibile secondo OM Regole B/H7; non sostituita da un agente GPT interno e non bloccante per questa chiusura sul percorso sostitutivo già loggato. |
-| **EVIDENCE** | [Attestazione e chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Rilascio e prove tecniche](orchestrator/evidence/2026-11-09-https443-release-280/REPORT.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Nessuna operazione server nel pass di chiusura/audit; valgono le prove di deploy del 2026-11-09. Non usare il vecchio alias SSH. |
-| **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità ATAK, nei limiti del backlog e del freeze esistente. Nessuna nuova funzionalità Oggetti GIS attivata da questo audit. |
+| **WORKSTREAM ATTIVO** | Uniformità e controlli delle finestre GIS |
+| **WU ATTIVA** | — (bundle runtime a livello blocco) |
+| **BLOCCO ATTIVO** | `GIS-WINDOW-CONTROLS-A` |
+| **STATO BLOCCO** | Candidato Build 281 pronto: tre difetti riprodotti e corretti; regressione mirata e REVIEW GPT-SOSTITUTIVA PASS. Deploy e ABQA live non ancora eseguiti in questo checkpoint. |
+| **GATE CORRENTE** | Deploy strict del candidato immutabile: preflight fresco sulla HEAD pubblicata esplicitamente verificata, applicazione del solo runtime, confronto file/HTTP/HTTPS e invarianti dei servizi. |
+| **RUNTIME LIVE** | Build 280 · SHA-256 `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde` · 11.108.654 byte · deploy e prove tecniche del 2026-11-09; QA operatore aggregata acquisita e blocco routing chiuso. |
+| **RUNTIME CANDIDATE** | Build 281 · source commit `0c0f6785654dbba279774bb8569788088f0762e9` · blob `3dcff61081a2f461f8841953986ced17b058eab1` · SHA-256 `e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62` · 11.108.861 byte. Nome accessibile Converti, consumo/delega Escape e geometria mobile Astro. |
+| **ULTIMO BLOCCO CHIUSO** | `ROUTING-LAND-ONLY-NO-FERRY-A` · PASS operatore aggregato sui tre casi residui, dichiarato il 2026-11-09; chiusura e autosync verificati su GitHub. |
+| **NEXT** | Applicare il runtime già autorizzato solo dopo preflight PASS; poi ABQA sulla vera risposta HTTPS senza sostituzione HTML. Dopo ABQA PASS, chiedere solo il riscontro umano residuo pertinente alla Build 281. |
+| **FOLLOW-UP REVIEW** | Review AI esterna routing 280 e finestre 281 non eseguita; backstop post-hoc sul percorso sostitutivo loggato. Le review interne GPT non sono attribuite a un reviewer esterno. |
+| **EVIDENCE** | [Dossier finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Rilascio 280](orchestrator/evidence/2026-11-09-https443-release-280/REPORT.md) |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Accesso SSH già configurato verificato da ASUSDESKTOP; nessun deploy 281 anticipato. Non usare il vecchio alias SSH. |
+| **ALTRI WORKSTREAM** | L'audit statico inventaria 38 dialoghi; i tre difetti selezionati non equivalgono a un PASS generale delle finestre. I rilievi statici residui restano da riprodurre. Altri workstream e freeze Oggetti GIS invariati. |
+
+## Checkpoint 2026-11-09 — candidato finestre 281
+
+Audit browser sulla Build 280: nome AX Converti vuoto a desktop e 390 px; un Escape chiude Guida e Converti quando entrambi sono aperti; Astro a 390 px forza l'header sotto i comandi superiori. Il candidato modifica soltanto tre aree e metadati/release. La ricostruzione indipendente delle dieci sostituzioni restituisce il byte esatto; altri componenti invariati.
+
+Regressione candidata in Edge/Windows: 9 casi e 123 check PASS, più un controllo supplementare di scroll/Calcola su Astro (1 caso e 11 assert PASS), senza ripetere la matrice. Zero pageerror, zero POST e richieste ai provider di routing; richieste applicative intercettate. Verificati anche input, pick, figlio nativo e minimize/restore. Fonte HTML iniettata, non runtime servito; viewport mobile emulato, non iPhone/Safari fisico. Sintassi 2/2 PASS e review GPT sostitutiva conclusiva PASS. Il dossier deploy ha review statica PASS; preflight, deploy, ABQA live e QA operatore sono gate distinti.
+
+La pubblicazione di questo checkpoint accompagna lo stesso blob runtime. L'eventuale HEAD documentale successiva al source commit deve avere soltanto delta docs e runtime identico. Nessun nuovo intervento infrastrutturale è autorizzato da questo bundle.
+
+---
+
+Le sezioni seguenti sono **storico datato**, non lo stato corrente della tabella.
 
 ## Checkpoint 2026-11-09 — QA operatore acquisita e prosecuzione
 

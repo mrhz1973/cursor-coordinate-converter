@@ -1,0 +1,12 @@
+"use strict";
+const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const original=fs.readFileSync(path.join(__dirname,'audit-panels-edge-280.cjs'),'utf8');
+if(crypto.createHash('sha256').update(original).digest('hex')!=='bfe8d103d9e699d8cc7cb652ee5f7bb0a5ea014f79334e21febae67b38e5b201')throw new Error('original_runner_hash_mismatch');
+const dir=path.join(__dirname,'escape-focus');fs.mkdirSync(dir,{recursive:true});
+if(fs.existsSync(path.join(dir,'audit-results.json')))throw new Error('focus_result_already_exists_no_duplicate');
+const before="focus:{id:document.activeElement?.id,tag:document.activeElement?.tagName},";
+const after="focus:{id:document.activeElement?.id,tag:document.activeElement?.tagName,className:document.activeElement?.className,dataRole:document.activeElement?.getAttribute('data-role'),ariaLabel:document.activeElement?.getAttribute('aria-label'),text:document.activeElement?.textContent?.trim().slice(0,80),closestDialog:document.activeElement?.closest('dialog')?.id||null},";
+if(original.split(before).length!==2)throw new Error('focus_probe_target_not_unique');
+const adapted=original.replace(before,after).replaceAll('path.join(__dirname,',"path.join(__dirname,'escape-focus',");
+process.env.AUDIT_CASES='desktop-escape-convert-help';
+eval(adapted);

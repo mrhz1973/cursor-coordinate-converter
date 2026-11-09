@@ -1,0 +1,7 @@
+# Note del collaudo — 9 novembre 2026
+
+- Il primo percorso aggiuntivo di salvataggio della baseline indicava `#btnTrackSaveLibrary`, un controllo legacy mantenuto nel DOM ma deliberatamente nascosto/disabilitato. Il tentativo è conservato in `instrumentation-attempt1`; il successivo usa il CTA visibile `[data-role="track-save-current"]`. Nessun click forzato e nessun FAIL del prodotto attribuito al controllo legacy.
+- L'opener Astro del primo tentativo controllava troppo presto la visibilità del menu alla riapertura. Il runner successivo aspetta una condizione DOM osservabile; non usa ritardi fissi.
+- Una ricerca regex per il pulsante Astro nel monolite ha incluso una lunga riga di dati inline, con output troncato. Quell'output esteso non è stato usato per inferenze; il locator già individuato `#btnAstro2` è stato verificato nel browser. Le successive letture restano mirate ai file di evidenza, senza ripetere la ricerca ampia.
+- Il PNG della prima riapertura Astro corto mostrava l'azione Calcola oltre il limite inferiore del corpo. Il caso aggiuntivo documentato nel rapporto ne verifica esplicitamente la raggiungibilità mediante scroll interno e l'utilizzo locale; non è stata ripetuta l'intera matrice.
+- Il runner live dopo il deploy è distinto dal candidato: nessun HTML locale sostituisce la risposta, solo la navigazione HTTPS è ammessa e il corpo nativo viene verificato con SHA-256 prima delle azioni UI. Prima del GO dell'esecutore resta preparato e non eseguito.
