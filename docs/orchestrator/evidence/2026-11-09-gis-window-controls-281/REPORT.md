@@ -4,7 +4,7 @@ Data delle prove: **9 novembre 2026**. Blocco: `GIS-WINDOW-CONTROLS-A`. Profilo:
 
 ## Stato di questo checkpoint
 
-Il candidato corregge tre difetti riprodotti nell'audit delle finestre. La regressione mirata sul candidato e la **REVIEW GPT-SOSTITUTIVA conclusiva sono PASS**. Questo documento precede il deploy: la Build 280 resta il runtime live fino a una prova di distribuzione successiva. Nessun PASS della Build 281 viene attribuito alla conferma operatore della release precedente.
+La **Build 281 è live**: deploy tecnico PASS il 9 novembre 2026 alle **17:17:38 Europe/Rome**, seguito da **ABQA live PASS alle 17:18:57 Europe/Rome**. Le tre correzioni, la regressione candidata e la REVIEW GPT-SOSTITUTIVA sono confermate sullo stesso byte. Il gate residuo è soltanto la [QA operatore breve sul telefono](OPERATOR-CHECK-281.md). La conferma dei tre casi routing resta distinta e chiude il blocco precedente; nessun PASS umano della 281 è stato inventato.
 
 | Identità | Valore |
 | --- | --- |
@@ -15,7 +15,7 @@ Il candidato corregge tre difetti riprodotti nell'audit delle finestre. La regre
 | Base documentale | `63d4fd7b3bbd2b02fe10d8e2180c58c31b9e11d0` |
 | Baseline runtime | Build 280, SHA-256 `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde` |
 
-Il commit sorgente del runtime è un riferimento immutabile, distinto dalla HEAD documentale del checkpoint. Il candidato è stato controllato sul byte esatto; le prove browser qui descritte usano **HTML candidato iniettato**, non attestano la pagina distribuita dal server. Il deploy e l'ABQA sulla vera risposta HTTPS richiedono evidenze separate.
+Il commit sorgente del runtime è un riferimento immutabile, distinto dai commit documentali. Le prove prepubblicazione hanno usato HTML candidato iniettato; le successive prove live hanno letto la vera risposta HTTPS. Le due fasi restano separate. Il [checkpoint predeploy](PREDEPLOY-REPORT.md) è conservato immutato come storico.
 
 ## Dall'audit alla correzione
 
@@ -74,7 +74,21 @@ Le due esecuzioni coprono quindi **9 + 1 casi e 123 + 11 controlli**, sul medesi
 
 La [review preliminare](REVIEW-GPT-SOSTITUTIVA.md) e l'[addendum conclusivo PASS](REVIEW-GPT-SOSTITUTIVA-ADDENDUM-FINALE.md) riguardano l'intero bundle delicato e distinguono analisi statica, prove comportamentali e stato di pubblicazione. Il reviewer è un agente GPT interno distinto dall'autore del runtime. La review AI esterna non è stata eseguita e rimane un backstop post-hoc sul percorso sostitutivo già autorizzato.
 
-La [review statica del dossier deploy](deploy/DEPLOY-REVIEW.md) è PASS sui due script congelati; non equivale a una verifica del server o a un deploy eseguito. Prima dell'applicazione occorrono la pubblicazione verificata del candidato e della FRONTIER coerente e il preflight fresco sulla HEAD esplicita del GO. Dopo il deploy tecnico PASS, l'ABQA deve caricare la vera risposta HTTPS, verificarne SHA e dimensione ed eseguire i tre controlli principali. Solo allora può essere richiesto il breve riscontro operatore residuo su dispositivo fisico.
+La [review statica del dossier deploy](deploy/DEPLOY-REVIEW.md), il preflight fresco, il deploy tecnico e l’ABQA live sono ora tutti PASS, con prove distinte riportate di seguito. Resta la QA operatore sul dispositivo fisico; la sua assenza non viene trasformata in un esito tecnico negativo né in un PASS umano.
+
+## Deploy e ABQA sul runtime servito
+
+La pubblicazione iniziale ha aggiornato GitHub dal checkpoint di chiusura routing al commit documentale `cee1c9a1e71a38fc36ba33ab717870730d70036b`, includendo il runtime source commit `0c0f6785654dbba279774bb8569788088f0762e9`. La verifica indipendente ha confermato HEAD, tracking, tree pulito e blob esatto prima del GO. Fonti: [pubblicazione](publication-predeploy-result.json) e [verifica Git indipendente](publication-independent-verification.json).
+
+**Deploy: PASS il 9 novembre 2026, 16:17:38.520901 UTC / 17:17:38 Europe/Rome.** Un preflight e una sola applicazione, entrambi con SSH exit 0. Clone VPS pulito su `main` alla HEAD autorizzata `cee1c9a1…`; file sul disco, HTTP 8000 e HTTPS `/gis` coincidono: Build 281, 11.108.861 byte, SHA-256 `e8bd8c1d…ca62`. Entrambi gli endpoint restituiscono 200; la verifica HTTPS sul VPS usa il normale controllo di certificato e hostname.
+
+È stato riavviato esclusivamente `goi-gis-app.service` (PID 1838127 → 2103860). Nginx, gateway ORS e proxy HTTPS conservano PID e stato; sei hash di configurazione, listener condivisi ed endpoint risultano preservati. Nessun rollback o POST provider. Backup privato: `/var/backups/goi-gis-runtime/20261109T161709498200Z-build281`. Fonti: [rapporto deploy](deploy/DEPLOY-REPORT.md), [summary](deploy/deployment-summary.json) e [manifest di esecuzione](deploy/execution-artifact-manifest.json).
+
+**ABQA live: PASS il 9 novembre 2026, 16:18:42.686–16:18:57.697 UTC / 17:18:42–17:18:57 Europe/Rome.** Tre casi, 23 assert, zero fallimenti o pageerror. Ogni caso carica un nuovo documento HTTPS nativo: 3/3 risposte 200, 11.108.861 byte e SHA esatto verificato prima delle azioni UI. Cache disco e Service Worker sono false; il documento non è sostituito o modificato dal runner. Sono confermati nome accessibile Converti, Escape Guida/Converti e posizione/controlli/minimize-restore di Astro a 390×844.
+
+Sono consentiti soltanto i tre GET del documento; 170 richieste accessorie sono bloccate, zero tentativi POST o routing, zero risposte favicon. I messaggi Console di blocco restano distinti dagli errori JavaScript. Il browser Windows osserva TLS 1.3 `secure` con issuer locale **ESET SSL Filter CA**; questa osservazione non è attribuita alla catena server verificata dal VPS. Il byte dell’HTML coincide comunque con il runtime revisionato.
+
+Fonti: [rapporto ABQA live](QA-WINDOWS-281-POSTDEPLOY.md), [riepilogo live](postdeploy-281/postdeploy-summary.json), [manifest live](postdeploy-281/evidence-manifest.json), [verifica di coerenza del root](postdeploy-root-verification.json). Le prove automatiche non certificano Safari o un iPhone fisico.
 
 ## Limiti e seguito dell'audit
 

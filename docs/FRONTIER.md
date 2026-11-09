@@ -7,16 +7,28 @@
 | **WORKSTREAM ATTIVO** | Uniformità e controlli delle finestre GIS |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
 | **BLOCCO ATTIVO** | `GIS-WINDOW-CONTROLS-A` |
-| **STATO BLOCCO** | Candidato Build 281 pronto: tre difetti riprodotti e corretti; regressione mirata e REVIEW GPT-SOSTITUTIVA PASS. Deploy e ABQA live non ancora eseguiti in questo checkpoint. |
-| **GATE CORRENTE** | Deploy strict del candidato immutabile: preflight fresco sulla HEAD pubblicata esplicitamente verificata, applicazione del solo runtime, confronto file/HTTP/HTTPS e invarianti dei servizi. |
-| **RUNTIME LIVE** | Build 280 · SHA-256 `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde` · 11.108.654 byte · deploy e prove tecniche del 2026-11-09; QA operatore aggregata acquisita e blocco routing chiuso. |
-| **RUNTIME CANDIDATE** | Build 281 · source commit `0c0f6785654dbba279774bb8569788088f0762e9` · blob `3dcff61081a2f461f8841953986ced17b058eab1` · SHA-256 `e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62` · 11.108.861 byte. Nome accessibile Converti, consumo/delega Escape e geometria mobile Astro. |
-| **ULTIMO BLOCCO CHIUSO** | `ROUTING-LAND-ONLY-NO-FERRY-A` · PASS operatore aggregato sui tre casi residui, dichiarato il 2026-11-09; chiusura e autosync verificati su GitHub. |
-| **NEXT** | Applicare il runtime già autorizzato solo dopo preflight PASS; poi ABQA sulla vera risposta HTTPS senza sostituzione HTML. Dopo ABQA PASS, chiedere solo il riscontro umano residuo pertinente alla Build 281. |
-| **FOLLOW-UP REVIEW** | Review AI esterna routing 280 e finestre 281 non eseguita; backstop post-hoc sul percorso sostitutivo loggato. Le review interne GPT non sono attribuite a un reviewer esterno. |
-| **EVIDENCE** | [Dossier finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Rilascio 280](orchestrator/evidence/2026-11-09-https443-release-280/REPORT.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Accesso SSH già configurato verificato da ASUSDESKTOP; nessun deploy 281 anticipato. Non usare il vecchio alias SSH. |
-| **ALTRI WORKSTREAM** | L'audit statico inventaria 38 dialoghi; i tre difetti selezionati non equivalgono a un PASS generale delle finestre. I rilievi statici residui restano da riprodurre. Altri workstream e freeze Oggetti GIS invariati. |
+| **STATO BLOCCO** | Build 281 live. Deploy tecnico e ABQA sul documento realmente servito PASS. In attesa del solo riscontro operatore residuo su telefono; blocco non ancora chiuso. |
+| **GATE CORRENTE** | QA operatore breve della Build 281: Astro su telefono, header e comandi raggiungibili, scroll fino a Calcola, minimize/restore e chiusura. |
+| **RUNTIME LIVE** | Build 281 · source commit `0c0f6785654dbba279774bb8569788088f0762e9` · blob `3dcff61081a2f461f8841953986ced17b058eab1` · SHA-256 `e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62` · 11.108.861 byte. Deploy 2026-11-09 17:17:38; ABQA conclusa 17:18:57 Europe/Rome. |
+| **RUNTIME CANDIDATE** | Nessun ulteriore delta runtime in attesa. Il byte revisionato e verificato prima del rilascio coincide con file, HTTP, HTTPS e tre documenti browser nativi. |
+| **ULTIMO BLOCCO CHIUSO** | `ROUTING-LAND-ONLY-NO-FERRY-A` · PASS operatore aggregato sui tre casi residui del 2026-11-09; chiusura e autosync verificati. La conferma non viene estesa alla Build 281. |
+| **NEXT** | Acquisire il [riscontro operatore mirato](orchestrator/evidence/2026-11-09-gis-window-controls-281/OPERATOR-CHECK-281.md). Dopo PASS, chiudere il blocco secondo Regola H e riprendere l'audit sui rilievi residui solo attraverso riproduzioni UI pertinenti. |
+| **FOLLOW-UP REVIEW** | Review AI esterna routing 280 e finestre 281 non eseguita; backstop post-hoc sul percorso GPT sostitutivo loggato. Non blocca i gate già soddisfatti e non è dichiarata completata. |
+| **EVIDENCE** | [Rilascio finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [ABQA live](orchestrator/evidence/2026-11-09-gis-window-controls-281/QA-WINDOWS-281-POSTDEPLOY.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Unico restart GIS; Nginx, gateway ORS, proxy HTTPS, configurazioni/listener/endpoint condivisi preservati. Backup e journal nel rapporto deploy. |
+| **ALTRI WORKSTREAM** | Inventario di 38 dialoghi e tre difetti selezionati: nessun PASS generale delle finestre. Rilievi statici Preferiti/D-Flight e priorità Escape restano da riprodurre. Altri workstream e freeze Oggetti GIS invariati. |
+
+## Checkpoint 2026-11-09 — Build 281 distribuita e ABQA live PASS
+
+Il bundle corregge il nome accessibile di Converti, l'evento Escape consumato due volte e le forzature CSS che coprivano l'header Astro su schermi stretti. Dieci sostituzioni ricostruiscono esattamente il candidato; i byte esterni sono invariati. Sintassi 2/2, REVIEW GPT-SOSTITUTIVA e review della procedura deploy PASS.
+
+Prima del deploy: 9 casi e 123 check, più un controllo di scroll/Calcola (1 caso e 11 assert), tutti PASS sul candidato iniettato in Edge/Windows. Dopo il deploy: 3 documenti HTTPS nativi, 3 casi e 23 assert PASS, SHA verificato prima delle azioni; nessun HTML sostituito, nessun POST/routing/pageerror. Il browser Windows usa la CA locale ESET, distinta dalla verifica TLS effettuata sul VPS. I viewport mobili restano emulazioni, non prove Safari/iPhone fisico.
+
+Rimane un solo caso umano breve su Astro nel telefono dell'operatore. I tre casi routing già confermati non vanno ripetuti e non valgono come nuova attestazione della 281. Codex e Cursor non sono stati invocati; il passaggio GPT conserva stato ed evidenze nel repository. L'autosync finale segue F3 senza commit aggiuntivi per citare il proprio hash.
+
+---
+
+Le sezioni seguenti sono **storico datato**, non lo stato corrente della tabella.
 
 ## Checkpoint 2026-11-09 — candidato finestre 281
 
