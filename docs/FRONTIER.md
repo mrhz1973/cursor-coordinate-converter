@@ -6,19 +6,23 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | Uniformità e controlli delle finestre GIS |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | — (nessun nuovo bundle runtime; audit desktop residuo) |
-| **STATO BLOCCO** | `GIS-WINDOW-CONTROLS-A` CLOSED / PASS operatore del 2026-11-10. Build 281 live, deploy e ABQA già PASS; chiusura secondo Regola H/H7. Nessun nuovo bundle runtime assegnato. |
-| **GATE CORRENTE** | Riproduzione UI dei candidati desktop sulla Build 281 live. Preferiti/D-Flight minimizzati su Escape e priorità Escape restano candidati statici finché non è registrato un esito UI osservato. |
+| **BLOCCO ATTIVO** | `GIS-FAVORITES-MINIMIZED-ESCAPE-A` |
+| **STATO BLOCCO** | Build 282 candidata: due manifestazioni desktop riprodotte nella 281 live, una correzione funzionale circoscritta. Sintassi 2/2 PASS; QA candidata e review downstream pendenti. Build 281 resta live. |
+| **GATE CORRENTE** | Regressione candidata desktop e REVIEW GPT-SOSTITUTIVA downstream dal commit immutabile, prima del deploy. |
 | **RUNTIME LIVE** | Build 281 · source commit `0c0f6785654dbba279774bb8569788088f0762e9` · blob `3dcff61081a2f461f8841953986ced17b058eab1` · SHA-256 `e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62` · 11.108.861 byte. Deploy 2026-11-09 17:17:38; ABQA conclusa 17:18:57 Europe/Rome. |
-| **RUNTIME CANDIDATE** | Nessun ulteriore delta runtime in attesa. Il byte revisionato e verificato prima del rilascio coincide con file, HTTP, HTTPS e tre documenti browser nativi. |
+| **RUNTIME CANDIDATE** | Build 282 · blob `4636ad186934b0d2f43e8564c9e657cdcdfc652e` · SHA-256 `71267f1a9d95488adf527db40333c811c2beeef0c9051e98ee5673debb5a7399` · 11.108.980 byte. Un guard su Escape/Preferiti e tre metadati; tutti gli altri byte invariati. |
 | **ULTIMO BLOCCO CHIUSO** | `GIS-WINDOW-CONTROLS-A` · PASS operatore esplicito del 2026-11-10; [chiusura e direttiva telefono](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md). |
-| **NEXT** | Verificare in UI desktop Preferiti/D-Flight minimizzati su Escape, poi la priorità Escape. Riprodurre il candidato prima di assegnare un nuovo bundle runtime; sviluppo telefono in pausa fino a nuovo ordine. |
+| **NEXT** | Completare QA candidata desktop e review downstream; se PASS, deploy standard circoscritto e ABQA HTTPS nativa. Nessuno sviluppo o test specifico per telefono. D-Flight e altre priorità Escape restano da riprodurre. |
 | **SVILUPPO TELEFONO** | **PAUSA fino a nuovo ordine dell'utente**, limitatamente a TMAR GIS Tool, dal 2026-11-10. Proseguire con il backlog desktop; la direttiva non rimuove o disabilita le funzioni mobili esistenti. [Attestazione e scope](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md). |
 | **FOLLOW-UP REVIEW** | Review AI esterna routing 280 e finestre 281 non eseguita; backstop post-hoc sul percorso GPT sostitutivo loggato. Non blocca i gate già soddisfatti e non è dichiarata completata. |
-| **EVIDENCE** | [Rilascio finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [ABQA live](orchestrator/evidence/2026-11-09-gis-window-controls-281/QA-WINDOWS-281-POSTDEPLOY.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Astro desktop PC lavoro](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md) · [Chiusura finestre 281](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md) |
+| **EVIDENCE** | [Rilascio finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [ABQA live](orchestrator/evidence/2026-11-09-gis-window-controls-281/QA-WINDOWS-281-POSTDEPLOY.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Astro desktop PC lavoro](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md) · [Chiusura finestre 281](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md) · [Preferiti/Escape 282](orchestrator/evidence/2026-11-10-favorites-escape-282/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Unico restart GIS; Nginx, gateway ORS, proxy HTTPS, configurazioni/listener/endpoint condivisi preservati. Backup e journal nel rapporto deploy. |
 | **ACCESSO OPERATIVO — sessione al PC del lavoro** | 2026-11-10: su richiesta esplicita dell'utente, Remote Desktop Commander originale sul PC DESKTOP-DPIJL64. Comandi, Git e prova HTTPS nativa Astro desktop verificati. Autonomia dal PC e accesso SSH diretto non attestati in questo pass. La precedente scelta TMAR/ASUS resta [storico del 9 novembre](orchestrator/evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md); non è il connettore selezionato per questa sessione. [Prova ed evidenze](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md). |
-| **ALTRI WORKSTREAM** | Inventario di 38 dialoghi e tre difetti selezionati: nessun PASS generale delle finestre. Rilievi statici Preferiti/D-Flight e priorità Escape restano da riprodurre. Altri workstream e freeze Oggetti GIS invariati. |
+| **ALTRI WORKSTREAM** | Nessun PASS generale delle 38 finestre. Preferiti minimizzato su Escape riprodotto e in correzione nel blocco attivo; D-Flight e priorità fisse Escape restano candidati statici. Altri workstream e freeze Oggetti GIS invariati. |
+
+## Checkpoint 2026-11-10 — candidato desktop Preferiti/Escape 282
+
+Baseline nativa 281: Preferiti minimizzato viene chiuso da Escape e intercetta il comando destinato a Mappe Offline. Due casi FAIL e controllo visibile PASS, 26 assert (19 PASS/7 FAIL). Candidato 282: una modifica funzionale più tre metadati, byte esterni identici, 192 CR isolati preservati, sintassi 2/2 PASS. QA candidata e review downstream non ancora attestate; nessun deploy. [Evidenze e gate](orchestrator/evidence/2026-11-10-favorites-escape-282/REPORT.md).
 
 ## Checkpoint 2026-11-10 — chiusura finestre 281; sviluppo telefono in pausa
 
