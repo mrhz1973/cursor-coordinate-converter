@@ -2,11 +2,11 @@
 
 ## Stato
 
-**CANDIDATE PREPARED — QA candidata e review downstream pendenti alla pubblicazione di questo checkpoint. Nessun deploy della 282 attestato qui.**
+**PREDEPLOY — QA candidata desktop PASS: 3 casi, 44/44 controlli. Codice/checklist e QA esaminati nel rapporto review provvisorio; esito complessivo PENDING_METADATA_VERIFICATION fino alla verifica del manifest corretto sul nuovo ref pubblicato. Build 281 ancora live; nessun deploy 282 attestato qui.**
 
 Blocco: `GIS-FAVORITES-MINIMIZED-ESCAPE-A`. Il precedente `GIS-WINDOW-CONTROLS-A` è chiuso con PASS operatore; lo sviluppo telefono resta in pausa fino a nuovo ordine, come registrato nella [chiusura 281](../2026-11-10-window-controls-281-closure/REPORT.md).
 
-Tier **DELICATO, lifecycle modale/dialog** secondo OM §4 B/G. Percorso **REVIEW GPT-SOSTITUTIVA**: review upstream della scelta svolta; downstream sul commit candidato immutabile ancora da concludere. Nessuna review AI esterna dichiarata.
+Tier **DELICATO, lifecycle modale/dialog** secondo OM §4 B/G. Percorso **REVIEW GPT-SOSTITUTIVA**: review upstream della scelta svolta; downstream sul commit candidato immutabile con codice/checklist e QA esaminati; verifica documentale finale sul checkpoint pubblicato ancora pendente. Nessuna review AI esterna dichiarata.
 
 ## Baseline live riprodotta
 
@@ -40,10 +40,18 @@ Il delta contiene **una modifica funzionale e tre metadati**: APP_BUILD_ID, APP_
 
 GitHub.fetch_file ha restituito content vuoto nei range del monolite. Il fallback è stato il blob del clone Git verificato, pinnato al commit indicato, con output limitato ai range necessari.
 
+## Checkpoint predeploy del 10 novembre 2026
+
+La [QA candidata](QA-CANDIDATE-282.md) conclude 3 casi e 44/44 controlli PASS, compreso ciclo completo del dock e gesto reale sulla mappa. Il primo tentativo INCOMPLETE per riferimento DOM staccato è conservato; non è classificato come bug applicativo.
+
+La [review provvisoria](review-favorites-282.md) resta PENDING_METADATA_VERIFICATION. Il finding sul vecchio manifest è corretto in questo checkpoint: patch-manifest.json pubblicato al source commit misura 1886 byte LF e SHA-256 `d90d47ed8915466746060f701d9c7ffcbd9f38c25778e64fada84cf9f51412fd`, mentre il precedente manifest misurava 1938 byte raw Windows CRLF. Il nuovo evidence-manifest è calcolato dai blob dell'indice Git dopo staging, esclude il proprio hash e conserva separatamente le identità raw.
+
+La [review del coordinatore sulla preparazione deploy](ROOT-REVIEW-DEPLOY-PREPARATION.md) è PASS STATICO. Il [pacchetto](deploy-preparation/PREPARATION.md) è solo preparato; non contiene una directory frozen né una seconda copia del runtime.
+
 ## Evidence e NEXT
 
 [Manifest patch e sintassi](patch-manifest.json) · [Harness baseline](baseline-harness.cjs) · [Config](baseline.config.json) · [Risultato baseline](baseline-result.json) · [Manifest artefatti](evidence-manifest.json).
 
-NEXT: regressione candidata desktop sui tre casi, restore/×/riapertura e interattività mappa; review GPT sostitutiva downstream dal commit immutabile; dopo PASS, deploy circoscritto e ABQA HTTPS nativa. La QA operatore residua sarà soltanto desktop secondo D2.
+NEXT immediato: verifica finale del reviewer sul manifest corretto e sugli artefatti del nuovo ref pubblicato. Dopo review complessiva PASS: preflight/apply circoscritti, quindi ABQA HTTPS nativa. Nessun GO o deploy è attestato da questo checkpoint; la QA operatore residua sarà soltanto desktop secondo D2.
 
-Esecuzione GPT; Codex e Cursor non invocati. Questo checkpoint non attribuisce PASS candidato, review downstream o deploy non ancora osservati.
+Esecuzione GPT; Codex e Cursor non invocati. Questo checkpoint attesta il PASS della QA candidata iniettata; non anticipa il PASS complessivo della review, il deploy o l'ABQA live.
