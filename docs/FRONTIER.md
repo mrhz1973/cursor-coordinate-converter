@@ -6,18 +6,27 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | Uniformità e controlli delle finestre GIS |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | `GIS-WINDOW-CONTROLS-A` |
-| **STATO BLOCCO** | Build 281 live. Deploy tecnico e ABQA sul documento realmente servito PASS. In attesa del solo riscontro operatore residuo su telefono; blocco non ancora chiuso. |
-| **GATE CORRENTE** | QA operatore breve della Build 281: Astro su telefono, header e comandi raggiungibili, scroll fino a Calcola, minimize/restore e chiusura. |
+| **BLOCCO ATTIVO** | — (nessun nuovo bundle runtime; audit desktop residuo) |
+| **STATO BLOCCO** | `GIS-WINDOW-CONTROLS-A` CLOSED / PASS operatore del 2026-11-10. Build 281 live, deploy e ABQA già PASS; chiusura secondo Regola H/H7. Nessun nuovo bundle runtime assegnato. |
+| **GATE CORRENTE** | Riproduzione UI dei candidati desktop sulla Build 281 live. Preferiti/D-Flight minimizzati su Escape e priorità Escape restano candidati statici finché non è registrato un esito UI osservato. |
 | **RUNTIME LIVE** | Build 281 · source commit `0c0f6785654dbba279774bb8569788088f0762e9` · blob `3dcff61081a2f461f8841953986ced17b058eab1` · SHA-256 `e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62` · 11.108.861 byte. Deploy 2026-11-09 17:17:38; ABQA conclusa 17:18:57 Europe/Rome. |
 | **RUNTIME CANDIDATE** | Nessun ulteriore delta runtime in attesa. Il byte revisionato e verificato prima del rilascio coincide con file, HTTP, HTTPS e tre documenti browser nativi. |
-| **ULTIMO BLOCCO CHIUSO** | `ROUTING-LAND-ONLY-NO-FERRY-A` · PASS operatore aggregato sui tre casi residui del 2026-11-09; chiusura e autosync verificati. La conferma non viene estesa alla Build 281. |
-| **NEXT** | Acquisire il [riscontro operatore mirato](orchestrator/evidence/2026-11-09-gis-window-controls-281/OPERATOR-CHECK-281.md). Dopo PASS, chiudere il blocco secondo Regola H e riprendere l'audit sui rilievi residui solo attraverso riproduzioni UI pertinenti. |
+| **ULTIMO BLOCCO CHIUSO** | `GIS-WINDOW-CONTROLS-A` · PASS operatore esplicito del 2026-11-10; [chiusura e direttiva telefono](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md). |
+| **NEXT** | Verificare in UI desktop Preferiti/D-Flight minimizzati su Escape, poi la priorità Escape. Riprodurre il candidato prima di assegnare un nuovo bundle runtime; sviluppo telefono in pausa fino a nuovo ordine. |
+| **SVILUPPO TELEFONO** | **PAUSA fino a nuovo ordine dell'utente**, limitatamente a TMAR GIS Tool, dal 2026-11-10. Proseguire con il backlog desktop; la direttiva non rimuove o disabilita le funzioni mobili esistenti. [Attestazione e scope](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md). |
 | **FOLLOW-UP REVIEW** | Review AI esterna routing 280 e finestre 281 non eseguita; backstop post-hoc sul percorso GPT sostitutivo loggato. Non blocca i gate già soddisfatti e non è dichiarata completata. |
-| **EVIDENCE** | [Rilascio finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [ABQA live](orchestrator/evidence/2026-11-09-gis-window-controls-281/QA-WINDOWS-281-POSTDEPLOY.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Astro desktop PC lavoro](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md) |
+| **EVIDENCE** | [Rilascio finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [ABQA live](orchestrator/evidence/2026-11-09-gis-window-controls-281/QA-WINDOWS-281-POSTDEPLOY.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Astro desktop PC lavoro](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md) · [Chiusura finestre 281](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Unico restart GIS; Nginx, gateway ORS, proxy HTTPS, configurazioni/listener/endpoint condivisi preservati. Backup e journal nel rapporto deploy. |
-| **ACCESSO OPERATIVO — sessione al PC del lavoro** | 2026-11-10: su richiesta esplicita dell'utente, Remote Desktop Commander originale sul PC DESKTOP-DPIJL64. Comandi, Git e prova HTTPS nativa Astro desktop verificati. Autonomia dal PC e accesso SSH diretto non attestati in questo pass. La precedente scelta TMAR/ASUS resta [storico del 9 novembre](orchestrator/evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md); non è il connettore selezionato per questa sessione. [Prova ed evidenze](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md). La QA Astro su telefono rimane distinta. |
+| **ACCESSO OPERATIVO — sessione al PC del lavoro** | 2026-11-10: su richiesta esplicita dell'utente, Remote Desktop Commander originale sul PC DESKTOP-DPIJL64. Comandi, Git e prova HTTPS nativa Astro desktop verificati. Autonomia dal PC e accesso SSH diretto non attestati in questo pass. La precedente scelta TMAR/ASUS resta [storico del 9 novembre](orchestrator/evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md); non è il connettore selezionato per questa sessione. [Prova ed evidenze](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md). |
 | **ALTRI WORKSTREAM** | Inventario di 38 dialoghi e tre difetti selezionati: nessun PASS generale delle finestre. Rilievi statici Preferiti/D-Flight e priorità Escape restano da riprodurre. Altri workstream e freeze Oggetti GIS invariati. |
+
+## Checkpoint 2026-11-10 — chiusura finestre 281; sviluppo telefono in pausa
+
+Ricevuto il trigger esatto `QA GIS-WINDOW-CONTROLS-A PASS operatore`. Chiuso `GIS-WINDOW-CONTROLS-A` secondo Regola H/H7, con review GPT sostitutiva già loggata, deploy e ABQA PASS. Nessuna nuova review AI esterna dichiarata. L'operatore dispone la pausa dello sviluppo telefono fino a nuovo ordine e la prosecuzione del backlog desktop. [Citazione integrale e chiusura](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md).
+
+Nessun delta runtime o deploy. Gate successivo: riproduzione UI di Preferiti/D-Flight minimizzati su Escape, poi priorità Escape; nessun nuovo bundle runtime e nessun nuovo FAIL UI attestato da questa registrazione.
+
+I checkpoint precedenti sono storico datato; per gate e NEXT correnti prevale la tabella LIVE STATE sopra.
 
 ## Checkpoint 2026-11-10 — Astro desktop dal PC del lavoro
 
