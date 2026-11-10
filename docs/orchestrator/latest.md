@@ -1,13 +1,13 @@
 # Ultimo checkpoint orchestratore
 
-Stato vivo: [FRONTIER](../FRONTIER.md). **9 novembre 2026 — scelta del plugin TMAR recepita; percorso hosted precedente fermato.**
+Stato vivo: [FRONTIER](../FRONTIER.md). **10 novembre 2026 — Astro desktop Build 281 verificato dal PC del lavoro.**
 
-L’operatore ha scelto esplicitamente il proprio TMAR Desktop Commander Win tramite OpenAI Secure MCP Tunnel. Il plugin risponde su ASUSDESKTOP, Windows, versione 0.3.1. Il servizio hosted tmar-vps-access predisposto sul VPS è fermo e disabilitato: MainPID=0, UnitFileState=disabled; lo stato systemd failed residuo non indica un processo attivo. Il precedente pairing non va ripreso.
+Su richiesta dell'operatore, è stato usato il Remote Desktop Commander originale sul PC DESKTOP-DPIJL64. Prova della pagina HTTPS nativa in Edge: **11/11 controlli PASS**, conclusa alle 10:52:56 Europe/Rome. Dimensione e SHA-256 verificati prima delle azioni UI; apertura, controlli visibili e raggiungibili, riduzione, ripristino dal dock e chiusura riusciti. Il primo tentativo si era fermato per la cache diagnostica del browser; il solo harness è stato corretto. Entrambi gli esiti sono conservati.
 
-**NEXT / WAIT:** Usare il plugin TMAR selezionato. L’autonomia dal PC resta aperta: il percorso coerente richiede un tunnel OpenAI dedicato al VPS, credenziale runtime configurata privatamente e relativo collegamento ChatGPT verificato. Non duplicare la stessa identità stdio su Windows e VPS, non ripuntare il plugin Windows e non riattivare il servizio hosted precedente. Nessun nuovo tunnel, trasferimento di credenziali o modifica del plugin è stato eseguito.
+**NEXT / WAIT:** rimane la QA operatore di Astro su telefono reale: titolo e comandi, scroll fino a Calcola, riduzione/ripristino e chiusura. La richiesta di effettuare prove non è un PASS operatore. Il test desktop non certifica l'intera applicazione o i servizi esterni.
 
-Build 281 invariata, source commit 0c0f6785654dbba279774bb8569788088f0762e9, blob 3dcff61081a2f461f8841953986ced17b058eab1, SHA-256 e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62. GIS-WINDOW-CONTROLS-A resta aperto per la QA operatore Astro su telefono. La preferenza sul connettore non è un PASS di quella QA.
+Build 281 invariata; nessun nuovo candidato runtime o deploy. Source commit `0c0f6785654dbba279774bb8569788088f0762e9`, blob `3dcff61081a2f461f8841953986ced17b058eab1`, SHA-256 `e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62`. Accesso SSH diretto e autonomia dal PC non attestati in questo pass. Esecuzione GPT; Codex e Cursor non invocati.
 
-[Correzione ed evidenze](evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md) · [Inbox](inbox/2026-11-09_2320_tmar-tunnel-choice.md) · [Controllo operatore Astro](evidence/2026-11-09-gis-window-controls-281/OPERATOR-CHECK-281.md).
+[Rapporto ed evidenze](evidence/2026-11-10-workpc-astro-281/REPORT.md) · [Inbox](inbox/2026-11-10_1052_workpc-astro-281.md) · [Controllo operatore Astro](evidence/2026-11-09-gis-window-controls-281/OPERATOR-CHECK-281.md).
 
-`real_task_commit = a3bc2b189d2ad4cc8dfe26fe5d71ab4f64b3bf62`; `current_report_container = PENDING_SELF_REFERENCE`; proprio push e HEAD finale `EXTERNAL_ONLY`.
+`real_task_commit = 589a308f83807c393e5e00445b76d42a7d1983a2`; `current_report_container = PENDING_SELF_REFERENCE`; proprio push e HEAD finale `EXTERNAL_ONLY`.
