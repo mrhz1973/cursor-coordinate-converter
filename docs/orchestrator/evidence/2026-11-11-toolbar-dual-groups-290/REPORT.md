@@ -1,6 +1,10 @@
 # Build 290 — restyling barra destra desktop, due gruppi
 
-Data: 2026-11-11 15:28:25 Europe/Rome. Stato: PREDEPLOY, non ancora LIVE.
+Data: 2026-11-11 15:28:25 Europe/Rome. Stato storico: candidata predeploy. Stato corrente: Build 290 LIVE, QA operatore grafica PENDING.
+
+## Stato LIVE
+
+Build 290 LIVE, source 56d336a3942028836924f68af322d36996095b15, blob f8c469e39e2c647b2bde377e5ac1b6b7e90683cc, SHA256 7d69fc145779f223c570e9596e23b497ab678329d4b495ebc03567301f010e69, 11.120.343 byte. Review 22/22, deploy GIS-only, backup 289, smoke HTTP/HTTPS e Automated Browser QA nativa 76/76 layout + 25/25 Waypoint PASS. QA operatore grafica PENDING. [Deploy](DEPLOY-RESULT-290.md) · [QA](QA-LIVE-290.md).
 
 ## Requisito
 L'operatore ha richiesto due aree grafiche distinte: NAVIGAZIONE mappa in alto (Livelli, Zoom +/−, Zoom area, Livello zN) e STRUMENTI GIS verso fondo dello schermo (Misura, Traccia, Poligoni, Range & Bearing, Waypoint, Nuovo punto, GPS). Livelli era disallineato di circa 4 px; richiesta anche grafica più curata e due colori/bordi diversi.
