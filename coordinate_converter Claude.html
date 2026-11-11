@@ -26008,10 +26008,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A";
-const APP_BUILD_DETAIL = "Toolbar desktop con comandi diretti e nomi sempre visibili.";
+const APP_BUILD_ID = "GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX1";
+const APP_BUILD_DETAIL = "Toolbar desktop: Waypoint con icona incorporata, tutti i comandi con targhetta.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 285;
+const APP_BUILD_NUM = 286;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -71395,9 +71395,14 @@ function renderTileMap(lat, lon, zoom){
       const recItem = (vcOffPxToolbar > 40)
         ? `<button type="button" class="twpt-menu-item" role="menuitem" data-role="waypoint-map-recenter" data-tip="${recTip}" aria-label="${recTip}"><span class="twpt-menu-ico" aria-hidden="true">📍</span><span class="twpt-menu-label">${recLbl}</span><span class="gis-desktop-caption" aria-hidden="true">Ricentra</span></button>`
         : "";
+      /* Desktop: embedded icon avoids HTTPS 404 on assets/waypoint-map.png; mobile/classic unchanged. */
+      const wpDesktopIcon = (typeof window.matchMedia === "function"
+        && window.matchMedia("(min-width:960px) and (hover:hover) and (pointer:fine)").matches)
+        ? '<svg class="twpt-ico-img" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 1.5a8.5 8.5 0 0 0-8.5 8.5C3.5 15.3 12 23 12 23s8.5-7.7 8.5-13A8.5 8.5 0 0 0 12 1.5Z" fill="#2563eb" stroke="#1e40af" stroke-width="1.3"/><circle cx="12" cy="10" r="3.4" fill="#fff"/></svg>'
+        : waypointMapIcoImg;
       return `<div class="twpt-group" data-role="waypoint-toolbar-group">
         <div class="twpt-row">
-          <button class="twpt-btn${cls}" type="button" data-role="waypoint-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${waypointMapIcoImg}<span class="gis-ctrl-caption" aria-hidden="true">Waypoint</span></button>
+          <button class="twpt-btn${cls}" type="button" data-role="waypoint-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${wpDesktopIcon}<span class="gis-ctrl-caption" aria-hidden="true">Waypoint</span></button>
           <button class="twpt-exp" type="button" data-role="waypoint-map-menu-toggle" data-tip="${tipExp}" aria-label="${tipExp}" aria-expanded="${wpMenuOpen ? "true" : "false"}" aria-haspopup="menu"><span aria-hidden="true">▾</span></button>
         </div>
         <div class="twpt-menu" data-role="waypoint-map-menu" role="menu"${wpMenuOpen ? "" : " hidden"}>
