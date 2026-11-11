@@ -1,13 +1,11 @@
 # Ultimo checkpoint orchestratore
 
-LIVE STATE: [FRONTIER](../FRONTIER.md). 11 novembre 2026: Build 288 LIVE, blocco GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX3 ancora aperto per QA OPERATORE DESKTOP.
+LIVE STATE: [FRONTIER](../FRONTIER.md). **Build 289 LIVE**, blocco GIS-WAYPOINT-CLOSE-UNSAVED-A QA operatore PENDING.
 
-Fonte runtime source d4e9821e180f82a33bb506c48b5c1d683a8cb82a, blob 67fb15263fc5a6d2461552f33fd3d6165f66c466, SHA256 ce97e3b72e2e17e383417c777509889cd74cebe144f6751f4fda89829f28209b, 11.116.411 byte. Review ROUTINE 21/21 PASS; deploy GIS-only con backup 287 PASS; HTTP/HTTPS hash identici; Automated Browser QA Edge HTTPS NATIVE 62/62 PASS, POST 0, 462 risorse esterne bloccate. Console/pageerror non misurati separatamente.
+Cambiato soltanto il flusso Waypoint: modalita di selezione attivata automaticamente non e di per se un draft; il pulsante Waypoint e X usano lo stesso close guard. Review routine 20/20 PASS, deploy GIS-only con backup 288 PASS, ABQA Edge HTTPS NATIVA 25/25 PASS, zero POST, 304 accessorie esterne bloccate. Source 214e6ea248f4d390bfd1c79b12b95123f93642f0, blob 6a4a2639e6b2a205ee26ab38778e5b85b3ad6d0b, SHA 19be22d478262c6ad7f1dbb9ef4c7a0706a8d58bf2a39236fb02750129e45107, 11.116.484 byte. Clic reale mappa non attestato, stato draft posizionato testato deterministicamente 32/32 nella candidata.
 
-Colonna toolbar VERTICALE destra, 12 comandi uno sotto l'altro, 62x44, labels; scorrimento in finestre basse; Traccia indipendente da Poligoni e R&B. Mobile invariato, sviluppo telefono in pausa. Ramo Escape 284 separato non distribuito.
+**NEXT:** QA operatore breve: chiusura senza messaggio se nessuna modifica e conferma quando coordinate/punto non salvato. Poi, dopo PASS, chiusura H. Toolbar grafica alto/basso e QA toolbar FIX3 288 ancora backlog/pendente, senza dichiarare PASS. Mobile in pausa.
 
-NEXT: QA operatore breve su verticale e comportamento Traccia; attendere QA GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX3 PASS operatore; poi chiusura Regola H. Feedback negativo 287 non normalizzato a PASS.
+[Report](evidence/2026-11-11-waypoint-close-289/REPORT.md) · [Deploy](evidence/2026-11-11-waypoint-close-289/DEPLOY-RESULT-289.md) · [QA](evidence/2026-11-11-waypoint-close-289/QA-LIVE-289.md) · [Inbox](inbox/2026-11-11_1502_waypoint-289-live.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
 
-[Report](evidence/2026-11-11-desktop-toolbar-288-vertical/REPORT.md) · [Deploy](evidence/2026-11-11-desktop-toolbar-288-vertical/DEPLOY-RESULT-288.md) · [QA](evidence/2026-11-11-desktop-toolbar-288-vertical/QA-LIVE-288.md) · [Inbox](inbox/2026-11-11_1242_desktop-toolbar-288-vertical-live.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
-
-real_task_commit = 45565eec2ac259431d7722bcf3b8c34abe9b77fa; current_report_container = PENDING_SELF_REFERENCE; final_remote_head_after_report_push = EXTERNAL_ONLY.
+real_task_commit=d1a11c117e8d6f7ea0d045f88fa239b54f8abdb6; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
