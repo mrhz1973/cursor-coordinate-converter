@@ -1,6 +1,10 @@
 # Toolbar desktop — Build 286 FIX1, Waypoint self-contained
 
-Data: 2026-11-11 09:45:00 Europe/Rome. **PREDEPLOY**. Fix nel medesimo ambito UI della Build 285, senza infrastruttura.
+Data: 2026-11-11 09:45:00 Europe/Rome. **STORICO PREDEPLOY**. Fix nel medesimo ambito UI della Build 285, senza infrastruttura.
+
+## Stato aggiornato dopo deploy
+
+Build 286 LIVE: deploy GIS-only, backup 285, HTTP/HTTPS SHA corretta; ABQA nativa Edge **33/33 PASS**, nessun HTML iniettato, 0 POST e 402 richieste esterne bloccate. QA operatore PENDING. [Deploy](DEPLOY-RESULT-286.md) · [ABQA](QA-LIVE-286.md).
 
 ## Finding reale e correzione
 Dopo deploy e QA geometrica della Build 285 (28/28 PASS), due URL dell'icona Waypoint hanno restituito HTTP 404: /assets/waypoint-map.png e /gis/assets/waypoint-map.png. File presente sul clone ma non esposto dal reverse-proxy GIS. Non alterare Nginx/proxy.
