@@ -26023,10 +26023,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX3";
-const APP_BUILD_DETAIL = "Toolbar desktop verticale compatta; Traccia indipendente da Poligoni e R&B.";
+const APP_BUILD_ID = "GIS-WAYPOINT-CLOSE-DIRTY-ONLY-A";
+const APP_BUILD_DETAIL = "Waypoint si chiude senza conferma se non ci sono modifiche; avviso solo per draft non salvati.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 288;
+const APP_BUILD_NUM = 289;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -72150,7 +72150,13 @@ function renderTileMap(lat, lon, zoom){
           return;
         }
         if (state.waypointsModalOpen || (dlg && dlg.open)){
-          try { if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow(); } catch(_){}
+          if (typeof waypointDesktopClosePolicyActive === "function" && waypointDesktopClosePolicyActive()){
+            // Toggle close on desktop, never erase a draft without user choice.
+            if (typeof requestWaypointModalClose === "function") requestWaypointModalClose();
+          } else {
+            // Mobile toolbar behavior remains unchanged.
+            try { if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow(); } catch(_){}
+          }
         } else if (typeof openWaypointModal === "function") {
           openWaypointModal();
         }
@@ -83587,6 +83593,12 @@ function waypointModalShowUnsavedCloseBar(){
   } catch(_){}
 }
 
+/** Desktop GIS close policy; mobile development stays paused. */
+function waypointDesktopClosePolicyActive(){
+  return document.body.classList.contains("gis-mode")
+    && typeof window.matchMedia === "function"
+    && window.matchMedia("(min-width:960px) and (hover:hover) and (pointer:fine)").matches;
+}
 function waypointModalUnsavedCloseRisk(){
   const delSelBar = document.getElementById("wpDeleteSelectedBar");
   if (delSelBar && !delSelBar.hidden) return true;
@@ -83594,9 +83606,10 @@ function waypointModalUnsavedCloseRisk(){
   if (delBar && !delBar.hidden) return true;
   const rmFavBar = document.getElementById("wpRemoveFavBar");
   if (rmFavBar && !rmFavBar.hidden) return true;
+  // GIS desktop starts pick mode on open; only actual drafts/edits are dirty.
   const wmDlg = document.getElementById("waypointModal");
   const modalOpen = !!(state.waypointsModalOpen || (wmDlg && wmDlg.open));
-  if (state.waypointPickMode && modalOpen) return true;
+  if (!waypointDesktopClosePolicyActive() && state.waypointPickMode && modalOpen) return true;
   if (state.trackWaypointDraft && state.waypointsModalOpen) return true;
   const ed = document.getElementById("waypointEditor");
   if (!ed || ed.hidden) return false;
@@ -83622,9 +83635,23 @@ function waypointModalUnsavedCloseRisk(){
     const col0 = sanitizeTrackColor((p.meta && p.meta.color) || "#2563eb");
     if (nameDom !== name0 || notesDom !== notes0 || icDom !== ic0 || colDom !== col0) return true;
     let lat = d.lat, lon = d.lon;
-    if (coordEl && String(coordEl.value || "").trim()){
+    const coordText = coordEl ? String(coordEl.value || "").trim() : "";
+    if (waypointDesktopClosePolicyActive()){
+      // MGRS rounds coordinates: identical display text is NOT a user edit.
+      const savedDisplay = String(formatWaypointListCoordinates(p.lat, p.lon) || "").trim();
+      if (coordText !== savedDisplay){
+        if (!coordText) return true;
+        try {
+          const det = autoDetect(coordText);
+          validateLatLon(det.lat, det.lon);
+          lat = det.lat;
+          lon = normalizeLon(det.lon);
+        } catch(_){ return true; } // preserve invalid unsaved field contents
+      }
+    } else if (coordText){
+      // Preserve original mobile/classic comparison.
       try {
-        const det = autoDetect(String(coordEl.value).trim());
+        const det = autoDetect(coordText);
         validateLatLon(det.lat, det.lon);
         lat = det.lat;
         lon = normalizeLon(det.lon);
@@ -83668,7 +83695,7 @@ function waypointModalPerformCloseAndDeactivateTab(){
 function requestWaypointModalClose(){
   const bar = document.getElementById("waypointModalUnsavedCloseBar");
   if (bar && !bar.hidden){
-    waypointModalHideUnsavedCloseBar();
+    if (!waypointDesktopClosePolicyActive()) waypointModalHideUnsavedCloseBar();
     return;
   }
   if (waypointModalUnsavedCloseRisk()){
