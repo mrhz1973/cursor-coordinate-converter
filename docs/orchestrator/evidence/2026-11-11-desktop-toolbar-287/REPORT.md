@@ -1,6 +1,10 @@
 # Build 287 FIX2 — toolbar GIS desktop su una fila e stato Traccia indipendente
 
-**Registrazione:** 2026-11-11 11:34:04 Europe/Rome. **Categoria:** ROUTINE CSS/JS UI a basso rischio. **Gate:** PREDEPLOY.
+**Registrazione:** 2026-11-11 11:34:04 Europe/Rome. **Categoria:** ROUTINE CSS/JS UI a basso rischio. **Gate storico:** PREDEPLOY (superato dal rilascio documentato sotto).
+
+## Stato LIVE dopo deploy della 287
+
+**Build 287 LIVE.** Fast-forward su main e deploy GIS-only PASS, backup della 286; file HTTP/HTTPS identico allo SHA fdb28dd544a4f138b4e249b6fbc1d2257029e9fecff0fa5fd93fddf27fc559db. QA automatizzata HTTPS nativa 60/60 PASS, 0 POST, 467 accessorie esterne bloccate. Il PASS umano desktop resta PENDING. [Deploy](DEPLOY-RESULT-287.md) · [QA LIVE](QA-LIVE-287.md).
 
 ## Feedback operatore sulla Build 286
 Nella Build 286 LIVE, attivare Poligoni o Range & Bearing provoca l'illuminazione impropria del comando Traccia. Il layout attuale su due colonne è giudicato troppo grande. L'operatore chiede un'unica riga orizzontale di pulsanti leggermente più piccoli, mantenendo i nomi sotto le icone. La richiesta è un finding visivo e una correzione, non un PASS QA della 286.
