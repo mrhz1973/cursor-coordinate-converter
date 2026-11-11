@@ -1,41 +1,43 @@
-# LAST_CURSOR_REPORT — chiusura 282, esecuzione GPT
+# LAST_CURSOR_REPORT — pass GPT, Build 283 LIVE
 
-> Filename legacy. GPT tramite TMAR Desktop Commander Win su AsusDesktop; Cursor/Codex non utilizzati. Stato vivo: [FRONTIER](../FRONTIER.md).
+> Nome file storico. GPT tramite TMAR Desktop Commander Win su AsusDesktop, non Cursor/Codex. Stato LIVE: [FRONTIER](../FRONTIER.md).
 
 ## A. Header sintetico
 
 | Campo | Valore |
 | --- | --- |
-| BLOCK CLOSED | `GIS-FAVORITES-MINIMIZED-ESCAPE-A` · PASS operatore 2026-11-11 |
-| BLOCK ACTIVE | `GIS-DFLIGHT-MINIMIZED-ESCAPE-DIAG-A` · diagnosi read-only |
-| GATE | Riproduzione browser D-Flight / priorità Escape, non ancora attestata |
-| NEXT | Evidenza browser Build 282, nessun FIX anticipato |
-| RUNTIME | Build 282 · source `6b906869b77a2b3c91c8848012894ffff85399e3` · SHA `71267f1a9d95488adf527db40333c811c2beeef0c9051e98ee5673debb5a7399` invariata |
-| QA | review GPT sostitutiva PASS; deploy PASS; ABQA 3/44 PASS; PASS operatore ricevuto |
-| REVIEW esterna | NOT_PERFORMED / backstop |
-| TELEFONO | PAUSA |
-| ACCESSO | TMAR Desktop Commander Win AsusDesktop, SSH VPS e HTTPS PASS |
-| real_task_commit | `db7902eb4b8766a72d5dc15e5763a10e7e6dbb10` |
-| previous_report_container | `95266797330969a9009a3066902415ad7a04fd5a` |
-| current_report_container | `PENDING_SELF_REFERENCE` |
-| final_remote_head_after_report_push | `EXTERNAL_ONLY` |
+| BLOCK | `GIS-DFLIGHT-MINIMIZED-ESCAPE-A` · aperto |
+| GATE | QA OPERATORE DESKTOP Build 283, PASS non ricevuto |
+| NEXT | D-Flight minimizzato + Poligoni visibile, Escape chiude Poligoni e conserva chip; ripristino |
+| Runtime LIVE | Build 283, source `5795b6711c5690216a2f1862003af29758520101`, blob `c5d8ee1edaeba2513f897d838b7caa24aa4b4eaa` |
+| SHA-256 / bytes | `dbdc54753722bee425d9c4e6528455ef7b72d946b69e747ae109621de414ea24` / 11.108.965 |
+| Review | GPT sostitutiva 18/18 PASS; esterna NOT_PERFORMED/backstop |
+| Deploy | GIS-only PASS, backup 282, servizio GIS attivo |
+| ABQA | HTTPS nativa Edge 17/17 PASS, POST 0, 305 accessorie bloccate |
+| Telefono | PAUSA |
+| real_task_commit | `01513ce82fae41e2617b9579bfca9d828794d9da` |
+| current_report_container | PENDING_SELF_REFERENCE |
+| final_remote_head_after_report_push | EXTERNAL_ONLY |
 
 ## B. RIEPILOGO COMPLETO
 
-1. Attestazione dell'operatore: «QA GIS-FAVORITES-MINIMIZED-ESCAPE-A PASS operatore vai pure avanti». La dichiarazione è esplicita; dettagli test non inventati.
-2. I prerequisiti review GPT, deploy e ABQA HTTPS 3/44 PASS erano documentati sulla Build 282; review AI esterna resta NOT_PERFORMED.
-3. Verificati tramite AsusDesktop: TMAR Desktop Commander Win 0.3.1, HTTPS /gis HTTP 200 e SHA 282, SSH autenticato al VPS. Tailnet SSH TIMEOUT da casa.
-4. VPS clone allineato da 2b929e3 alla HEAD 95266797330969a9009a3066902415ad7a04fd5a con differenze soltanto docs; monolite invariato; nessun restart.
-5. Chiusura docs su FRONTIER ed evidence; commit sostanziale `db7902eb4b8766a72d5dc15e5763a10e7e6dbb10` pushato.
-6. Nuovo diagnostico `GIS-DFLIGHT-MINIMIZED-ESCAPE-DIAG-A`; nessun FAIL browser già riprodotto. Nessun PASS generale 38 finestre; telefono in pausa.
-7. Autosync F3 selettivo: latest, nuova inbox e questo LAST; nessuna autocitazione della propria HEAD.
+1. Baseline 282: D-Flight minimizzato e Poligoni visibile, Escape non chiudeva Poligoni: 16 PASS / 1 FAIL su 17. D-Flight + Mappe Offline PASS.
+2. Candidato 283: un'unica modifica funzionale Escape e tre metadati. Nessun delta CSS, markup, OPSEC, rete, GPS, cache, storage, state.mapWaypoints[]. 192 CR preservati, sintassi Node inline 2/2 PASS.
+3. Code source `5795b6711c5690216a2f1862003af29758520101`, review GPT sostitutiva 18/18 PASS su blob Git pinnato. QA candidata HTTPS document-injected 17/17 PASS; review AI esterna NOT_PERFORMED.
+4. Deploy da AsusDesktop con SSH al VPS: backup 282, pull FF, unico restart GIS. SHA file, HTTP interno, HTTPS VPS e HTTPS AsusDesktop confermata sulla Build 283. Nessun altro servizio modificato.
+5. ABQA nativa Edge (documento servito, non sostituito): 17/17 PASS inclusa la regressione Poligoni, 0 POST, 305 accessorie bloccate. Console/pageerror non misurati separatamente; fuori GIS non testato direttamente.
+6. Due richieste HTTPS iniziali dal PC casa troncate dopo deploy; retry successivo HTTP 200 completo, 11.108.965 byte, SHA verificato e QA reale completata. Non dichiarare connettività universalmente priva di errori.
+7. QA operatore Build 283 **PENDING**; PASS 282 non riutilizzato. NEXT caso umano breve prima di chiusura H e backlog desktop. Sviluppo telefono sospeso; nessun PASS generale 38 finestre.
+8. Autosync F3: latest, una sola inbox nuova e questo LAST. Commit sostanziale `01513ce82fae41e2617b9579bfca9d828794d9da`, container PENDING_SELF_REFERENCE, push finale EXTERNAL_ONLY per evitare autocitazione.
 
 ## C. Identità
 
-`real_task_commit = db7902eb4b8766a72d5dc15e5763a10e7e6dbb10`
+`real_task_commit = 01513ce82fae41e2617b9579bfca9d828794d9da`
+
+`previous_report_container = 9f2fe361b249d3b42cddfd5417cc66775d478ebe`
 
 `current_report_container = PENDING_SELF_REFERENCE`
 
 `final_remote_head_after_report_push = EXTERNAL_ONLY`
 
-[Evidence](../orchestrator/evidence/2026-11-11-favorites-escape-282-closure/REPORT.md).
+[Evidence](../orchestrator/evidence/2026-11-11-dflight-escape-283/REPORT.md).

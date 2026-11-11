@@ -1,11 +1,13 @@
 # Ultimo checkpoint orchestratore
 
-LIVE STATE: [FRONTIER](../FRONTIER.md). **2026-11-11: `GIS-FAVORITES-MINIMIZED-ESCAPE-A` CLOSED / PASS operatore.**
+Stato canonico LIVE: [FRONTIER](../FRONTIER.md). **11 novembre 2026 — Build 283 LIVE; QA operatore desktop PENDENTE.**
 
-Ricevuto «QA GIS-FAVORITES-MINIMIZED-ESCAPE-A PASS operatore vai pure avanti». Review sostitutiva, deploy e ABQA HTTPS 3/44 PASS preesistenti; review AI esterna NOT_PERFORMED/backstop. Build 282 invariata.
+Blocco `GIS-DFLIGHT-MINIMIZED-ESCAPE-A`: baseline 282 FAIL reale su Escape con D-Flight minimizzato e Poligoni visibile. Build 283 corregge l'intercettazione; review GPT sostitutiva **18/18 PASS** (esterna NOT_PERFORMED/backstop), deploy GIS-only PASS, Automated Browser QA HTTPS **NATIVA 17/17 PASS**. Runtime source `5795b6711c5690216a2f1862003af29758520101`, blob `c5d8ee1edaeba2513f897d838b7caa24aa4b4eaa`, SHA-256 `dbdc54753722bee425d9c4e6528455ef7b72d946b69e747ae109621de414ea24`, 11.108.965 byte.
 
-**NEXT:** `GIS-DFLIGHT-MINIMIZED-ESCAPE-DIAG-A` — D-Flight minimizzato / priorità Escape da riprodurre su desktop HTTPS, prima di definire un FIX. Telefono in pausa. TMAR Desktop Commander Win/AsusDesktop e SSH al VPS PASS.
+**Gate:** QA OPERATORE DESKTOP Build 283 (nessun PASS ricevuto). **NEXT:** D-Flight minimizzato → Poligoni visibile → Escape chiude Poligoni, conserva chip → ripristinare D-Flight. Dopo PASS, chiusura Regola H e backlog desktop. Telefono in pausa.
 
-[Chiusura](evidence/2026-11-11-favorites-escape-282-closure/REPORT.md) · [Inbox](inbox/2026-11-11_0210_favorites-escape-282-closure.md) · [Handoff A/B/C](../runtime/LAST_CURSOR_REPORT.md).
+Note: due fetch HTTPS iniziali incompleti da AsusDesktop dopo deploy; successivo GET completo con SHA corretto e QA Edge nativa 17/17. Nessun POST; console/pageerror non raccolti separatamente. Non attestare stabilità di rete universale.
 
-`real_task_commit = db7902eb4b8766a72d5dc15e5763a10e7e6dbb10`; `current_report_container = PENDING_SELF_REFERENCE`; verifica finale push `EXTERNAL_ONLY`.
+[Rapporto](orchestrator/evidence/2026-11-11-dflight-escape-283/REPORT.md) · [Deploy](orchestrator/evidence/2026-11-11-dflight-escape-283/DEPLOY-RESULT-283.md) · [ABQA](orchestrator/evidence/2026-11-11-dflight-escape-283/QA-LIVE-283.md) · [Inbox](inbox/2026-11-11_0320_dflight-escape-283-live.md) · [Handoff A/B/C](../runtime/LAST_CURSOR_REPORT.md).
+
+`real_task_commit = 01513ce82fae41e2617b9579bfca9d828794d9da` · `current_report_container = PENDING_SELF_REFERENCE` · `final_remote_head_after_report_push = EXTERNAL_ONLY`.
