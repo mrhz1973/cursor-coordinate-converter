@@ -26023,10 +26023,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX3";
-const APP_BUILD_DETAIL = "Toolbar desktop verticale compatta; Traccia indipendente da Poligoni e R&B.";
+const APP_BUILD_ID = "GIS-WAYPOINT-CLEAN-CLOSE-A";
+const APP_BUILD_DETAIL = "Waypoint: chiusura immediata senza modifiche, conferma solo per dati non salvati.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 288;
+const APP_BUILD_NUM = 289;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -72150,7 +72150,7 @@ function renderTileMap(lat, lon, zoom){
           return;
         }
         if (state.waypointsModalOpen || (dlg && dlg.open)){
-          try { if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow(); } catch(_){}
+          if (typeof requestWaypointModalClose === "function") requestWaypointModalClose();
         } else if (typeof openWaypointModal === "function") {
           openWaypointModal();
         }
@@ -83596,8 +83596,9 @@ function waypointModalUnsavedCloseRisk(){
   if (rmFavBar && !rmFavBar.hidden) return true;
   const wmDlg = document.getElementById("waypointModal");
   const modalOpen = !!(state.waypointsModalOpen || (wmDlg && wmDlg.open));
-  if (state.waypointPickMode && modalOpen) return true;
-  if (state.trackWaypointDraft && state.waypointsModalOpen) return true;
+  // Pick mode is armed automatically on open, but is not itself an unsaved waypoint.
+  // A placed point or edited draft is checked below, so confirmation protects real data.
+  if (state.trackWaypointDraft && modalOpen) return true;
   const ed = document.getElementById("waypointEditor");
   if (!ed || ed.hidden) return false;
   const d = state.waypointEditorDraft;
