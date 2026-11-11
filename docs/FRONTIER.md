@@ -19,7 +19,11 @@
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Unico restart GIS; Nginx, gateway ORS, proxy HTTPS, configurazioni/listener/endpoint condivisi preservati. Backup e journal nel rapporto deploy. |
 | **ACCESSO OPERATIVO — sessione al PC del lavoro** | 2026-11-10: RDC originale sul PC DESKTOP-DPIJL64, su scelta esplicita dell'utente. Comandi, Git, HTTPS nativo e SSH dal PC al VPS realmente verificati. La sessione continua tramite RDC sul PC del lavoro; non attesta accesso indipendente dal PC. [Deploy](orchestrator/evidence/2026-11-10-favorites-escape-282/deploy/DEPLOY-RESULT-282.md). La scelta TMAR/ASUS resta [storico del 9 novembre](orchestrator/evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md). |
 | **ACCESSO OPERATIVO — AsusDesktop** | 2026-11-11: TMAR Desktop Commander Win 0.3.1 sul PC di casa PASS; SSH autenticato al VPS tramite alias `ionos-n8n-new` su `31.70.139.73:22` PASS; HTTPS GIS HTTP 200, SHA-256 Build 282 corrispondente. Nessuna modifica di servizi o infrastruttura. |
-| **ALTRI WORKSTREAM** | Nessun PASS generale delle 38 finestre. D-Flight minimizzato/Escape corretto nella 283 con QA automatizzata nativa 17/17; QA operatore pendente. Altri workstream e freeze Oggetti GIS invariati. |
+| **ALTRI WORKSTREAM** | Nessun PASS generale delle 38 finestre. D-Flight minimizzato/Escape corretto nella 283 con QA automatizzata nativa 17/17; QA operatore pendente. Altri workstream e freeze Oggetti GIS invariati. [Audit aggiuntivo Escape](orchestrator/evidence/2026-11-11-escape-followup-284/REPORT.md): tre difetti riprodotti sulla 283; ramo sperimentale 284 separato, non distribuito. |
+
+## Checkpoint 2026-11-11 — audit aggiuntivo Escape, 283 ancora in QA operatore
+
+Riprodotti in Edge nativo HTTPS tre blocchi Escape con Poligoni visibile: Mappe Offline, Cerca, Cronologia minimizzate. Ognuno 6 PASS e 1 FAIL su 7 controlli. Ramo sperimentale 284 pubblicato su GitHub separatamente, senza merge/deploy; QA candidata in memoria 21/21 sui tre casi e 17/17 regressione D-Flight. Il gate operatore della 283 resta PENDING, invariato. [Dossier](orchestrator/evidence/2026-11-11-escape-followup-284/REPORT.md).
 
 ## Checkpoint 2026-11-11 — Build 283 live, ABQA HTTPS nativa PASS
 
