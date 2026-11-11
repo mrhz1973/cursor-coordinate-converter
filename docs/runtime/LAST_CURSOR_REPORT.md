@@ -28,3 +28,9 @@ current_report_container = PENDING_SELF_REFERENCE
 final_remote_head_after_report_push = EXTERNAL_ONLY
 
 [Dossier](../orchestrator/evidence/2026-11-11-toolbar-dual-groups-290/REPORT.md).
+
+## Appendice 2026-11-11 — attestazione tardiva 287
+
+Ricevuta in chat `QA GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX2 PASS operatore`, riferita esclusivamente alla Build 287, già superata dalla direttiva successiva di toolbar verticale e dalla 290 LIVE. Il PASS storico non convalida la 290 e non modifica il suo gate QA OPERATORE PENDING. Nessun runtime o servizio modificato. Dossier: [attestazione tardiva](../orchestrator/evidence/2026-11-11-toolbar-287-delayed-operator-qa/REPORT.md).
+
+real_task_commit = `235e470c85bc04477be0aef2caa13d5abf5890f6`; current_report_container = PENDING_SELF_REFERENCE; final remote HEAD = EXTERNAL_ONLY.

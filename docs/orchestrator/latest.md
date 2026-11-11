@@ -1,3 +1,11 @@
+# Nota di attestazione tardiva — 287 (senza cambio del LIVE)
+
+La chat ha ricevuto `QA GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX2 PASS operatore` in data 2026-11-11, quando `origin/main` era già la Build 290. Il PASS è documentato **solo per il blocco storico 287**, superato dalla successiva direttiva verticale della 288. **Gate LIVE invariato: `GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A` — QA operatore Build 290 PENDING.** Nessun runtime o deploy in questa registrazione.
+
+[Dossier](evidence/2026-11-11-toolbar-287-delayed-operator-qa/REPORT.md) · [FRONTIER](../FRONTIER.md).
+
+---
+
 # Ultimo checkpoint orchestratore
 
 Fonte LIVE: [FRONTIER](../FRONTIER.md). **Build 290 LIVE**, blocco GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A QA OPERATORE DESKTOP PENDING.
