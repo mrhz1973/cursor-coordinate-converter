@@ -2,6 +2,12 @@
 
 > Nome file storico. GPT tramite TMAR Desktop Commander Win su AsusDesktop, non Cursor/Codex. Stato LIVE: [FRONTIER](../FRONTIER.md).
 
+## Appendice — audit aggiuntivo Escape (2026-11-11; non modifica il gate LIVE)
+
+Build 283 resta LIVE, con QA operatore desktop PENDING. Tre difetti Escape riprodotti in Edge nativo HTTPS: Mappe Offline/Cerca/Cronologia minimizzate impediscono la chiusura di Poligoni visibile, ciascun caso 6/7 PASS. Preparazione isolata Build 284, branch task/gis-escape-minimized-followup-284, code commit 274e59c0e972189f937af78ad2c6080150ed8247, 38/38 prove candidate iniettate PASS, NON deploy/review finale. Dossier [audit](../orchestrator/evidence/2026-11-11-escape-followup-284/REPORT.md). Worktree LIVE e monolite 283 invariati.
+
+Checkpoint docs-only real_task_commit = f767c7020b9de0313ce266e530e30d29ff82e555; current_report_container = PENDING_SELF_REFERENCE; post-push HEAD = EXTERNAL_ONLY. Il riepilogo sotto della Build 283 mantiene la propria evidenza storica.
+
 ## A. Header sintetico
 
 | Campo | Valore |
