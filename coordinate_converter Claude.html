@@ -25915,10 +25915,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-FAVORITES-MINIMIZED-ESCAPE-A";
-const APP_BUILD_DETAIL = "Escape mantiene nel dock il pannello Preferiti minimizzato.";
+const APP_BUILD_ID = "GIS-DFLIGHT-MINIMIZED-ESCAPE-A";
+const APP_BUILD_DETAIL = "Escape ignora D-Flight minimizzato e lascia agire i pannelli visibili.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 282;
+const APP_BUILD_NUM = 283;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -81403,9 +81403,9 @@ function gisInit(){
       return;
     }
     const dfCtl = document.getElementById("dflightPanel");
-    if ((typeof _dflightPanelOpen !== "undefined" && _dflightPanelOpen) || (dfCtl && dfCtl.open)){
-      /* Minimized: Esc must not run real-close (overlay stays). Restore then X/Esc to close. */
-      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("dflightPanel")) return;
+    if (((typeof _dflightPanelOpen !== "undefined" && _dflightPanelOpen) || (dfCtl && dfCtl.open))
+        && !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("dflightPanel"))){
+      /* A minimized D-Flight must yield Escape to later visible panels. */
       try { ev.preventDefault(); } catch(_){}
       try { if (typeof dflightCloseControlPanel === "function") dflightCloseControlPanel(); } catch(_){}
       return;
