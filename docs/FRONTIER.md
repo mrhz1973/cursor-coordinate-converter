@@ -7,19 +7,27 @@
 | **WORKSTREAM ATTIVO** | Uniformità e controlli delle finestre GIS |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
 | **BLOCCO ATTIVO** | `GIS-DFLIGHT-MINIMIZED-ESCAPE-A` — FIX1 desktop, correzione priorità Escape |
-| **STATO BLOCCO** | Candidata Build 283 su ramo GitHub, 17/17 QA candidata PASS e REVIEW GPT-SOSTITUTIVA 18/18 PASS; **non ancora distribuita**. Baseline 282: 16/17, FAIL Poligoni con D-Flight minimizzato. |
-| **GATE CORRENTE** | DEPLOY GIS-ONLY / preflight dopo review sostitutiva PASS; postdeploy ABQA HTTPS nativa obbligatoria, poi QA operatore desktop. Nessun deploy 283 attestato. |
-| **RUNTIME LIVE** | Build 282 · source commit `6b906869b77a2b3c91c8848012894ffff85399e3` · blob `4636ad186934b0d2f43e8564c9e657cdcdfc652e` · SHA-256 `71267f1a9d95488adf527db40333c811c2beeef0c9051e98ee5673debb5a7399` · 11.108.980 byte. Deploy 2026-11-10 13:06:57; ABQA conclusa 13:09:05 Europe/Rome. |
-| **RUNTIME CANDIDATE** | Build 283 · source code `5795b6711c5690216a2f1862003af29758520101` · blob `c5d8ee1edaeba2513f897d838b7caa24aa4b4eaa` · SHA-256 `dbdc54753722bee425d9c4e6528455ef7b72d946b69e747ae109621de414ea24` · 11.108.965 byte; 192 CR isolati conservati. |
+| **STATO BLOCCO** | Build **283 LIVE**, REVIEW GPT-SOSTITUTIVA 18/18 PASS, deploy GIS-only e ABQA HTTPS nativa **17/17 PASS**; blocco aperto in attesa della sola QA operatore desktop. Nessun PASS operatore 283 acquisito. |
+| **GATE CORRENTE** | QA OPERATORE DESKTOP per `GIS-DFLIGHT-MINIMIZED-ESCAPE-A`; nessuna conferma operatore 283 ancora ricevuta. |
+| **RUNTIME LIVE** | Build 283 · source commit `5795b6711c5690216a2f1862003af29758520101` · blob `c5d8ee1edaeba2513f897d838b7caa24aa4b4eaa` · SHA-256 `dbdc54753722bee425d9c4e6528455ef7b72d946b69e747ae109621de414ea24` · 11.108.965 byte. Deploy 2026-11-11 03:09:05 Europe/Rome; QA HTTPS nativa 17/17 PASS. |
+| **RUNTIME CANDIDATE** | Nessun candidato successivo. Build 283 distribuita; source runtime e checkpoint documentali restano distinti. |
 | **ULTIMO BLOCCO CHIUSO** | `GIS-FAVORITES-MINIMIZED-ESCAPE-A` · PASS operatore 2026-11-11; [chiusura](orchestrator/evidence/2026-11-11-favorites-escape-282-closure/REPORT.md). |
-| **NEXT** | Preflight deploy GIS-only della candidata 283 da origin/main; solo dopo esito PASS: fast-forward clone VPS, unico restart `goi-gis-app.service`, verifica hash HTTP/HTTPS e ABQA nativa. In caso FAIL nessuna QA operatore. Telefono in pausa. |
+| **NEXT** | Caso umano desktop breve su Build 283: minimizzare D-Flight, aprire Poligoni, premere Escape (chiude Poligoni, conserva chip D-Flight), ripristinare D-Flight. Attendere `QA GIS-DFLIGHT-MINIMIZED-ESCAPE-A PASS operatore`. Poi backlog desktop; telefono in pausa. |
 | **SVILUPPO TELEFONO** | **PAUSA fino a nuovo ordine dell'utente**, limitatamente a TMAR GIS Tool, dal 2026-11-10. Proseguire con il backlog desktop; la direttiva non rimuove o disabilita le funzioni mobili esistenti. [Attestazione e scope](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md). |
-| **FOLLOW-UP REVIEW** | 283: REVIEW GPT-SOSTITUTIVA 18/18 PASS sul blob esatto pubblicato, review AI esterna NOT_PERFORMED/backstop. Backstop precedenti 280/281/282 invariati. |
+| **FOLLOW-UP REVIEW** | 283: REVIEW GPT-SOSTITUTIVA 18/18 PASS; review AI esterna NOT_PERFORMED/backstop. Backstop precedenti 280/281/282 invariati. |
 | **EVIDENCE** | [D-Flight/Escape 283](orchestrator/evidence/2026-11-11-dflight-escape-283/REPORT.md) · [Rilascio finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [ABQA live](orchestrator/evidence/2026-11-09-gis-window-controls-281/QA-WINDOWS-281-POSTDEPLOY.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Astro desktop PC lavoro](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md) · [Chiusura finestre 281](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md) · [Preferiti/Escape 282](orchestrator/evidence/2026-11-10-favorites-escape-282/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Unico restart GIS; Nginx, gateway ORS, proxy HTTPS, configurazioni/listener/endpoint condivisi preservati. Backup e journal nel rapporto deploy. |
 | **ACCESSO OPERATIVO — sessione al PC del lavoro** | 2026-11-10: RDC originale sul PC DESKTOP-DPIJL64, su scelta esplicita dell'utente. Comandi, Git, HTTPS nativo e SSH dal PC al VPS realmente verificati. La sessione continua tramite RDC sul PC del lavoro; non attesta accesso indipendente dal PC. [Deploy](orchestrator/evidence/2026-11-10-favorites-escape-282/deploy/DEPLOY-RESULT-282.md). La scelta TMAR/ASUS resta [storico del 9 novembre](orchestrator/evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md). |
 | **ACCESSO OPERATIVO — AsusDesktop** | 2026-11-11: TMAR Desktop Commander Win 0.3.1 sul PC di casa PASS; SSH autenticato al VPS tramite alias `ionos-n8n-new` su `31.70.139.73:22` PASS; HTTPS GIS HTTP 200, SHA-256 Build 282 corrispondente. Nessuna modifica di servizi o infrastruttura. |
-| **ALTRI WORKSTREAM** | Nessun PASS generale 38 finestre. D-Flight minimizzato vs Mappe Offline PASS 282; vs Poligoni FAIL 282 e FIX candidato 283 PASS in iniezione HTTPS, non live; altri workstream/freeze Oggetti GIS invariati. |
+| **ALTRI WORKSTREAM** | Nessun PASS generale delle 38 finestre. D-Flight minimizzato/Escape corretto nella 283 con QA automatizzata nativa 17/17; QA operatore pendente. Altri workstream e freeze Oggetti GIS invariati. |
+
+## Checkpoint 2026-11-11 — Build 283 live, ABQA HTTPS nativa PASS
+
+Deploy GIS-only: preflight, backup e pull fast-forward PASS; restart del solo `goi-gis-app.service` PASS alle **03:09:05 Europe/Rome**. VPS main `8a44e608c68ba1ebd4b4b6ffbdfbbb20505f55d6` al momento del deploy, working tree clean; SHA del file/HTTP 8000/HTTPS confermato `dbdc54753722bee425d9c4e6528455ef7b72d946b69e747ae109621de414ea24`, 11.108.965 byte. Backup Build 282: `/var/backups/goi-gis-runtime/20261111T020904Z-build283`. Nessun comando sui servizi condivisi.
+
+Dall'AsusDesktop iniziali trasferimenti HTTPS incompleti (curl code 18 / HttpClient eccezione), successivamente GET HTTPS completo e SHA verificato e ABQA **nativa (HTML non iniettato) Edge 17/17 PASS**. 0 POST, 305 richieste accessorie bloccate, console generale/pageerror non raccolti separatamente. Infrastruttura non modificata. [Deploy](orchestrator/evidence/2026-11-11-dflight-escape-283/DEPLOY-RESULT-283.md) · [ABQA](orchestrator/evidence/2026-11-11-dflight-escape-283/QA-LIVE-283.md) · [Report](orchestrator/evidence/2026-11-11-dflight-escape-283/REPORT.md).
+
+Gate attivo: QA operatore desktop **non ancora ricevuta**. Nessun PASS generale delle 38 finestre; telefono in pausa. Review GPT sostitutiva completata 18/18; esterna NOT_PERFORMED/backstop.
 
 ## Checkpoint 2026-11-11 — candidata desktop D-Flight/Escape 283, predeploy
 

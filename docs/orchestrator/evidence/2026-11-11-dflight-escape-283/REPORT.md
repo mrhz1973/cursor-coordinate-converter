@@ -2,9 +2,19 @@
 
 **Registrazione:** 2026-11-11 03:06:36 Europe/Rome. **Blocco:** `GIS-DFLIGHT-MINIMIZED-ESCAPE-A` · DELICATO lifecycle modale/dialog.
 
+## Stato LIVE postdeploy — 2026-11-11
+
+**Build 283 LIVE.** GitHub main e clone VPS aggiornati. Preflight, backup, fast-forward e restart GIS-only PASS (03:09:05 Europe/Rome). HTTP diretto sul VPS SHA `dbdc54753722bee425d9c4e6528455ef7b72d946b69e747ae109621de414ea24`; HTTPS dal VPS e AsusDesktop SHA identico, 11.108.965 byte. QA HTTPS **NATIVA** Edge (documento reale non sostituito): **17/17 PASS**, compreso T16 (Poligoni con D-Flight minimizzato), 0 POST, 305 richieste accessorie bloccate. [Deploy](DEPLOY-RESULT-283.md) · [ABQA](QA-LIVE-283.md).
+
+Nota rete: prime due richieste HTTPS dal PC AsusDesktop incomplete dopo il deploy, successive richieste a contenuto completo e SHA corretto; nessuna modifica Nginx/proxy. Questa variabilità non viene convertita in PASS universale della connettività. Review AI esterna NOT_PERFORMED/backstop.
+
+**Gate residuo:** QA OPERATORE DESKTOP 283, non ricevuta; il PASS precedente della 282 non si trasferisce. Telefono in pausa.
+
+---
+
 ## Stato al checkpoint
 
-**PREDEPLOY.** Runtime LIVE Build **282** invariato. Candidata 283 su GitHub, review sostitutiva completata, QA candidata completata. Nessun deploy, nessuna ABQA LIVE 283, nessun PASS operatore 283 attribuito.
+**STORICO PREDEPLOY (non stato corrente):** runtime LIVE era la Build **282**. Candidata 283 su GitHub, review sostitutiva completata, QA candidata completata. Nessun deploy, nessuna ABQA LIVE 283, nessun PASS operatore 283 attribuito.
 
 | Identità | Valore |
 | --- | --- |
