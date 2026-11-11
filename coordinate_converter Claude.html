@@ -25915,10 +25915,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-DFLIGHT-MINIMIZED-ESCAPE-A";
-const APP_BUILD_DETAIL = "Escape ignora D-Flight minimizzato e lascia agire i pannelli visibili.";
+const APP_BUILD_ID = "GIS-MINIMIZED-WINDOW-ESCAPE-PRIORITY-A";
+const APP_BUILD_DETAIL = "Escape raggiunge il pannello visibile anche con Cerca, Cronologia o Mappe Offline minimizzati.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 283;
+const APP_BUILD_NUM = 284;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -81326,14 +81326,14 @@ function gisInit(){
     }
     if (state.toolsMenuOpen !== null){ closeToolsModal(); return; }
     const spd = document.getElementById("searchPanel");
-    if (state.searchPanelOpen || (spd && spd.open)){
-      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("searchPanel")) return;
+    if ((state.searchPanelOpen || (spd && spd.open)) &&
+        !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("searchPanel"))){
       closeSearchPanel();
       return;
     }
     const hpd = document.getElementById("historyPanel");
-    if (state.historyPanelOpen || (hpd && hpd.open)){
-      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("historyPanel")) return;
+    if ((state.historyPanelOpen || (hpd && hpd.open)) &&
+        !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("historyPanel"))){
       ev.preventDefault();
       if (typeof closeHistoryPanel === "function") closeHistoryPanel();
       return;
@@ -81346,8 +81346,8 @@ function gisInit(){
       return;
     }
     const lpd = document.getElementById("layersPanel");
-    if (state.layersPanelOpen || (lpd && lpd.open)){
-      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("layersPanel")) return;
+    if ((state.layersPanelOpen || (lpd && lpd.open)) &&
+        !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("layersPanel"))){
       void closeLayersPanel();
       return;
     }
