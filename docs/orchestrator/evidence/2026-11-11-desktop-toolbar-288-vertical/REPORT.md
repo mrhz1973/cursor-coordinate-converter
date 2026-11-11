@@ -1,6 +1,10 @@
 # Build 288 — toolbar destra in unica colonna verticale desktop
 
-Registrazione 2026-11-11 12:38:28 Europe/Rome. STATO: CANDIDATA PREDEPLOY; runtime LIVE fino al deploy: Build 287.
+Registrazione 2026-11-11 12:38:28 Europe/Rome. STATO STORICO: candidata predeploy preparata su base Build 287. Build 288 ora LIVE; gate operatore desktop ancora aperto.
+
+## Stato LIVE postdeploy — 11 novembre 2026
+
+Build 288 LIVE, SHA256 ce97e3b72e2e17e383417c777509889cd74cebe144f6751f4fda89829f28209b, 11.116.411 byte. Backup 287, fast-forward, restart del solo GIS e smoke HTTP/HTTPS PASS. ABQA Edge nativa HTTPS **62/62 PASS**, 0 POST, 462 accessorie esterne bloccate. Console/pageerror non raccolti separatamente. QA operatore PENDING. [Deploy](DEPLOY-RESULT-288.md) · [QA](QA-LIVE-288.md).
 
 ## Origine e requisito
 L'operatore ha corretto esplicitamente l'orientamento richiesto: tutti i pulsanti in linea verticale, NON orizzontale. Devono restare compatti, identificati con targhette e accessibili direttamente. La QA operatore 287 non e stata approvata. Le funzioni mobile restano in pausa.
