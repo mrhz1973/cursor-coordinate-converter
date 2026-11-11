@@ -1,11 +1,13 @@
 # Ultimo checkpoint orchestratore
 
-Stato canonico [FRONTIER](../FRONTIER.md): GIS-WAYPOINT-CLOSE-UNSAVED-A **CLOSED / QA PASS operatore 2026-11-11**. Attestazione «QA GIS-WAYPOINT-CLOSE-UNSAVED-A PASS operatore».
+Fonte LIVE: [FRONTIER](../FRONTIER.md). **Build 290 LIVE**, blocco GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A QA OPERATORE DESKTOP PENDING.
 
-Build 289 LIVE invariata, source 214e6ea248f4d390bfd1c79b12b95123f93642f0, blob 6a4a2639e6b2a205ee26ab38778e5b85b3ad6d0b, SHA 19be22d478262c6ad7f1dbb9ef4c7a0706a8d58bf2a39236fb02750129e45107, 11.116.484 byte. Gate preesistenti review 20/20, deploy e ABQA HTTPS 25/25 PASS. Chiusura docs-only, nessun restart.
+Runtime source 56d336a3942028836924f68af322d36996095b15, blob f8c469e39e2c647b2bde377e5ac1b6b7e90683cc, SHA256 7d69fc145779f223c570e9596e23b497ab678329d4b495ebc03567301f010e69, 11.120.343 byte. Review routine 22/22 PASS, deploy GIS-only con backup 289 e smoke HTTP/HTTPS PASS. ABQA HTTPS nativa Edge **76/76 PASS** su layout/stati e Waypoint **25/25 PASS**, POST zero; chiamate terze bloccate 500+304 nelle due sessioni. Console/pageerror non rilevati separatamente.
 
-**NEXT:** GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A: toolbar desktop destra in due gruppi verticali, navigazione alta e strumenti ancorati in basso; Livelli allineato, bordi/colori distinti e icone più curate. Mobile in pausa. QA formale FIX3 toolbar 288 resta separatamente non attestata; ramo Escape 284 non distribuito.
+Toolbar destra: navigazione blu in alto, strumenti teal in basso, Livelli allineato, separazione visuale e GPS sopra footer, scrolling in finestre basse. Mobile invariato per il redesign, sviluppo telefono sospeso. FIX3 toolbar 288 QA umana autonomamente non attestata, ramo Escape 284 distinto.
 
-[Chiusura](evidence/2026-11-11-waypoint-289-operator-closure/REPORT.md) · [Inbox](inbox/2026-11-11_1511_waypoint-289-operator-closure.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
+**NEXT:** QA estetica umana della Build 290, verificare gruppi/colori/allineamento/leggibilità e funzionamento. Solo dopo PASS esplicito: chiusura Regola H.
 
-real_task_commit = 81484f2ef4f511e2ef83e0f437d2ff48b8af7cec; current_report_container = PENDING_SELF_REFERENCE; final_remote_head_after_report_push = EXTERNAL_ONLY.
+[Report](evidence/2026-11-11-toolbar-dual-groups-290/REPORT.md) · [Deploy](evidence/2026-11-11-toolbar-dual-groups-290/DEPLOY-RESULT-290.md) · [QA](evidence/2026-11-11-toolbar-dual-groups-290/QA-LIVE-290.md) · [Inbox](inbox/2026-11-11_1533_toolbar-dual-groups-290-live.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
+
+real_task_commit = ae915be0ecccc0b6b73cfe5402da43dd30502b0c; current_report_container = PENDING_SELF_REFERENCE; final_remote_head_after_report_push = EXTERNAL_ONLY.
