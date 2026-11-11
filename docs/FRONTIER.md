@@ -6,19 +6,28 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | Uniformità e controlli delle finestre GIS |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | `GIS-FAVORITES-MINIMIZED-ESCAPE-A` |
-| **STATO BLOCCO** | Build 282 effettivamente live. REVIEW GPT-SOSTITUTIVA finale, deploy e ABQA HTTPS nativa PASS (3 casi / 44 controlli). Blocco aperto in attesa della QA operatore desktop. |
-| **GATE CORRENTE** | QA OPERATORE DESKTOP per `GIS-FAVORITES-MINIMIZED-ESCAPE-A`; nessun PASS operatore 282 ancora ricevuto. |
+| **BLOCCO ATTIVO** | `GIS-DFLIGHT-MINIMIZED-ESCAPE-DIAG-A` — diagnosi desktop READ-ONLY, nessun bug ancora riprodotto |
+| **STATO BLOCCO** | `GIS-FAVORITES-MINIMIZED-ESCAPE-A` **CLOSED / PASS operatore 2026-11-11**. Build 282 live invariata; nuovo diagnostico D-Flight aperto in sola lettura. |
+| **GATE CORRENTE** | RIPRODUZIONE UI DESKTOP D-Flight minimizzato / priorità Escape sulla Build 282 live; nessun FAIL browser ancora attestato. |
 | **RUNTIME LIVE** | Build 282 · source commit `6b906869b77a2b3c91c8848012894ffff85399e3` · blob `4636ad186934b0d2f43e8564c9e657cdcdfc652e` · SHA-256 `71267f1a9d95488adf527db40333c811c2beeef0c9051e98ee5673debb5a7399` · 11.108.980 byte. Deploy 2026-11-10 13:06:57; ABQA conclusa 13:09:05 Europe/Rome. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo. La Build 282 del blocco attivo è distribuita; source runtime e checkpoint documentali restano distinti. |
-| **ULTIMO BLOCCO CHIUSO** | `GIS-WINDOW-CONTROLS-A` · PASS operatore esplicito del 2026-11-10; [chiusura e direttiva telefono](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md). |
-| **NEXT** | Caso umano breve desktop: Preferiti minimizzato + Mappe Offline visibile, Escape chiude Mappe Offline e conserva Preferiti; ripristinare Preferiti dal chip. Attendere `QA GIS-FAVORITES-MINIMIZED-ESCAPE-A PASS operatore`. Poi backlog desktop; D-Flight e altre priorità Escape da riprodurre. |
+| **ULTIMO BLOCCO CHIUSO** | `GIS-FAVORITES-MINIMIZED-ESCAPE-A` · PASS operatore 2026-11-11; [chiusura](orchestrator/evidence/2026-11-11-favorites-escape-282-closure/REPORT.md). |
+| **NEXT** | Riprodurre su HTTPS desktop D-Flight minimizzato + Escape e priorità Escape dei pannelli visibili. Registrare evidenza prima del FIX. Nessun runtime candidate; telefono in pausa. |
 | **SVILUPPO TELEFONO** | **PAUSA fino a nuovo ordine dell'utente**, limitatamente a TMAR GIS Tool, dal 2026-11-10. Proseguire con il backlog desktop; la direttiva non rimuove o disabilita le funzioni mobili esistenti. [Attestazione e scope](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md). |
 | **FOLLOW-UP REVIEW** | Review AI esterna routing 280 e finestre 281/282 NOT_PERFORMED; backstop post-hoc distinto dal percorso GPT sostitutivo loggato. REVIEW GPT-SOSTITUTIVA finale 282 PASS. |
 | **EVIDENCE** | [Rilascio finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [ABQA live](orchestrator/evidence/2026-11-09-gis-window-controls-281/QA-WINDOWS-281-POSTDEPLOY.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Astro desktop PC lavoro](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md) · [Chiusura finestre 281](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md) · [Preferiti/Escape 282](orchestrator/evidence/2026-11-10-favorites-escape-282/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Unico restart GIS; Nginx, gateway ORS, proxy HTTPS, configurazioni/listener/endpoint condivisi preservati. Backup e journal nel rapporto deploy. |
 | **ACCESSO OPERATIVO — sessione al PC del lavoro** | 2026-11-10: RDC originale sul PC DESKTOP-DPIJL64, su scelta esplicita dell'utente. Comandi, Git, HTTPS nativo e SSH dal PC al VPS realmente verificati. La sessione continua tramite RDC sul PC del lavoro; non attesta accesso indipendente dal PC. [Deploy](orchestrator/evidence/2026-11-10-favorites-escape-282/deploy/DEPLOY-RESULT-282.md). La scelta TMAR/ASUS resta [storico del 9 novembre](orchestrator/evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md). |
-| **ALTRI WORKSTREAM** | Nessun PASS generale delle 38 finestre. Preferiti minimizzato su Escape corretto e verificato nella 282, con QA operatore desktop pendente; D-Flight e priorità fisse Escape restano candidati statici. Altri workstream e freeze Oggetti GIS invariati. |
+| **ACCESSO OPERATIVO — AsusDesktop** | 2026-11-11: TMAR Desktop Commander Win 0.3.1 sul PC di casa PASS; SSH autenticato al VPS tramite alias `ionos-n8n-new` su `31.70.139.73:22` PASS; HTTPS GIS HTTP 200, SHA-256 Build 282 corrispondente. Nessuna modifica di servizi o infrastruttura. |
+| **ALTRI WORKSTREAM** | Nessun PASS generale delle 38 finestre. Preferiti/Escape 282 CLOSED PASS operatore; D-Flight ed Escape da riprodurre, non FAIL attestati; altri workstream e freeze Oggetti GIS invariati. |
+
+## Checkpoint 2026-11-11 — chiusura 282 e NEXT D-Flight desktop
+
+Ricevuta l'attestazione esatta «QA GIS-FAVORITES-MINIMIZED-ESCAPE-A PASS operatore vai pure avanti»: `GIS-FAVORITES-MINIMIZED-ESCAPE-A` **CLOSED / PASS operatore**, secondo Regola H. Review GPT sostitutiva finale, deploy e ABQA HTTPS 3 casi / 44 controlli erano già PASS. Review AI esterna NOT_PERFORMED/backstop, mai attribuita retroattivamente. Nessun nuovo runtime, restart, deploy o QA attribuito a questa chiusura.
+
+Dal PC di casa AsusDesktop: TMAR Desktop Commander Win 0.3.1 operativo, HTTPS GIS SHA-256 Build 282 verificato e SSH autenticato al VPS PASS. Il clone VPS è stato fast-forwardato dal precedente checkpoint per documenti soltanto; HTML runtime invariato. [Rapporto](orchestrator/evidence/2026-11-11-favorites-escape-282-closure/REPORT.md).
+
+Prosegue il diagnostico desktop `GIS-DFLIGHT-MINIMIZED-ESCAPE-DIAG-A`: D-Flight minimizzato/Escape e priorità di pannelli visibili da riprodurre nel browser. Nessun FAIL o PASS generale delle 38 finestre dedotto; telefono in pausa.
 
 ## Checkpoint 2026-11-10 — Build 282 live, ABQA nativa PASS
 
