@@ -13078,6 +13078,86 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
 }
 }
 </style>
+
+<style id="gis-desktop-toolbar-dual-290">
+/* Desktop-only visual separation; existing markup and tool handlers remain canonical. */
+@media (min-width:960px) and (hover:hover) and (pointer:fine){
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls{
+    position:fixed!important;
+    top:var(--gis-toolbar-top);
+    right:10px;
+    bottom:76px;
+    height:auto;
+    max-height:none;
+    justify-content:flex-start;
+    overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;
+    overscroll-behavior:contain;
+    padding:2px;
+  }
+  /* Upper navigation group: bright blue borders and a cool surface. */
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tlayer-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tz-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tz-level{
+    border:1px solid #60a5fa!important;
+    border-radius:9px;
+    background:linear-gradient(150deg,#ffffff 0%,#eaf3ff 100%);
+    color:#1d4ed8;
+    box-shadow:0 2px 6px rgba(37,99,235,.18),inset 0 1px 0 rgba(255,255,255,.88);
+  }
+  /* Correct the inherited four-pixel shift on the Layers button alone. */
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-layers .tlayer-btn{
+    transform:translateX(-4px);
+  }
+  /* Lower operations group: contrasting teal outlines, anchored near map bottom. */
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn{
+    margin-top:auto!important;
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-menu-item,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-menu-item,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tgps-btn{
+    border:1px solid #5eead4!important;
+    border-radius:9px;
+    background:linear-gradient(150deg,#ffffff 0%,#e7faf6 100%);
+    color:#0f766e;
+    box-shadow:0 2px 6px rgba(15,118,110,.17),inset 0 1px 0 rgba(255,255,255,.88);
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tlayer-btn:hover,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tz-btn:hover{
+    background:#dbeafe;color:#1e40af;
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn:hover,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn:hover,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-menu-item:hover,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn:hover,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-menu-item:hover{
+    background:#d1fae5;color:#065f46;
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn.active,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn.active,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-menu-item.is-active,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn.active,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-menu-item.is-active,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn[aria-pressed="true"],
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn[aria-pressed="true"],
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn[aria-pressed="true"]{
+    background:#0f766e;color:#fff;border-color:#065f46!important;
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-layers .tlayer-btn svg,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn svg,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn svg,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn svg,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-menu-item svg{
+    filter:drop-shadow(0 1px 1px rgba(15,23,42,.17));
+  }
+  /* Leave the existing Layers menu unobstructed when expanded. */
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls.is-basemap-menu-open{
+    overflow:visible;
+  }
+}
+</style>
 </head>
 <body class="gis-boot">
 
@@ -26023,10 +26103,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-WAYPOINT-CLEAN-CLOSE-A";
-const APP_BUILD_DETAIL = "Waypoint: chiusura immediata senza modifiche, conferma solo per dati non salvati.";
+const APP_BUILD_ID = "GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A";
+const APP_BUILD_DETAIL = "Toolbar desktop: navigazione alta blu, strumenti in basso verde, Livelli allineato.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 289;
+const APP_BUILD_NUM = 290;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
