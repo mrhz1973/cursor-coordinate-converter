@@ -1,6 +1,10 @@
 # Waypoint Close UX — candidata Build 289
 
-Data: 2026-11-11 14:58:38 Europe/Rome. Stato: PREDEPLOY. La Build 288 resta LIVE fino ai gate del 289.
+Data: 2026-11-11 14:58:38 Europe/Rome. Stato storico: candidata preparata sulla Build 288. Stato corrente: Build 289 LIVE, QA operatore PENDING.
+
+## Stato LIVE postdeploy
+
+Build 289 LIVE, source 214e6ea248f4d390bfd1c79b12b95123f93642f0, SHA 19be22d478262c6ad7f1dbb9ef4c7a0706a8d58bf2a39236fb02750129e45107. Preflight, backup Build 288, solo GIS restart e smoke HTTP/HTTPS PASS; QA nativa Edge 25/25 PASS. QA operatore ancora PENDING; nessun test clic mappa completo attestato. [Deploy](DEPLOY-RESULT-289.md) · [ABQA](QA-LIVE-289.md).
 
 ## Obiettivo utente
 Quando Waypoint viene aperto e non e stato inserito/modificato alcun punto, cliccare nuovamente Waypoint oppure X deve chiudere senza chiedere Scarta. Se esistono coordinate o modifiche non salvate, deve apparire la conferma; Annulla deve conservare dati, Scarta deve chiudere.
