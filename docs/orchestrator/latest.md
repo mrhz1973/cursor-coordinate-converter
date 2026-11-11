@@ -1,13 +1,13 @@
 # Ultimo checkpoint orchestratore
 
-Stato LIVE: [FRONTIER](../FRONTIER.md). **11 novembre 2026 — Build 287 LIVE; QA OPERATORE DESKTOP PENDING.**
+LIVE STATE: [FRONTIER](../FRONTIER.md). 11 novembre 2026: Build 288 LIVE, blocco GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX3 ancora aperto per QA OPERATORE DESKTOP.
 
-Blocco GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX2: feedback operatore sulla Build 286 (Traccia si illumina con Poligoni/R&B, pulsanti a due colonne troppo grandi), corretto nella 287. Toolbar desktop ora una sola fila con pulsanti da 64×50 px e targhette sotto icone; Traccia visivamente indipendente da Poligoni e R&B. Mobile non modificato.
+Fonte runtime source d4e9821e180f82a33bb506c48b5c1d683a8cb82a, blob 67fb15263fc5a6d2461552f33fd3d6165f66c466, SHA256 ce97e3b72e2e17e383417c777509889cd74cebe144f6751f4fda89829f28209b, 11.116.411 byte. Review ROUTINE 21/21 PASS; deploy GIS-only con backup 287 PASS; HTTP/HTTPS hash identici; Automated Browser QA Edge HTTPS NATIVE 62/62 PASS, POST 0, 462 risorse esterne bloccate. Console/pageerror non misurati separatamente.
 
-Runtime source d69a21a1cb3f09828a51b342c91bec50f2e88380, blob 71e2931bbff30ea81b5fbbc17d071953618af3d1, SHA-256 fdb28dd544a4f138b4e249b6fbc1d2257029e9fecff0fa5fd93fddf27fc559db, 11.115.745 byte. Review routine 22/22 PASS; deploy GIS-only con backup 286 e smoke HTTP/HTTPS PASS; ABQA nativa Edge **60/60 PASS**, 0 POST, 467 accessorie bloccate. Console/pageerror non rilevati separatamente. PASS operatore 287 non ancora acquisito.
+Colonna toolbar VERTICALE destra, 12 comandi uno sotto l'altro, 62x44, labels; scorrimento in finestre basse; Traccia indipendente da Poligoni e R&B. Mobile invariato, sviluppo telefono in pausa. Ramo Escape 284 separato non distribuito.
 
-**NEXT:** breve QA umana desktop: fila unica, etichette leggibili, Traccia inattiva aprendo Poligoni/R&B e attiva soltanto con suo pannello. Dopo conferma PASS esplicita, chiusura H. Telefono in pausa, ramo Escape 284 differito.
+NEXT: QA operatore breve su verticale e comportamento Traccia; attendere QA GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX3 PASS operatore; poi chiusura Regola H. Feedback negativo 287 non normalizzato a PASS.
 
-[Dossier](evidence/2026-11-11-desktop-toolbar-287/REPORT.md) · [Deploy](evidence/2026-11-11-desktop-toolbar-287/DEPLOY-RESULT-287.md) · [QA LIVE](evidence/2026-11-11-desktop-toolbar-287/QA-LIVE-287.md) · [Inbox](inbox/2026-11-11_1144_desktop-toolbar-287-live.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
+[Report](evidence/2026-11-11-desktop-toolbar-288-vertical/REPORT.md) · [Deploy](evidence/2026-11-11-desktop-toolbar-288-vertical/DEPLOY-RESULT-288.md) · [QA](evidence/2026-11-11-desktop-toolbar-288-vertical/QA-LIVE-288.md) · [Inbox](inbox/2026-11-11_1242_desktop-toolbar-288-vertical-live.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
 
-real_task_commit=2d1845811762810256b30831bbf95e97ebf428f2; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
+real_task_commit = 45565eec2ac259431d7722bcf3b8c34abe9b77fa; current_report_container = PENDING_SELF_REFERENCE; final_remote_head_after_report_push = EXTERNAL_ONLY.

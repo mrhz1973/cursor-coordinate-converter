@@ -1,31 +1,31 @@
-# LAST_CURSOR_REPORT — pass GPT, Build 287 LIVE
+# LAST_CURSOR_REPORT — pass GPT, Build 288 LIVE
 
-> Filename storico: GPT tramite TMAR Desktop Commander Win / AsusDesktop. Stato LIVE: [FRONTIER](../FRONTIER.md).
+Nome file storico. GPT via TMAR Desktop Commander Win da AsusDesktop; stato vivo in [FRONTIER](../FRONTIER.md).
 
-## A. Header sintetico
+## A. Header
 
-BLOCK: GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX2 OPEN.
-GATE: QA OPERATORE DESKTOP Build 287; PASS umano non ancora ricevuto.
-NEXT: visibilità barra orizzontale compatta, etichette, Poligoni/R&B non accendono Traccia, Traccia attiva solo con proprio pannello.
-RUNTIME: Build 287 LIVE; source d69a21a1cb3f09828a51b342c91bec50f2e88380; blob 71e2931bbff30ea81b5fbbc17d071953618af3d1; SHA fdb28dd544a4f138b4e249b6fbc1d2257029e9fecff0fa5fd93fddf27fc559db; 11.115.745 byte.
-REVIEW: ROUTINE 22/22 PASS. Deploy GIS-only/backup 286 e smoke HTTPS PASS. ABQA LIVE Edge 60/60 PASS, POST 0 e 467 accessorie esterne bloccate.
-MOBILE: sviluppo sospeso; layout/flyout mobile conservati.
-real_task_commit=2d1845811762810256b30831bbf95e97ebf428f2; current_report_container=PENDING_SELF_REFERENCE; remote final=EXTERNAL_ONLY.
+- BLOCK: GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX3, OPEN.
+- GATE: QA OPERATORE DESKTOP, PASS non ricevuto.
+- NEXT: confermare singola colonna verticale, etichette, dimensioni compatte e stato Traccia separato da Poligoni/R&B.
+- RUNTIME LIVE: Build 288; source d4e9821e180f82a33bb506c48b5c1d683a8cb82a, blob 67fb15263fc5a6d2461552f33fd3d6165f66c466, SHA256 ce97e3b72e2e17e383417c777509889cd74cebe144f6751f4fda89829f28209b; 11.116.411 byte.
+- REVIEW routine: 21/21 PASS. DEPLOY: GIS-only con backup 287 PASS. ABQA: HTTPS nativa Edge 62/62 PASS, POST 0, 462 accessorie bloccate.
+- Telefono: PAUSA; Escape 284: NON LIVE.
+- real_task_commit: 45565eec2ac259431d7722bcf3b8c34abe9b77fa; current_report_container = PENDING_SELF_REFERENCE; remote HEAD finale = EXTERNAL_ONLY.
 
-## B. Riepilogo operativo
+## B. RIEPILOGO COMPLETO
 
-1. L'utente ha segnalato sulla Build 286 che Poligoni e R&B accendono erroneamente Traccia; ha richiesto una sola fila orizzontale di comandi più piccoli, con didascalie. Nessun QA operatore PASS 286 ricevuto.
-2. Correzione in due punti JS dello stato visuale Traccia, media query desktop, e CSS della barra: una fila con pulsanti 64×50, caption. Nessun cambio a runtime mobile, dati GIS, GPS, OPSEC, storage o rete.
-3. Candidate source d69a21a1cb3f09828a51b342c91bec50f2e88380, 22/22 review routine PASS e 48/48 QA candidata origin HTTPS con HTML iniettato PASS, CR 192 preservati, Node JS inline 2/2 PASS.
-4. Deploy GIS-only sul VPS: preflight primo tentativo bloccato per due nomi di file nel manifest del launcher (nessuna modifica), corregge, backup Build 286 /var/backups/goi-gis-runtime/20261111T103743Z-build287, FF e unico restart GIS. HTTP/HTTPS e curl da Asus SHA corretta.
-5. ABQA LIVE reale Edge senza iniezione: primo harness 55/60 per soglia dimensionale errata del test, secondo run corretto 60/60 PASS, POST 0, 467 richieste esterne bloccate; console/pageerror non registrati separatamente. Nessuna QA generale di 38 finestre.
-6. QA operatore 287 rimane PENDING. Prossimo PASS eventualmente innesca Regola H, non va attribuito anticipatamente. Mobile in pausa, ramo Escape 284 separato.
-7. Autosync F3 selettivo latest/inbox/LAST, nessun commit per autocitazione.
+1. Utente ha corretto orientamento desiderato: VERTICALE, non fila orizzontale. Il feedback invalida la QA operatore del layout 287; non attribuire PASS 287.
+2. Candidata 288 ottenuta da codice 287 mantenendo i suoi fix (Traccia non si accende su Poligoni/R&B). CSS mirata per colonna desktop, 12 pulsanti 62x44 con etichette, scroll su finestre basse; mobile resta al precedente layout.
+3. Review routine su source pinnato d4e9821e180f82a33bb506c48b5c1d683a8cb82a, 21/21 PASS; test candidata Edge con HTML iniettato 62/62 PASS, zero POST.
+4. Main GitHub e clone VPS hanno ricevuto 288, backup della 287 in /var/backups/goi-gis-runtime/20261111T114016Z-build288. Restart del solo GIS, SHA HTTP/HTTPS corrette. Nessun intervento infrastrutturale.
+5. QA Edge HTTPS NATIVE sul file realmente servito: 62/62 PASS a 960/1024/1366/1440/1920 desktop e 390 mobile emulato, 0 POST, 462 accessorie bloccate. Non è QA generale delle 38 finestre, né test fisico telefono. Console/pageerror non misurati separatamente.
+6. QA operatore desktop 288 PENDING. NEXT check percettivo rapido e attestazione esplicita, poi chiusura H. Sviluppo mobile sospeso e ramo Escape 284 separato.
+7. Autosync F3: latest, una inbox e LAST; real_task_commit stabile, container PENDING_SELF_REFERENCE per evitare autocitazione.
 
 ## C. Identità
 
-real_task_commit=2d1845811762810256b30831bbf95e97ebf428f2
-current_report_container=PENDING_SELF_REFERENCE
-final_remote_head_after_report_push=EXTERNAL_ONLY
+real_task_commit = 45565eec2ac259431d7722bcf3b8c34abe9b77fa
+current_report_container = PENDING_SELF_REFERENCE
+final_remote_head_after_report_push = EXTERNAL_ONLY
 
-[Dossier](../orchestrator/evidence/2026-11-11-desktop-toolbar-287/REPORT.md).
+[QA LIVE](../orchestrator/evidence/2026-11-11-desktop-toolbar-288-vertical/QA-LIVE-288.md).
