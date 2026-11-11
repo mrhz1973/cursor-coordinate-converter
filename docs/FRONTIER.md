@@ -6,20 +6,26 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | Uniformità e controlli delle finestre GIS |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | `GIS-DFLIGHT-MINIMIZED-ESCAPE-A` — FIX1 desktop, correzione priorità Escape |
-| **STATO BLOCCO** | Build **283 LIVE**, REVIEW GPT-SOSTITUTIVA 18/18 PASS, deploy GIS-only e ABQA HTTPS nativa **17/17 PASS**; blocco aperto in attesa della sola QA operatore desktop. Nessun PASS operatore 283 acquisito. |
-| **GATE CORRENTE** | QA OPERATORE DESKTOP per `GIS-DFLIGHT-MINIMIZED-ESCAPE-A`; nessuna conferma operatore 283 ancora ricevuta. |
+| **BLOCCO ATTIVO** | `GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A` — toolbar destra desktop: tutti i comandi diretti e etichette visibili |
+| **STATO BLOCCO** | `GIS-DFLIGHT-MINIMIZED-ESCAPE-A` **CLOSED / PASS operatore 2026-11-11**. Nuovo lavoro desktop richiesto: etichette sotto ogni comando, Poligoni e Range & Bearing visibili senza flyout, Waypoint/Punto, Misura, Traccia, Livelli/Zoom. Nessuna patch ancora distribuita in questo blocco. |
+| **GATE CORRENTE** | AUDIT UI DESKTOP E CANDIDATA SCOPED; preservare mobile. Controllare layout, visibilita e accesso diretto, poi code/review/QA/deploy per metodo. |
 | **RUNTIME LIVE** | Build 283 · source commit `5795b6711c5690216a2f1862003af29758520101` · blob `c5d8ee1edaeba2513f897d838b7caa24aa4b4eaa` · SHA-256 `dbdc54753722bee425d9c4e6528455ef7b72d946b69e747ae109621de414ea24` · 11.108.965 byte. Deploy 2026-11-11 03:09:05 Europe/Rome; QA HTTPS nativa 17/17 PASS. |
-| **RUNTIME CANDIDATE** | Nessun candidato successivo. Build 283 distribuita; source runtime e checkpoint documentali restano distinti. |
-| **ULTIMO BLOCCO CHIUSO** | `GIS-FAVORITES-MINIMIZED-ESCAPE-A` · PASS operatore 2026-11-11; [chiusura](orchestrator/evidence/2026-11-11-favorites-escape-282-closure/REPORT.md). |
-| **NEXT** | Caso umano desktop breve su Build 283: minimizzare D-Flight, aprire Poligoni, premere Escape (chiude Poligoni, conserva chip D-Flight), ripristinare D-Flight. Attendere `QA GIS-DFLIGHT-MINIMIZED-ESCAPE-A PASS operatore`. Poi backlog desktop; telefono in pausa. |
+| **RUNTIME CANDIDATE** | Nessun nuovo candidato della toolbar. Ramo sperimentale separato 284 Escape `task/gis-escape-minimized-followup-284` invariato, NON DEPLOY. |
+| **ULTIMO BLOCCO CHIUSO** | `GIS-DFLIGHT-MINIMIZED-ESCAPE-A` · PASS operatore 2026-11-11; [chiusura](orchestrator/evidence/2026-11-11-dflight-283-operator-closure/REPORT.md). |
+| **NEXT** | Priorita utente: desktop Windows toolbar destra con pulsanti sempre visibili e targhette testuali (Poligoni, Range & Bearing, Nuovo punto, Waypoint, Misura, Traccia, Livelli, Zoom +/-, Zoom area/livello, GPS); implementazione in ramo separato e QA desktop. Ramo Escape 284 differito. Telefono in pausa. |
 | **SVILUPPO TELEFONO** | **PAUSA fino a nuovo ordine dell'utente**, limitatamente a TMAR GIS Tool, dal 2026-11-10. Proseguire con il backlog desktop; la direttiva non rimuove o disabilita le funzioni mobili esistenti. [Attestazione e scope](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md). |
 | **FOLLOW-UP REVIEW** | 283: REVIEW GPT-SOSTITUTIVA 18/18 PASS; review AI esterna NOT_PERFORMED/backstop. Backstop precedenti 280/281/282 invariati. |
 | **EVIDENCE** | [D-Flight/Escape 283](orchestrator/evidence/2026-11-11-dflight-escape-283/REPORT.md) · [Rilascio finestre 281](orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [ABQA live](orchestrator/evidence/2026-11-09-gis-window-controls-281/QA-WINDOWS-281-POSTDEPLOY.md) · [Chiusura routing 280](orchestrator/evidence/2026-11-09-routing-280-operator-closure/REPORT.md) · [Astro desktop PC lavoro](orchestrator/evidence/2026-11-10-workpc-astro-281/REPORT.md) · [Chiusura finestre 281](orchestrator/evidence/2026-11-10-window-controls-281-closure/REPORT.md) · [Preferiti/Escape 282](orchestrator/evidence/2026-11-10-favorites-escape-282/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; HTTPS `https://ionos-n8n-new.tailc01234.ts.net/gis`. Unico restart GIS; Nginx, gateway ORS, proxy HTTPS, configurazioni/listener/endpoint condivisi preservati. Backup e journal nel rapporto deploy. |
 | **ACCESSO OPERATIVO — sessione al PC del lavoro** | 2026-11-10: RDC originale sul PC DESKTOP-DPIJL64, su scelta esplicita dell'utente. Comandi, Git, HTTPS nativo e SSH dal PC al VPS realmente verificati. La sessione continua tramite RDC sul PC del lavoro; non attesta accesso indipendente dal PC. [Deploy](orchestrator/evidence/2026-11-10-favorites-escape-282/deploy/DEPLOY-RESULT-282.md). La scelta TMAR/ASUS resta [storico del 9 novembre](orchestrator/evidence/2026-11-09-vps-direct-access/TMAR-ROUTE-CORRECTION.md). |
 | **ACCESSO OPERATIVO — AsusDesktop** | 2026-11-11: TMAR Desktop Commander Win 0.3.1 sul PC di casa PASS; SSH autenticato al VPS tramite alias `ionos-n8n-new` su `31.70.139.73:22` PASS; HTTPS GIS HTTP 200, SHA-256 Build 282 corrispondente. Nessuna modifica di servizi o infrastruttura. |
-| **ALTRI WORKSTREAM** | Nessun PASS generale delle 38 finestre. D-Flight minimizzato/Escape corretto nella 283 con QA automatizzata nativa 17/17; QA operatore pendente. Altri workstream e freeze Oggetti GIS invariati. [Audit aggiuntivo Escape](orchestrator/evidence/2026-11-11-escape-followup-284/REPORT.md): tre difetti riprodotti sulla 283; ramo sperimentale 284 separato, non distribuito. |
+| **ALTRI WORKSTREAM** | Build 283 D-Flight/Escape CLOSED / PASS operatore; non attestato PASS generale 38 finestre. Ramo sperimentale Escape 284 rimane separato con tre difetti registrati; differito per nuova priorita desktop toolbar. Freeze Oggetti GIS e sviluppo telefono pausa invariati. |
+
+## Checkpoint 2026-11-11 — QA operatore D-Flight 283 PASS; priorita desktop toolbar
+
+Attestazione esatta ricevuta in chat: `QA GIS-DFLIGHT-MINIMIZED-ESCAPE-A PASS operatore`. Chiusa 283 secondo Regola H, con review GPT sostitutiva gia PASS 18/18, deploy GIS-only e ABQA HTTPS nativa 17/17 PASS. Review AI esterna NOT_PERFORMED/backstop. Chiusura docs-only, runtime 283 invariato. [Rapporto](orchestrator/evidence/2026-11-11-dflight-283-operator-closure/REPORT.md).
+
+Nuova richiesta dell'operatore: su desktop tutti i comandi sulla destra devono essere sempre raggiungibili direttamente, anche Poligoni, R&B, Punto/Waypoint, con etichette sotto icona. Non estendere automaticamente a mobile. Nuovo blocco UI `GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A` prioritario; il candidato Escape 284 preparato su branch separato resta congelato NON DEPLOY. Nessun nuovo runtime ancora pubblicato.
 
 ## Checkpoint 2026-11-11 — audit aggiuntivo Escape, 283 ancora in QA operatore
 
