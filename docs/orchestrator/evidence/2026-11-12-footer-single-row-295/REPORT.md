@@ -1,6 +1,10 @@
 # Build295 — footer desktop single-row + HUD anticollisione
 
-**Data:** 2026-11-12 20:07:23 Europe/Rome. **Stato:** PREDEPLOY. **Incarico:** schermata annotata operatore, delta desktop.
+**Data:** 2026-11-12 20:07:23 Europe/Rome. **Stato storico:** PREDEPLOY. La Build295 è ora LIVE come da evidenze sottostanti. **Incarico:** schermata annotata operatore, delta desktop.
+
+## Stato LIVE verificato
+
+La Build295 è LIVE su VPS, source b213b80fb8c006508e40d6d50e79a0036f3a8cfe, blob 57eb5cedf84982806bdd726c438d4d35acf473eb, SHA 8bc8ce1bde2e448ba3b6f60f042d371520707c21b5f6cea581eacb8135724840, 11.127.935 byte. Review GPT-SOSTITUTIVA 42/42 PASS, deploy GIS-only/backup294 e smoke HTTP/HTTPS PASS. ABQA HTTPS nativa **170/170 PASS**, 0 POST: footer/HUD 86, Waypoint 25, Escape 42, D-Flight 17. QA operatore PENDING. [Deploy](DEPLOY-RESULT-295.md) · [QA LIVE](QA-LIVE-295.md).
 
 ## Richiesta e risultato progettato
 La banda nera inferiore deve occupare una riga: credits+build a partire dal bordo sinistro, valore **Cache sessione** al centro, attribuzione reale **Imagery / © OpenStreetMap** del layer in uso a destra. Il punto 2 cerchiato nello screenshot indica la dicitura Imagery © Google — proxy tailnet; non è un nuovo campo/etichetta statico. La frase superiore Applicazione 100% offline... scompare **solo dal footer GIS desktop**; testo preesistente conservato per schermate non-GIS. PUNTO/CURSORE finiscono 2px sopra la banda; la toolbar resta sopra con un pulsante di gap su desktop capiente. Su viewport piccolo, se la colonna completa non entra, il readout scivola a sinistra della toolbar e questa può arrivare vicino al footer, senza overlap. Mobile con viewport 390x844 e 1024x600 landscape resta identico.
