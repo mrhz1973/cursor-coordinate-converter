@@ -16548,6 +16548,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 298 - Escape Dettaglio zona D-Flight desktop</h4><ul><li>Il dettaglio D-Flight minimizzato non intercetta Escape destinato a un pannello visibile su desktop. Nessuna modifica ai dati aeronautici, OPSEC o comportamento mobile.</li></ul>
             <h4>Build 297 - Escape Guida e Strumenti desktop</h4><ul><li>Guida e Strumenti minimizzati non intercettano Escape destinato a un pannello visibile; modalit? inserimento e comportamento mobile invariati.</li></ul>
             <h4>Build 296 - priorita Escape desktop</h4><ul><li>Converti, Indice cartografico, Oggetti GIS e Pianifica percorso minimizzati cedono Escape ai pannelli visibili su desktop; comportamento mobile preservato.</li></ul>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
@@ -26162,10 +26163,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-MINIMIZED-HELP-TOOLS-ESCAPE-PRIORITY-D";
-const APP_BUILD_DETAIL = "Escape desktop: Guida e Strumenti minimizzati cedono ai pannelli visibili.";
+const APP_BUILD_ID = "GIS-MINIMIZED-DFLIGHT-DETAILS-ESCAPE-PRIORITY-E";
+const APP_BUILD_DETAIL = "Escape desktop: Dettaglio zona D-Flight minimizzato cede priorita ai pannelli visibili.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 297;
+const APP_BUILD_NUM = 298;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -81726,7 +81727,8 @@ function gisInit(){
       return;
     }
     const dfDet = document.getElementById("dflightDetailsPanel");
-    if ((typeof _dflightDetailsOpen !== "undefined" && _dflightDetailsOpen) || (dfDet && dfDet.open)){
+    if (((typeof _dflightDetailsOpen !== "undefined" && _dflightDetailsOpen) || (dfDet && dfDet.open)) &&
+        !(desktopEscapeRoutesToVisiblePanel && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("dflightDetailsPanel"))){
       try { ev.preventDefault(); } catch(_){}
       try {
         if (typeof dflightSelectZone === "function") dflightSelectZone(null);
