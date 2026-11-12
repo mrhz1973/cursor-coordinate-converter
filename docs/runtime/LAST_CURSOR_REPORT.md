@@ -1,4 +1,4 @@
-# LAST_CURSOR_REPORT ? GPT Build296 LIVE Escape desktop
+# LAST_CURSOR_REPORT - GPT Build296 LIVE Escape desktop
 
 Nome storico del file. Esecutore effettivo di questo pass: GPT via TMAR Desktop Commander Win su AsusDesktop, non Cursor. Fonte LIVE: docs/FRONTIER.md.
 
@@ -16,7 +16,7 @@ real_task_commit=e222efc35b9d0dc988935ffd05464fee12417398; current_report_contai
 ## B. Evidenza completa
 Da 38 dialoghi censiti non si ricava un PASS generale. La baseline295 aveva quattro difetti riproducibili su Converti, Indice IGM/IIM, Oggetti GIS, Pianifica percorso minimizzati: Escape non chiudeva Poligoni visibile. L'intervento cambia soltanto le guardie Escape desktop con il predicato media esistente e sposta la sua dichiarazione sopra Converti. Baseline 4/4 FAIL, candidata 4/4 PASS, regressione visibili4, parity touch4 e minimizzati soli4. Sintassi2/2, CR192, review static18/18 sul full SHA via Git object pinnato, esterna NON eseguita. Source GitHub main e222efc, VPS aggiornato con backup e restart esclusivo GIS. Il primo smoke ha fallito per readiness, retest file/HTTP/HTTPS PASS identico. ABQA HTTPS nativa Edge12/12, non sostituita/iniettata, terzi bloccati, zero POST. Nessun PASS QA umano ricevuto per 296/295/294, nessuna prova iPhone fisico.
 
-## C. Identit? report
+## C. Identità report
 real_task_commit=e222efc35b9d0dc988935ffd05464fee12417398
 current_report_container=PENDING_SELF_REFERENCE
 final_remote_head_after_report_push=EXTERNAL_ONLY
