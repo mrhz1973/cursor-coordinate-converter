@@ -1,21 +1,13 @@
-# Nota di attestazione tardiva — 287 (senza cambio del LIVE)
-
-La chat ha ricevuto `QA GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX2 PASS operatore` in data 2026-11-11, quando `origin/main` era già la Build 290. Il PASS è documentato **solo per il blocco storico 287**, superato dalla successiva direttiva verticale della 288. **Gate LIVE invariato: `GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A` — QA operatore Build 290 PENDING.** Nessun runtime o deploy in questa registrazione.
-
-[Dossier](evidence/2026-11-11-toolbar-287-delayed-operator-qa/REPORT.md) · [FRONTIER](../FRONTIER.md).
-
----
-
 # Ultimo checkpoint orchestratore
 
-Fonte LIVE: [FRONTIER](../FRONTIER.md). **Build 290 LIVE**, blocco GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A QA OPERATORE DESKTOP PENDING.
+Stato canonico LIVE: [FRONTIER](../FRONTIER.md). **12 novembre 2026: Build 291 LIVE, QA OPERATORE DESKTOP PENDING.**
 
-Runtime source 56d336a3942028836924f68af322d36996095b15, blob f8c469e39e2c647b2bde377e5ac1b6b7e90683cc, SHA256 7d69fc145779f223c570e9596e23b497ab678329d4b495ebc03567301f010e69, 11.120.343 byte. Review routine 22/22 PASS, deploy GIS-only con backup 289 e smoke HTTP/HTTPS PASS. ABQA HTTPS nativa Edge **76/76 PASS** su layout/stati e Waypoint **25/25 PASS**, POST zero; chiamate terze bloccate 500+304 nelle due sessioni. Console/pageerror non rilevati separatamente.
+Block GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX1: dopo la screenshot QA negativa della Build 290, corrette collisioni fra barra destra (Nuovo punto/GPS) e HUD PUNTO/CURSORE + © OpenStreetMap. Solo CSS desktop (right gutter 96px rispetto a toolbar right:10px width68, separazione 18px), mobile invariato, gruppi blu/teal preservati.
 
-Toolbar destra: navigazione blu in alto, strumenti teal in basso, Livelli allineato, separazione visuale e GPS sopra footer, scrolling in finestre basse. Mobile invariato per il redesign, sviluppo telefono sospeso. FIX3 toolbar 288 QA umana autonomamente non attestata, ramo Escape 284 distinto.
+Source a32bf2b5eede5ffcfbc0307eda8b4a0171edb6e9, blob 76211816541dbf54651171f7febe4f5150ff4ae3, SHA256 35d5dc79bc6e48e8d8d0558743411311e7fcfeb66db56218c5d07d908b3c46e5, 11.120.857 byte. Review routine 16/16 PASS; deploy GIS-only con backup 290 e smoke HTTP/HTTPS PASS; QA automatica LIVE Edge 14/14 anti-overlap + 76/76 dual-groups + 25/25 Waypoint = **115/115 PASS**, 0 POST. Console/pageerrors non rilevati separatamente.
 
-**NEXT:** QA estetica umana della Build 290, verificare gruppi/colori/allineamento/leggibilità e funzionamento. Solo dopo PASS esplicito: chiusura Regola H.
+**NEXT:** breve QA operatore sul problema screenshot: PUNTO/CURSORE e attribuzione sempre leggibili, nessun pulsante che li copre anche scorrendo fino a GPS. Solo dopo esatta conferma QA GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX1 PASS operatore -> chiusura H. Mobile in pausa, ramo Escape 284 non distribuito.
 
-[Report](evidence/2026-11-11-toolbar-dual-groups-290/REPORT.md) · [Deploy](evidence/2026-11-11-toolbar-dual-groups-290/DEPLOY-RESULT-290.md) · [QA](evidence/2026-11-11-toolbar-dual-groups-290/QA-LIVE-290.md) · [Inbox](inbox/2026-11-11_1533_toolbar-dual-groups-290-live.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
+[Dossier](evidence/2026-11-12-desktop-toolbar-291-hud-safe/REPORT.md) · [Deploy](evidence/2026-11-12-desktop-toolbar-291-hud-safe/DEPLOY-RESULT-291.md) · [QA nativa](evidence/2026-11-12-desktop-toolbar-291-hud-safe/QA-LIVE-291.md) · [Inbox](inbox/2026-11-12_1015_desktop-toolbar-291-hud-safe-live.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
 
-real_task_commit = ae915be0ecccc0b6b73cfe5402da43dd30502b0c; current_report_container = PENDING_SELF_REFERENCE; final_remote_head_after_report_push = EXTERNAL_ONLY.
+real_task_commit=7675cdf5f5c9746ddf3bbd41d531087cb5f76b45; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.

@@ -1,36 +1,27 @@
-# LAST_CURSOR_REPORT — Build 290 LIVE, pass GPT
+# LAST_CURSOR_REPORT — GPT, Build 291 HUD desktop anti-overlap
 
-> Filename storico. Esecuzione GPT tramite TMAR Desktop Commander Win su AsusDesktop; stato canonico [FRONTIER](../FRONTIER.md).
+Nome storico. Esecutore GPT via TMAR Desktop Commander Win su AsusDesktop; Cursor non invocato. Fonte LIVE [FRONTIER](../FRONTIER.md).
 
 ## A. Header
+BLOCK: GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX1 aperto; GATE: QA OPERATORE DESKTOP 291 PENDING.
+NEXT: verifica visiva che PUNTO/CURSORE e © OpenStreetMap non siano coperti dai tasti, incluso GPS raggiunto scorrendo la colonna; eventuale attestazione esatta QA GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX1 PASS operatore.
+RUNTIME: Build 291 LIVE, source a32bf2b5eede5ffcfbc0307eda8b4a0171edb6e9, blob 76211816541dbf54651171f7febe4f5150ff4ae3, SHA 35d5dc79bc6e48e8d8d0558743411311e7fcfeb66db56218c5d07d908b3c46e5, 11.120.857 byte.
+REVIEW: routine CSS desktop 16/16 PASS.
+DEPLOY: GIS-only, backup 290, smoke HTTP/HTTPS PASS.
+ABQA LIVE: Edge HTTPS nativa 115/115 PASS (14 anti-overlap, 76 dual-groups, 25 Waypoint), 0 POST.
+Mobile: sviluppo sospeso, layout e codice non modificati.
+real_task_commit=7675cdf5f5c9746ddf3bbd41d531087cb5f76b45; current_report_container=PENDING_SELF_REFERENCE; final remote=EXTERNAL_ONLY.
 
-- BLOCK GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A OPEN.
-- GATE QA OPERATORE DESKTOP Build290 PENDING.
-- NEXT verificare con operatore colori blu/teal, due gruppi ancorati alto/basso, Livelli allineato, nessun bottone coperto dal footer.
-- RUNTIME Build290 LIVE; source 56d336a3942028836924f68af322d36996095b15; blob f8c469e39e2c647b2bde377e5ac1b6b7e90683cc; SHA256 7d69fc145779f223c570e9596e23b497ab678329d4b495ebc03567301f010e69; 11.120.343 byte.
-- REVIEW routine 22/22 PASS; deploy GIS-only e backup289 PASS; ABQA Edge HTTPS nativa 76/76 PASS; Waypoint 25/25 PASS.
-- TELEFONO: PAUSA; FIX3 toolbar288 QA non conclusa; Escape284 NON LIVE.
-- real_task_commit ae915be0ecccc0b6b73cfe5402da43dd30502b0c; current_report_container PENDING_SELF_REFERENCE; remote head finale EXTERNAL_ONLY.
-
-## B. Evidenza e limiti
-
-1. User ha attestato QA PASS Waypoint 289; closure completata e pubblicata. Build290 CSS desktop introdotta nello stesso ciclo AUTO-VIA del NEXT grafico già richiesto.
-2. Nella candidata 290 il primo layout fissava il bottom oltre il footer, individuato da QA/screenshot; correzione a bottom 76px verificata da QA e screenshot ripetuto. Livelli x identico ai tasti Zoom; due gruppi distinguibili tramite bordo blue nav e teal tools.
-3. Source 56d336a3942028836924f68af322d36996095b15, review 22/22 PASS, QA candidata 76/76 + Waypoint 25/25 PASS; deploy GIS-only fast-forward con backup289. SHA HTTP/HTTPS e servizio GIS active.
-4. QA su documento HTTPS realmente servito 76/76 + Waypoint 25/25 PASS, 0 POST, terzi bloccati. Console/pageerror e tile provider reali non valutati separatamente. Nessun PASS umano grafico attribuito.
-5. Prossima azione QA grafica operatore su 290. Mobile sospeso; altre lavorazioni non correlate e ramo Escape284 non modificati.
-6. Autosync F3 selettivo latest, unica inbox e LAST; real_task_commit stabile, container PENDING_SELF_REFERENCE per evitare autocitazione.
+## B. Report e limiti
+Build 290 LIVE era risultata 101/101 PASS automatici ma screenshot utente ha dimostrato la sovrapposizione al HUD della mappa. Diagnosi reale a 5 desktop viewport e toolbar scroll: PUNTO/CURSORE e OpenStreetMap erano anchor-right sotto i pulsanti.
+Fix Build 291: applicate due regole CSS scoped su desktop con un gutter 96px a destra, 18px di separazione effettiva. Nessuna modifica a JS applicativo, calcoli GIS, waypoint, OPSEC, GPS, rete o mobile. Review del blob/code source 16/16, Node 2/2 e 192 CR preservati.
+QA candidata 14/14 collisioni e 76/76 layout e 25/25 Waypoint; poi FF main, backup e restart soltanto GIS, 115/115 ABQA HTTPS nativa su asset realmente servito; nessun POST.
+Nessun PASS operatore 291 attribuito e nessun PASS generale delle 38 finestre. Console/pageerror generali non raccolti separatamente; tile provider esterni bloccati.
+Autosync F3 latest, inbox e LAST; nessun commit autoreferenziale.
 
 ## C. Identità
+real_task_commit=7675cdf5f5c9746ddf3bbd41d531087cb5f76b45
+current_report_container=PENDING_SELF_REFERENCE
+final_remote_head_after_report_push=EXTERNAL_ONLY
 
-real_task_commit = ae915be0ecccc0b6b73cfe5402da43dd30502b0c
-current_report_container = PENDING_SELF_REFERENCE
-final_remote_head_after_report_push = EXTERNAL_ONLY
-
-[Dossier](../orchestrator/evidence/2026-11-11-toolbar-dual-groups-290/REPORT.md).
-
-## Appendice 2026-11-11 — attestazione tardiva 287
-
-Ricevuta in chat `QA GIS-DESKTOP-RIGHT-TOOLBAR-LABELS-A-FIX2 PASS operatore`, riferita esclusivamente alla Build 287, già superata dalla direttiva successiva di toolbar verticale e dalla 290 LIVE. Il PASS storico non convalida la 290 e non modifica il suo gate QA OPERATORE PENDING. Nessun runtime o servizio modificato. Dossier: [attestazione tardiva](../orchestrator/evidence/2026-11-11-toolbar-287-delayed-operator-qa/REPORT.md).
-
-real_task_commit = `235e470c85bc04477be0aef2caa13d5abf5890f6`; current_report_container = PENDING_SELF_REFERENCE; final remote HEAD = EXTERNAL_ONLY.
+[Dossier](../orchestrator/evidence/2026-11-12-desktop-toolbar-291-hud-safe/REPORT.md).
