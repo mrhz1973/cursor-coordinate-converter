@@ -1,26 +1,25 @@
-# LAST_CURSOR_REPORT — GPT, Build294 LIVE Escape panel priority
+# LAST_CURSOR_REPORT — GPT, Build295 LIVE footer/HUD
 
-Nome file storico. Esecuzione GPT via TMAR Desktop Commander Win/SSH VPS, prova candidata WorkPC originale. Stato LIVE [FRONTIER](../FRONTIER.md).
+Nome file storico. GPT tramite TMAR Desktop Commander Win su AsusDesktop, non Cursor. Fonte unica LIVE [FRONTIER](../FRONTIER.md).
 
 ## A. Header
-BLOCK GIS-MINIMIZED-WINDOW-ESCAPE-PRIORITY-B — OPEN.
-GATE QA OPERATORE DESKTOP 294 PENDING.
-NEXT minimizza Astro, apri Poligoni, Escape chiude Poligoni lasciando Astro minimizzato, ripristino.
-RUNTIME Build294 LIVE, source dd4bb2a2180c59b32c2259c7016f771a7bda0b16, blob c6aec7daa7330cd501883585d52d5e021a3dee33, SHA 2556773e442a2822461067df118713375388e71825efc46195ffd12936887743, 11.121.515 byte.
-REVIEW GPT-SOSTITUTIVA 31/31 PASS; reviewer esterno NOT_PERFORMED, post-hoc backstop.
-DEPLOY GIS-only PASS, backup293, smoke HTTP/HTTPS PASS, un solo servizio riavviato.
-ABQA nativa AsusDesktop 42/42 Escape +17/17 D-Flight =59/59 PASS, POST 0.
-WorkPC candidata 36/36 PASS; QA LIVE WorkPC NON_PERFORMED per timeout connettore.
-Mobile in pausa, comportamento Escape mobile preservato.
-real_task_commit=1dff8d18551aea85133d0802a2582301c55bd967; current_report_container=PENDING_SELF_REFERENCE; final remote=EXTERNAL_ONLY.
+BLOCK: GIS-DESKTOP-FOOTER-HUD-REFLOW-A, OPEN.
+GATE: QA OPERATORE DESKTOP 295 PENDING.
+NEXT: verifica footer riga unica, credits left, session cache center, provider right, readout PUNTO/CURSORE al bordo footer e lateral shift in bassa risoluzione, senza sovrapposizioni.
+RUNTIME: Build295 LIVE, source b213b80fb8c006508e40d6d50e79a0036f3a8cfe, blob 57eb5cedf84982806bdd726c438d4d35acf473eb, SHA256 8bc8ce1bde2e448ba3b6f60f042d371520707c21b5f6cea581eacb8135724840, 11.127.935 byte.
+REVIEW: GPT-SOSTITUTIVA 42/42 PASS, reviewer esterno NOT_PERFORMED/post-hoc backstop.
+DEPLOY: GIS-only PASS, backup294, SHA HTTP/HTTPS e workspace pulito.
+ABQA HTTPS nativa: 86/86 footer/HUD +25/25 Waypoint +42/42 Escape +17/17 D-Flight =170/170 PASS, 0 POST.
+MOBILE: layout non modificato, sviluppo in PAUSA.
+NOTE: Escape294 precedente ancora senza QA operatore, non chiuso automaticamente.
+real_task_commit=dc5155ac86bc10dcc6b925a5fc2c47a85f86a4c9; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
 
 ## B. Evidenza
-La Build293 LIVE sul PC lavoro aveva 3 FAIL riprodotti per Astro/Range/Misura minimizzati e Poligoni aperto. Patch294 modifica solo tre guardie Escape e metadata, riutilizzando predicato desktop dal293. Candidate 36/36 e review31/31; FF main e backup293, riavvio GIS-only, QA HTTPS LIVE da AsusDesktop 59/59. Nessun QA operatore ancora attestato. Nessuna QA generale di tutti i dialoghi o provider, nessuna review esterna o prova telefono reale dichiarata.
-Autosync F3 latest/inbox/LAST, nessun commit autoreferenziale.
+Screenshot utente richiede banda nera una sola riga con tre zone; posizione dinamica PUNTO/CURSORE deve prevenire overlap. Build295 modifica CSS/HTML UI, legge cache sessione preesistente senza nuove scritture, clona attribuzione layer già renderizzata e usa variabili CSS/RAF per shift su desktop bassi. Niente modifica a rete/storage/OPSEC/GPS o mobile layout. Candidate QA86+Waypoint25, review42; deploy GIS-only con backup e single restart, QA nativa live totale170/170. Prima regressione Escape non completata per timeout runner, ripetuta correttamente senza cambi runtime. Console/pageerror generale non misurati, provider esterni bloccati, nessun PASS operatore inventato.
 
 ## C. Identità
-real_task_commit=1dff8d18551aea85133d0802a2582301c55bd967
+real_task_commit=dc5155ac86bc10dcc6b925a5fc2c47a85f86a4c9
 current_report_container=PENDING_SELF_REFERENCE
 final_remote_head_after_report_push=EXTERNAL_ONLY
 
-[Report](../orchestrator/evidence/2026-11-12-desktop-escape-294/REPORT.md).
+[Dossier](../orchestrator/evidence/2026-11-12-footer-single-row-295/REPORT.md).
