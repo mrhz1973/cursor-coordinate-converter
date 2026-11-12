@@ -1,14 +1,15 @@
-# LAST_CURSOR_REPORT - GPT docs-only closure Build297
+# LAST_CURSOR_REPORT - GPT Build298 LIVE D-Flight details Escape
 
-Historical filename: executed by GPT through Desktop Commander (not Cursor). Authoritative LIVE STATE: docs/FRONTIER.md.
+Historical filename: executed by GPT via TMAR Desktop Commander Win on AsusDesktop, not Cursor. LIVE STATE in docs/FRONTIER.md.
 
-BLOCK: GIS-MINIMIZED-HELP-TOOLS-ESCAPE-PRIORITY-D CLOSED / QA PASS operatore 2026-11-12.
-GATE: Desktop remaining-dialog read-only audit; no current runtime candidate.
-NEXT: investigate remaining dialog Escape/minimize/restore using native browser checks; avoid unverified global PASS.
-RUNTIME: Build297 LIVE unchanged, source 1adf52d26efaaf62da491e3a445f37ce716a8351, Git blob cd158698c6de3a66f27bafb22be0da4443ab861b, SHA256 e9be9dc2c694a930cb607d3bd71a56cdff4f8dd6a78b4d4e86d2ab15800b1a96.
-REVIEW: GPT-SOSTITUTIVA 18/18 PASS; external NOT_PERFORMED/post-hoc backstop.
-DEPLOY: prior GIS-only PASS with backup296 and HTTP/HTTPS hashes; no new deploy or restart from this closure.
-ABQA: prior 12/12 PASS.
-HUMAN: exact reply "PASS vai avanti", normalized for Build297 only. Build294/295 QA human pending.
-REAL_TASK_COMMIT=PENDING_SELF_REFERENCE; CURRENT_REPORT_CONTAINER=PENDING_SELF_REFERENCE; FINAL_REMOTE_HEAD_AFTER_REPORT_PUSH=EXTERNAL_ONLY.
-[Receipt](../orchestrator/evidence/2026-11-12-desktop-escape-297/OPERATOR-CLOSURE-297.md).
+BLOCK: GIS-MINIMIZED-DFLIGHT-DETAILS-ESCAPE-PRIORITY-E OPEN, QA operatore PENDING.
+GATE: QA OPERATORE DESKTOP Build298; use actual available D-Flight zone detail if possible. The automated browser used only synthetic fixture.
+NEXT: minimize real D-Flight details, open Poligoni, Escape closes Poligoni while details stay minimized/restorable. Do not use mobile, and do not force external network access. Preserve independent pending QA 294 and 295.
+RUNTIME: Build298 LIVE, source 651c872b914025d6f0e84b19e51313b92599342b, blob 2390e70f133e534b76e70e71e3fa30f1946ed94a, SHA256 deffea948b029fdc030bdf0ccf724e7ce6016ec539c746c1eb74e111ff353fca, 11.129.915 byte / CR192.
+REVIEW: GPT-SOSTITUTIVA static 18/18 PASS, external NOT_PERFORMED/post-hoc backstop.
+DEPLOY: GIS-only PASS, backup Build297, single restart, HTTP/HTTPS checksum match.
+ABQA HTTPS native: 10/10 scoped PASS, 0 POST/0 uncaught JS errors. D-Flight data provider real network NOT tested.
+MOBILE: development paused, parity 390x844 unchanged.
+PREVIOUS: Build297 CLOSED/PASS operatore; Build294/295 human QA still PENDING.
+real_task_commit=651c872b914025d6f0e84b19e51313b92599342b; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
+[Dossier](../orchestrator/evidence/2026-11-12-desktop-escape-298/REPORT.md).
