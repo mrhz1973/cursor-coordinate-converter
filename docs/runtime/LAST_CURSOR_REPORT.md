@@ -1,27 +1,31 @@
-# LAST_CURSOR_REPORT — GPT, Build 291 HUD desktop anti-overlap
+# LAST_CURSOR_REPORT — GPT, TMAR GIS Tool Build 292 LIVE
 
-Nome storico. Esecutore GPT via TMAR Desktop Commander Win su AsusDesktop; Cursor non invocato. Fonte LIVE [FRONTIER](../FRONTIER.md).
+Nome storico. Esecuzione GPT via TMAR Desktop Commander Win su AsusDesktop; Cursor non invocato. Stato LIVE [FRONTIER](../FRONTIER.md).
 
-## A. Header
-BLOCK: GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX1 aperto; GATE: QA OPERATORE DESKTOP 291 PENDING.
-NEXT: verifica visiva che PUNTO/CURSORE e © OpenStreetMap non siano coperti dai tasti, incluso GPS raggiunto scorrendo la colonna; eventuale attestazione esatta QA GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX1 PASS operatore.
-RUNTIME: Build 291 LIVE, source a32bf2b5eede5ffcfbc0307eda8b4a0171edb6e9, blob 76211816541dbf54651171f7febe4f5150ff4ae3, SHA 35d5dc79bc6e48e8d8d0558743411311e7fcfeb66db56218c5d07d908b3c46e5, 11.120.857 byte.
-REVIEW: routine CSS desktop 16/16 PASS.
-DEPLOY: GIS-only, backup 290, smoke HTTP/HTTPS PASS.
-ABQA LIVE: Edge HTTPS nativa 115/115 PASS (14 anti-overlap, 76 dual-groups, 25 Waypoint), 0 POST.
-Mobile: sviluppo sospeso, layout e codice non modificati.
-real_task_commit=7675cdf5f5c9746ddf3bbd41d531087cb5f76b45; current_report_container=PENDING_SELF_REFERENCE; final remote=EXTERNAL_ONLY.
+## A. Header sintetico
 
-## B. Report e limiti
-Build 290 LIVE era risultata 101/101 PASS automatici ma screenshot utente ha dimostrato la sovrapposizione al HUD della mappa. Diagnosi reale a 5 desktop viewport e toolbar scroll: PUNTO/CURSORE e OpenStreetMap erano anchor-right sotto i pulsanti.
-Fix Build 291: applicate due regole CSS scoped su desktop con un gutter 96px a destra, 18px di separazione effettiva. Nessuna modifica a JS applicativo, calcoli GIS, waypoint, OPSEC, GPS, rete o mobile. Review del blob/code source 16/16, Node 2/2 e 192 CR preservati.
-QA candidata 14/14 collisioni e 76/76 layout e 25/25 Waypoint; poi FF main, backup e restart soltanto GIS, 115/115 ABQA HTTPS nativa su asset realmente servito; nessun POST.
-Nessun PASS operatore 291 attribuito e nessun PASS generale delle 38 finestre. Console/pageerror generali non raccolti separatamente; tile provider esterni bloccati.
-Autosync F3 latest, inbox e LAST; nessun commit autoreferenziale.
+BLOCK: GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX2 OPEN.
+GATE: QA OPERATORE DESKTOP 292 PENDING; nessun PASS umano acquisito.
+NEXT: HUD PUNTO/CURSORE e OpenStreetMap bottom-right, spazio di un pulsante fra GPS e PUNTO, nuovo nome TMAR GIS Tool.
+RUNTIME: Build 292 LIVE; source b8a3a6c18e29ba382df0c6e6b3c1a4ea3f9f22c9; blob fc432b1ca383f6abe168286084b7961e96c6908f; SHA a71206104ac0944edac4da5ffecece4321cddea53c9fb016160f2866e2af8917; 11.120.400 byte.
+REVIEW: ROUTINE CSS e branding 23/23 PASS.
+DEPLOY: GIS-only PASS, backup 291, smoke HTTP/HTTPS PASS.
+QA LIVE: Edge HTTPS 16/16 geometria, 9/9 brand, 76/76 gruppi e 25/25 Waypoint PASS, 0 POST.
+BRANDING SELFTEST: 17/18, unico controllo storico stale Build 234.
+TELEFONO: sviluppo sospeso, layout invariato; nome pubblico unico aggiornato.
+real_task_commit=62c6a89c8c69704f196739da346e1a8a42c13dbd; current_report_container=PENDING_SELF_REFERENCE; final remote=EXTERNAL_ONLY.
+
+## B. Riepilogo
+
+Feedback utente dopo Build 291: il precedente spostamento delle barre PUNTO/CURSORE/OSM a sinistra non era accettabile. Richiesto ripristinare HUD inferiore destro e alzare i tasti sulla destra con un pulsante di vuoto tra GPS/PUNTO; contemporaneamente rinominare app TMAR GIS Tool.
+Patch CSS desktop sola: rimosso right-gutter 96px sugli HUD e impostato bottom235px per toolbar; invariati colori blu/teal, comportamento di scroll, logica GPS e funzioni. Branding aggiornato in etichette UI, metadati ed export senza rinominare file, repository, storage, commenti di storia.
+Candidate su GitHub source b8a3a6c18e29ba382df0c6e6b3c1a4ea3f9f22c9, review 23/23; QA candidata geometria16, brand9, gruppi76, Waypoint25 PASS. Preflight, backup 291, FF main, restart GIS-only e hash HTTP/HTTPS, poi ABQA sulla pagina LIVE con gli stessi PASS. QA umana ancora pendente. Console/errori browser non raccolti separatamente, provider esterni bloccati, nessuna prova telefono fisico.
+Autosync F3 latest, inbox, LAST; real_task_commit stabile, autosync non autoreferenziale.
 
 ## C. Identità
-real_task_commit=7675cdf5f5c9746ddf3bbd41d531087cb5f76b45
+
+real_task_commit=62c6a89c8c69704f196739da346e1a8a42c13dbd
 current_report_container=PENDING_SELF_REFERENCE
 final_remote_head_after_report_push=EXTERNAL_ONLY
 
-[Dossier](../orchestrator/evidence/2026-11-12-desktop-toolbar-291-hud-safe/REPORT.md).
+[Dossier](../orchestrator/evidence/2026-11-12-toolbar-bottom-right-292/REPORT.md).
