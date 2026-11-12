@@ -1,6 +1,10 @@
 # Escape priorità pannello visibile — GIS desktop Build 293
 
-Registrazione 2026-11-12 11:57:32 Europe/Rome. Stato: PREDEPLOY, review sostitutiva completata.
+Registrazione 2026-11-12 11:57:32 Europe/Rome. Stato storico: PREDEPLOY, review sostitutiva completata; aggiornata con evidenza LIVE seguente.
+
+## Stato corrente dopo deploy
+
+Build 293 LIVE sul VPS; review GPT-SOSTITUTIVA 32/32 PASS, reviewer esterno NOT_PERFORMED/post-hoc backstop; deploy GIS-only con backup 292 e smoke HTTP/HTTPS PASS, ABQA HTTPS nativa **38/38 PASS**, 0 POST. Gate QA operatore PENDING. [Deploy](DEPLOY-RESULT-293.md) · [QA LIVE](QA-LIVE-293.md).
 
 ## Storia e baseline attuale
 Il ramo sperimentale 284 (code commit 274e59c0e972189f937af78ad2c6080150ed8247) derivava dalla Build 283, non è mai stato distribuito ed è incompatibile come monolite con la Build 292 LIVE. Audit ex novo sul runtime 292 native HTTPS, Edge Windows: 21 prove, 18 PASS e tre FAIL indipendenti. Con Mappe Offline, Cerca o Cronologia minimizzata e Poligoni visibile, Escape non chiude Poligoni. Controllo Poligoni da solo PASS. Nessun POST, provider esterni bloccati.
