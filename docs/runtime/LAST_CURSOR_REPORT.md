@@ -1,25 +1,24 @@
-# LAST_CURSOR_REPORT — GPT, Build295 LIVE footer/HUD
+# LAST_CURSOR_REPORT ? GPT Build296 LIVE Escape desktop
 
-Nome file storico. GPT tramite TMAR Desktop Commander Win su AsusDesktop, non Cursor. Fonte unica LIVE [FRONTIER](../FRONTIER.md).
+Nome storico del file. Esecutore effettivo di questo pass: GPT via TMAR Desktop Commander Win su AsusDesktop, non Cursor. Fonte LIVE: docs/FRONTIER.md.
 
 ## A. Header
-BLOCK: GIS-DESKTOP-FOOTER-HUD-REFLOW-A, OPEN.
-GATE: QA OPERATORE DESKTOP 295 PENDING.
-NEXT: verifica footer riga unica, credits left, session cache center, provider right, readout PUNTO/CURSORE al bordo footer e lateral shift in bassa risoluzione, senza sovrapposizioni.
-RUNTIME: Build295 LIVE, source b213b80fb8c006508e40d6d50e79a0036f3a8cfe, blob 57eb5cedf84982806bdd726c438d4d35acf473eb, SHA256 8bc8ce1bde2e448ba3b6f60f042d371520707c21b5f6cea581eacb8135724840, 11.127.935 byte.
-REVIEW: GPT-SOSTITUTIVA 42/42 PASS, reviewer esterno NOT_PERFORMED/post-hoc backstop.
-DEPLOY: GIS-only PASS, backup294, SHA HTTP/HTTPS e workspace pulito.
-ABQA HTTPS nativa: 86/86 footer/HUD +25/25 Waypoint +42/42 Escape +17/17 D-Flight =170/170 PASS, 0 POST.
-MOBILE: layout non modificato, sviluppo in PAUSA.
-NOTE: Escape294 precedente ancora senza QA operatore, non chiuso automaticamente.
-real_task_commit=dc5155ac86bc10dcc6b925a5fc2c47a85f86a4c9; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
+BLOCK: GIS-MINIMIZED-WINDOW-ESCAPE-PRIORITY-C, OPEN (QA operatore PENDING).
+GATE: QA OPERATORE DESKTOP Build296 PENDING.
+NEXT: verificare Escape con uno dei quattro pannelli minimizzati e Poligoni aperto, assicurandosi che Poligoni si chiuda mentre il minimizzato resta ripristinabile. Le QA precedenti 295 footer e 294 Escape rimangono aperte.
+RUNTIME: Build296 LIVE; code source e222efc35b9d0dc988935ffd05464fee12417398, Git blob aebedfd05656166ec403c7ad85699061abde46ae, SHA256 380ee97a3cb82feba3592016011e7510b63df7aab4ec82bc786d842d3484e2ff, 11.128.759 byte.
+REVIEW: GPT-SOSTITUTIVA statica 18/18 PASS; reviewer esterno NOT_PERFORMED / post-hoc backstop.
+DEPLOY: GIS-only a VPS da main e222efc; backup Build295, prima verifica di rete refused a listener non pronto, retest HTTP/HTTPS SHA esatto PASS senza doppio restart.
+ABQA HTTPS nativa: 4/4 target +4/4 visibili +4/4 parity touch = 12/12 scoped PASS, 0 POST, 0 eccezioni JS.
+MOBILE: sviluppo in PAUSA; comportamento touch comparato con Build295, invariato.
+real_task_commit=e222efc35b9d0dc988935ffd05464fee12417398; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
 
-## B. Evidenza
-Screenshot utente richiede banda nera una sola riga con tre zone; posizione dinamica PUNTO/CURSORE deve prevenire overlap. Build295 modifica CSS/HTML UI, legge cache sessione preesistente senza nuove scritture, clona attribuzione layer già renderizzata e usa variabili CSS/RAF per shift su desktop bassi. Niente modifica a rete/storage/OPSEC/GPS o mobile layout. Candidate QA86+Waypoint25, review42; deploy GIS-only con backup e single restart, QA nativa live totale170/170. Prima regressione Escape non completata per timeout runner, ripetuta correttamente senza cambi runtime. Console/pageerror generale non misurati, provider esterni bloccati, nessun PASS operatore inventato.
+## B. Evidenza completa
+Da 38 dialoghi censiti non si ricava un PASS generale. La baseline295 aveva quattro difetti riproducibili su Converti, Indice IGM/IIM, Oggetti GIS, Pianifica percorso minimizzati: Escape non chiudeva Poligoni visibile. L'intervento cambia soltanto le guardie Escape desktop con il predicato media esistente e sposta la sua dichiarazione sopra Converti. Baseline 4/4 FAIL, candidata 4/4 PASS, regressione visibili4, parity touch4 e minimizzati soli4. Sintassi2/2, CR192, review static18/18 sul full SHA via Git object pinnato, esterna NON eseguita. Source GitHub main e222efc, VPS aggiornato con backup e restart esclusivo GIS. Il primo smoke ha fallito per readiness, retest file/HTTP/HTTPS PASS identico. ABQA HTTPS nativa Edge12/12, non sostituita/iniettata, terzi bloccati, zero POST. Nessun PASS QA umano ricevuto per 296/295/294, nessuna prova iPhone fisico.
 
-## C. Identità
-real_task_commit=dc5155ac86bc10dcc6b925a5fc2c47a85f86a4c9
+## C. Identit? report
+real_task_commit=e222efc35b9d0dc988935ffd05464fee12417398
 current_report_container=PENDING_SELF_REFERENCE
 final_remote_head_after_report_push=EXTERNAL_ONLY
 
-[Dossier](../orchestrator/evidence/2026-11-12-footer-single-row-295/REPORT.md).
+[Dossier](../orchestrator/evidence/2026-11-12-desktop-escape-296/REPORT.md).
