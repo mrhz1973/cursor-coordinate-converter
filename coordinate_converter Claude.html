@@ -26104,10 +26104,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-MINIMIZED-WINDOW-ESCAPE-PRIORITY-A";
-const APP_BUILD_DETAIL = "Escape al pannello visibile con Offline, Cerca o Cronologia minimizzati su desktop.";
+const APP_BUILD_ID = "GIS-MINIMIZED-WINDOW-ESCAPE-PRIORITY-B";
+const APP_BUILD_DETAIL = "Escape passa ai pannelli visibili anche con Astro, R&B o Misura minimizzati.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 293;
+const APP_BUILD_NUM = 294;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -81558,7 +81558,8 @@ function gisInit(){
       return;
     }
     const apd = document.getElementById("astroPanel");
-    if (state.astroPanelOpen || (apd && apd.open)){
+    if ((state.astroPanelOpen || (apd && apd.open)) &&
+        !(desktopEscapeRoutesToVisiblePanel && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("astroPanel"))){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("astroPanel")) return;
       if (state._astroSkipNextGisPanelClose){
         state._astroSkipNextGisPanelClose = false;
@@ -81570,13 +81571,15 @@ function gisInit(){
       return;
     }
     const rrd = document.getElementById("rangeRingsPanel");
-    if (state.rangeRingsPanelOpen || (rrd && rrd.open)){
+    if ((state.rangeRingsPanelOpen || (rrd && rrd.open)) &&
+        !(desktopEscapeRoutesToVisiblePanel && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("rangeRingsPanel"))){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("rangeRingsPanel")) return;
       if (typeof closeRangeRingsPanel === "function") closeRangeRingsPanel();
       return;
     }
     const mpd = document.getElementById("measurePanel");
-    if (state.measurePanelOpen || (mpd && mpd.open)){
+    if ((state.measurePanelOpen || (mpd && mpd.open)) &&
+        !(desktopEscapeRoutesToVisiblePanel && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("measurePanel"))){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("measurePanel")) return;
       if (typeof closeMeasureFloatingPanelGis === "function") closeMeasureFloatingPanelGis();
       return;
