@@ -16548,6 +16548,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 297 - Escape Guida e Strumenti desktop</h4><ul><li>Guida e Strumenti minimizzati non intercettano Escape destinato a un pannello visibile; modalit? inserimento e comportamento mobile invariati.</li></ul>
             <h4>Build 296 - priorita Escape desktop</h4><ul><li>Converti, Indice cartografico, Oggetti GIS e Pianifica percorso minimizzati cedono Escape ai pannelli visibili su desktop; comportamento mobile preservato.</li></ul>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
             <h4>Build 281 — finestre e comandi</h4><ul><li>Il titolo di Converti è riconoscibile dalle tecnologie assistive.</li><li>Guida e Converti non si chiudono più insieme con una pressione di Escape.</li><li>I comandi del pannello Astro restano raggiungibili sugli schermi stretti.</li></ul><h4>Build 280 — routing terrestre</h4><ul><li>Controlli sui collegamenti marittimi e sulla distanza degli agganci, anche nel confronto fra provider.</li><li>Scadenza delle richieste ORS nel confronto e gestione distinta degli errori non verificabili.</li><li>Supporto all’origine HTTPS autorizzata; correzione del riferimento del test Roma–Abidjan.</li><li>Le alternative selezionate aggiornano anteprima e salvataggio; il confronto si aggiorna quando cambiano punti o profilo.</li></ul><h4>Build 279 — pannello Converti</h4><ul><li>La finestra Converti si apre interamente sullo schermo.</li></ul><h4>Build 278 — validazione MGRS</h4><ul><li>Corretto il controllo delle fasce e dei quadrati MGRS, preservando i casi validi ai confini.</li></ul><h4>Build 277 — gesti e spazio mobile</h4><ul><li>Zoom con due dita e spostamento con un dito sulla mappa.</li><li>Testata più compatta; scala e coordinate allineate e adattabili.</li></ul><h4>Build 276 — visualizzazione verticale</h4><ul><li>Titolo e controlli superiori allineati; comandi mappa più ordinati.</li><li>Scala e coordinate affiancate con un unico controllo di apertura.</li></ul><h4>Build 275 — scala e coordinate mobile</h4><ul><li>Scala più compatta con distanze ricalcolate e possibilità di minimizzarla.</li><li>Coordinate del cursore al centro in basso, con pannello richiudibile.</li><li>Crediti delle mappe più compatti e fascia inferiore nascosta sui telefoni.</li></ul><h4>Build 274 — barra mobile e Layer</h4><ul><li>Corretto l’allineamento della barra in orizzontale.</li><li>Adattata la visualizzazione del pannello Layer sui telefoni.</li><li>Resa scorrevole la colonna dei comandi quando lo spazio in orizzontale è ridotto.</li></ul><h4>Build 273 — stabilità in orizzontale su iPhone</h4><ul><li>Eliminate le animazioni di altezza della barra e della mappa durante i cambi della viewport, per evitare movimenti mentre Safari si assesta dopo la rotazione.</li></ul><h4>Build 272 — layout mobile e menu Layer</h4><ul><li>Il menu Layer si apre senza ridisegnare la mappa, riducendo lampeggi e ricaricamenti sui telefoni.</li><li>In orizzontale icone di navigazione, titolo e comandi sono allineati su un'unica riga; Strumenti ed Esporta si trovano a destra, accanto a Online e Impostazioni. Il footer scompare per lasciare più spazio alla mappa.</li></ul><h4>Build 271 — apertura Layer sui browser iOS</h4><ul><li>Il menu Layer non si chiude più sullo stesso tocco che lo apre, mantenendo la chiusura al tocco esterno.</li></ul><h4>Build 270 — menu Layer per schermi mobili</h4><ul><li>Durante rotazione e variazioni dell’area visibile il menu Layer resta aperto e viene riposizionato, così continua a scorrere e accetta la selezione di mappe e overlay.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
@@ -26161,10 +26162,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-MINIMIZED-WINDOW-ESCAPE-PRIORITY-C";
-const APP_BUILD_DETAIL = "Escape desktop: i pannelli minimizzati Converti, Indice IGM, Oggetti GIS e Routing cedono priorita ai pannelli visibili.";
+const APP_BUILD_ID = "GIS-MINIMIZED-HELP-TOOLS-ESCAPE-PRIORITY-D";
+const APP_BUILD_DETAIL = "Escape desktop: Guida e Strumenti minimizzati cedono ai pannelli visibili.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 296;
+const APP_BUILD_NUM = 297;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -52286,9 +52287,15 @@ function bindHotkeys(){
         ev.preventDefault();
         return;
       }
-      // Close the tools drawer if open
+      // Desktop GIS: a minimized drawer must yield Escape to visible dialogs.
+      const escapeDesktopMinimizedYield = document.body.classList.contains("gis-mode") &&
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(min-width:960px) and (hover:hover) and (pointer:fine)").matches;
       const td = document.getElementById("toolsDrawer");
-      if (td && td.classList.contains("open")){ closeToolsDrawer(); ev.preventDefault(); return; }
+      if (td && td.classList.contains("open") &&
+          !(escapeDesktopMinimizedYield && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("toolsDrawer"))){
+        closeToolsDrawer(); ev.preventDefault(); return;
+      }
       // Cancel an in-progress bbox selection first — it has no visible
       // modal but does have a sticky banner on the map.
       if (state._cartoUi && state._cartoUi.areaPickActive){
@@ -52372,7 +52379,10 @@ function bindHotkeys(){
       const qr = document.getElementById("qrModal");
       if (qr && qr.open){ closeQrModal(); ev.preventDefault(); return; }
       const ov = document.getElementById("helpOverlay");
-      if (ov && ov.open){ closeHelp(); ev.preventDefault(); return; }
+      if (ov && ov.open &&
+          !(escapeDesktopMinimizedYield && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("helpOverlay"))){
+        closeHelp(); ev.preventDefault(); return;
+      }
       if (isTypingInField()){ document.activeElement.blur(); return; }
       /* GIS hub: Esc è gestito dal listener dedicato (drawer/modali/picker).
        * Non chiamare clearForm() qui: resetterebbe lastResult, permalink e
