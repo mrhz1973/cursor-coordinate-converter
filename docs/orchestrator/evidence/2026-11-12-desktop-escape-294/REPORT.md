@@ -1,6 +1,10 @@
 # Escape desktop 294 — Astro, Range & Bearing, Misura minimizzati
 
-Data 2026-11-12 12:51:59 Europe/Rome. Stato PREDEPLOY.
+Data 2026-11-12 12:51:59 Europe/Rome. Stato storico PREDEPLOY; vedi lo stato LIVE seguente.
+
+## Stato dopo deploy
+
+La Build294 è LIVE: review GPT-SOSTITUTIVA 31/31 PASS, esterna NOT_PERFORMED/backstop; deploy GIS-only con backup293 e checksum HTTP/HTTPS PASS. Automated Browser QA nativa da AsusDesktop **59/59 PASS** (42 casi Escape e 17 D-Flight), zero POST. Gate QA OPERATORE DESKTOP PENDING. [Deploy](DEPLOY-RESULT-294.md) · [QA LIVE](QA-LIVE-294.md).
 
 ## Evidenza baseline Build293
 PC lavoro DESKTOP-DPIJL64 Windows, Remote Desktop Commander originale, Edge CDP con profilo isolato, URL HTTPS /gis nativo (Build293). Con Astro, Range & Bearing o Misura aperti e minimizzati e Poligoni visibile, Escape lascia Poligoni aperto. Tre FAIL concreti, 13/16 PASS. Sulle prove i pannelli minimizzati rimangono minimizzati. Nessun POST, provider terzi bloccati.
