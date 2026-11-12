@@ -13152,6 +13152,16 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
   body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-menu-item svg{
     filter:drop-shadow(0 1px 1px rgba(15,23,42,.17));
   }
+  /* Desktop map HUD must never occupy the tools' 68px right strip.
+     Toolbar ends 10px from the viewport edge and spans 68px: gutter 96px
+     leaves >=18px clear space, even when the tools scroll on short windows. */
+  body.gis-mode #gisMapMount .tile-map .tile-readout{
+    right:calc(96px + env(safe-area-inset-right,0px))!important;
+    max-width:min(55%,calc(100% - 112px))!important;
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-attrib{
+    right:calc(96px + env(safe-area-inset-right,0px))!important;
+  }
   /* Leave the existing Layers menu unobstructed when expanded. */
   body.gis-mode #gisMapMount .tile-map .tile-ctrls.is-basemap-menu-open{
     overflow:visible;
@@ -26103,10 +26113,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A";
-const APP_BUILD_DETAIL = "Toolbar desktop: navigazione alta blu, strumenti in basso verde, Livelli allineato.";
+const APP_BUILD_ID = "GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX1";
+const APP_BUILD_DETAIL = "HUD cartografico separato dai controlli destra, nessuna sovrapposizione.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 290;
+const APP_BUILD_NUM = 291;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
