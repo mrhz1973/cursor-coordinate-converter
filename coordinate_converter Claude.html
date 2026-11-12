@@ -26104,10 +26104,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX2";
-const APP_BUILD_DETAIL = "HUD in basso a destra; strumenti sollevati con uno spazio di un pulsante; nome TMAR GIS Tool.";
+const APP_BUILD_ID = "GIS-MINIMIZED-WINDOW-ESCAPE-PRIORITY-A";
+const APP_BUILD_DETAIL = "Escape al pannello visibile con Offline, Cerca o Cronologia minimizzati su desktop.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 292;
+const APP_BUILD_NUM = 293;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -81524,14 +81524,20 @@ function gisInit(){
       closeConvertModal(); return;
     }
     if (state.toolsMenuOpen !== null){ closeToolsModal(); return; }
+    /* Only desktop GIS changes Escape priority; existing phone handling remains unchanged. */
+    const desktopEscapeRoutesToVisiblePanel = document.body.classList.contains("gis-mode")
+      && typeof window.matchMedia === "function"
+      && window.matchMedia("(min-width:960px) and (hover:hover) and (pointer:fine)").matches;
     const spd = document.getElementById("searchPanel");
-    if (state.searchPanelOpen || (spd && spd.open)){
+    if ((state.searchPanelOpen || (spd && spd.open)) &&
+        !(desktopEscapeRoutesToVisiblePanel && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("searchPanel"))){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("searchPanel")) return;
       closeSearchPanel();
       return;
     }
     const hpd = document.getElementById("historyPanel");
-    if (state.historyPanelOpen || (hpd && hpd.open)){
+    if ((state.historyPanelOpen || (hpd && hpd.open)) &&
+        !(desktopEscapeRoutesToVisiblePanel && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("historyPanel"))){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("historyPanel")) return;
       ev.preventDefault();
       if (typeof closeHistoryPanel === "function") closeHistoryPanel();
@@ -81545,7 +81551,8 @@ function gisInit(){
       return;
     }
     const lpd = document.getElementById("layersPanel");
-    if (state.layersPanelOpen || (lpd && lpd.open)){
+    if ((state.layersPanelOpen || (lpd && lpd.open)) &&
+        !(desktopEscapeRoutesToVisiblePanel && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("layersPanel"))){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("layersPanel")) return;
       void closeLayersPanel();
       return;
