@@ -1,6 +1,10 @@
 # Desktop toolbar — FIX1 anti-sovrapposizione, Build 291
 
-Data: 2026-11-12 10:07:49 Europe/Rome. Stato storico: candidata PREDEPLOY. La Build 290 LIVE ha ricevuto feedback negativo con screenshot: pulsanti verdi Nuovo punto e GPS sopra i due riquadri PUNTO/CURSORE e attribuzione OpenStreetMap. Browser Edge ha riprodotto la collisione reale su 5 viewport (desktop basso incluso) con e senza scroll.
+Data: 2026-11-12 10:07:49 Europe/Rome. Stato storico PREDEPLOY; nuova evidenza LIVE riportata sotto. La Build 290 LIVE ha ricevuto feedback negativo con screenshot: pulsanti verdi Nuovo punto e GPS sopra i due riquadri PUNTO/CURSORE e attribuzione OpenStreetMap. Browser Edge ha riprodotto la collisione reale su 5 viewport (desktop basso incluso) con e senza scroll.
+
+## Stato LIVE dopo il deploy
+
+Build 291 LIVE sul VPS. Review routine 16/16 PASS; deploy GIS-only, backup 290, hash HTTP/HTTPS PASS. ABQA nativa Edge **115/115 PASS** (14 anti-overlap, 76 dual-groups, 25 Waypoint); zero POST. GATE QA OPERATORE DESKTOP **PENDING**. [Deploy](DEPLOY-RESULT-291.md) · [QA LIVE](QA-LIVE-291.md).
 
 ## Diagnosi e soluzione
 La colonna strumenti destra è larga 68px e dista 10px dal bordo destro. PUNTO/CURSORE e attribuzione erano anch'essi allineati al bordo destro; bottom:76px della toolbar non evita l'intersezione orizzontale. Build 291 applica CSS esclusivamente desktop hover/pointer fine: right:96px per .tile-readout e .tile-attrib e massimo 55% di larghezza per il readout. Restano 18px tra strumenti e dati; toolbar, gruppi blu/verde, scroll e posizione dei pulsanti rimangono inalterati.
