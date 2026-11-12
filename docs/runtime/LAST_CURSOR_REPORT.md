@@ -1,20 +1,25 @@
-# LAST_CURSOR_REPORT — chiusura GPT Build 292, QA PASS operatore
+# LAST_CURSOR_REPORT — GPT, Escape desktop Build293 LIVE
 
-Nome file storico; GPT via TMAR Desktop Commander Win, non Cursor.
+Nome file storico, esecutore GPT tramite TMAR Desktop Commander Win, non Cursor. Fonte LIVE [FRONTIER](../FRONTIER.md).
 
 ## A. Header
-BLOCK: GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX2 CLOSED, QA PASS operatore 2026-11-12.
-LIVE: Build 292, source b8a3a6c18e29ba382df0c6e6b3c1a4ea3f9f22c9, blob fc432b1ca383f6abe168286084b7961e96c6908f, SHA256 a71206104ac0944edac4da5ffecece4321cddea53c9fb016160f2866e2af8917, 11.120.400 byte.
-REVIEW: routine 23/23 PASS. DEPLOY: GIS-only PASS precedente. ABQA: LIVE 117/117 + branding 9/9 PASS.
-NEXT: audit compatibilita branch Escape 284 con main 292, solo desktop; mobile in pausa.
-real_task_commit=45c8a7560b2d291d3e4b5f3e2053a85911a03555; current_report_container=PENDING_SELF_REFERENCE; final HEAD EXTERNAL_ONLY.
+BLOCK: GIS-MINIMIZED-WINDOW-ESCAPE-PRIORITY-A, aperto.
+GATE: QA OPERATORE DESKTOP 293 PENDING.
+NEXT: minimizza Mappe Offline, apri Poligoni, Escape chiude Poligoni lasciando Offline minimizzata.
+RUNTIME: Build293 LIVE, source 86d27e7707046ec9829f5be4ef2832aec86f4a6c, blob f7ef7266bbf6d0b9912bc9f9d6f0c9f0336c7442, SHA b4bc346f74be303fa157bc8b7ebc80b532e50fec002edde55adf13ba64e3720e, 11.121.119 byte.
+REVIEW: REVIEW GPT-SOSTITUTIVA 32/32 PASS, esterna NOT_PERFORMED/backstop post-hoc.
+DEPLOY: GIS-only PASS, backup292, smoke HTTP/HTTPS PASS.
+ABQA: Edge HTTPS nativa 38/38 PASS (21 nuovi scenari e 17 D-Flight), 0 POST.
+MOBILE: in pausa, vecchio comportamento Escape intatto sotto 960px.
+real_task_commit=2d6596e97dd9140ef0d2143607e4bc6ade3fb0b1; current_report_container=PENDING_SELF_REFERENCE; final remote=EXTERNAL_ONLY.
 
-## B. Evidenza e limiti
-L'utente ha inviato la stringa esatta QA GIS-DESKTOP-TOOLBAR-DUAL-GROUPS-A-FIX2 PASS operatore dopo aver visionato la disposizione bottom-right e il nome TMAR GIS Tool. Nessuna nuova QA browser o deploy in questa fase; Regola H ha aggiornato FRONTIER ed evidence. Il vecchio branding selftest resta 17/18 per un check storico Build234; nessun falso PASS. Ramo Escape 284 distinto non LIVE.
+## B. Evidenze
+Old branch Escape284 basata sulla 283 non integrata; patch nuova su main292. Baseline 292 su HTTPS 18/21 con tre FAIL riprodotti. Condizioni desktop per tre early-return modificati; close handlers, modal markup, storage, dati, GPS e rete non modificati. Candidate 21/21 + DFlight 17/17; review sostitutiva 32/32; deploy GIS-only con backup e riscontri HTTP/HTTPS, poi ABQA LIVE 38/38. Nessuna QA operatore ancora ricevuta, nessuna qualifica 38 finestre. Telefono sospeso e vecchie funzioni preservate.
+F3 autosync latest, inbox singola, LAST; nessun commit per self-reference.
 
-## C. Identita
-real_task_commit=45c8a7560b2d291d3e4b5f3e2053a85911a03555
+## C. Identità
+real_task_commit=2d6596e97dd9140ef0d2143607e4bc6ade3fb0b1
 current_report_container=PENDING_SELF_REFERENCE
 final_remote_head_after_report_push=EXTERNAL_ONLY
 
-[Report](../orchestrator/evidence/2026-11-12-toolbar-292-operator-closure/REPORT.md).
+[Dossier](../orchestrator/evidence/2026-11-12-desktop-escape-293/REPORT.md).
