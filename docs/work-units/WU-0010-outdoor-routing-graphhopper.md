@@ -328,6 +328,9 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 **Backlog UX (non implementato in C):** ROUTING-POINT-ACTIVE-BADGE-A; ROUTING-INCOMPLETE-POINT-FEEDBACK-A; ROUTING-GRADE-METRICS-A; ROUTING-RESULT-FOCUS-A; ROUTING-BLOCKED-ACTION-FEEDBACK-A.
 
+**Ricognizione B0 del 13 novembre 2026, NON apertura di una nuova WU:** la dicitura sopra descrive lo stato del Bundle C storico e non deve essere interpretata come stato LIVE della Build298. Sul runtime Build298 attuale sono presenti e verificati tramite Edge HTTPS il feedback per 0/1/2 punti e il badge attivo di selezione A/B; i due ID storici ROUTING-INCOMPLETE-POINT-FEEDBACK-A e ROUTING-POINT-ACTIVE-BADGE-A NON vanno aperti per implementazione duplicata senza ulteriore gap verificato. Non si attribuisce CLOSED/QA operatore a tali ID sulla sola base dell'audit B0. Per grade metrics, result focus e blocked-action feedback non e stata determinata una decisione di implementazione in questa ricognizione. [Evidenza on-demand](../orchestrator/evidence/2026-11-13-routing-ux-backlog-reconcile-298/REPORT.md).
+
+
 ### BUNDLE D — Salva come traccia — **CLOSED / PASS end-to-end**
 
 **Stato:** **CLOSED / PASS end-to-end** (2026-07-28). Tip runtime **`567b611`** build **66** / `B6.0D-FIX1` (base D `c806099` build 65 + FIX1 harden).
