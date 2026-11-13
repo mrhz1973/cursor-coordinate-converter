@@ -16548,6 +16548,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 299 - Controllo pendenze Routing</h4><ul><li>Salti altimetrici non plausibili non contano nel dislivello filtrato, nelle pendenze o nella difficolta stimata; grafico e tooltip usano pendenze filtrate. I vecchi profili delle tracce non mostrano pendenze estreme senza modificare i dati archiviati.</li></ul>
             <h4>Build 298 - Escape Dettaglio zona D-Flight desktop</h4><ul><li>Il dettaglio D-Flight minimizzato non intercetta Escape destinato a un pannello visibile su desktop. Nessuna modifica ai dati aeronautici, OPSEC o comportamento mobile.</li></ul>
             <h4>Build 297 - Escape Guida e Strumenti desktop</h4><ul><li>Guida e Strumenti minimizzati non intercettano Escape destinato a un pannello visibile; modalit? inserimento e comportamento mobile invariati.</li></ul>
             <h4>Build 296 - priorita Escape desktop</h4><ul><li>Converti, Indice cartografico, Oggetti GIS e Pianifica percorso minimizzati cedono Escape ai pannelli visibili su desktop; comportamento mobile preservato.</li></ul>
@@ -26163,10 +26164,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-MINIMIZED-DFLIGHT-DETAILS-ESCAPE-PRIORITY-E";
-const APP_BUILD_DETAIL = "Escape desktop: Dettaglio zona D-Flight minimizzato cede priorita ai pannelli visibili.";
+const APP_BUILD_ID = "ROUTING-GRADE-OUTLIER-GUARD-A";
+const APP_BUILD_DETAIL = "Routing: pendenze filtrate robuste e guardia sui profili delle tracce salvate.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 298;
+const APP_BUILD_NUM = 299;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61331,6 +61332,9 @@ function savedTrackBuildElevationProfileFromRouting(savedTrack, routingState){
     const auth = (typeof routingAuthorityAscentDescent === "function")
       ? routingAuthorityAscentDescent(r)
       : { ascentM: null, descentM: null };
+    // Do not persist a fake 0 m ascent when the profile was rejected.
+    // The geometry track can still be saved without an elevation addon.
+    if (auth.source === "unreliable") return null;
     const ascentM = Number.isFinite(auth.ascentM) ? Number(auth.ascentM) : 0;
     const descentM = Number.isFinite(auth.descentM) ? Number(auth.descentM) : 0;
     const totalDistM = Number(ep.stats && ep.stats.totalDistM);
@@ -61737,7 +61741,13 @@ function savedTrackBuildRuntimeElevationProfile(st){
           const pe = Number(prev && prev.e);
           const seg = d - pd;
           if (Number.isFinite(pe) && Number.isFinite(pd) && seg >= minSeg){
-            gradePct = ((e - pe) / seg) * 100;
+            const rawGrade = ((e - pe) / seg) * 100;
+            // Historical saved profiles may predate the Routing outlier guard.
+            // Never rewrite stored data or display an implausible raw grade.
+            if (Number.isFinite(rawGrade) &&
+                Math.abs(rawGrade) <= ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT + ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT){
+              gradePct = rawGrade;
+            }
           }
         }
         let lat = null, lon = null;
@@ -96543,6 +96553,11 @@ function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom){
 const ROUTING_ELEV_MIN_SEG_M = 0.5;
 const ROUTING_ELEV_SUSPECT_MAX_SEG_M = 10;
 const ROUTING_ELEV_SUSPECT_MAX_DELTA_M = 100;
+// Plausibility boundary for terrestrial routing. A grade above 100%
+// is a suspect elevation discontinuity; never cap it to that value.
+const ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT = 100;
+// Keep numerically exact 100% grade valid despite Vincenty rounding.
+const ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT = 0.01;
 const ROUTING_ELEV_MAX_SVG_POINTS = 600;
 const ROUTING_ELEV_MIN_SAMPLES_FOR_DIFFICULTY = 5;
 const ROUTING_ELEV_MIN_USABLE_GRADE_SEGS = 4;
@@ -96896,6 +96911,8 @@ function routingBuildFilteredElevationModel(samples){
       gapCount++;
       continue;
     }
+    // Never tally gain or grade across a flagged raw elevation jump.
+    if (s.suspect && cur.length){ runs.push(cur); cur = []; gapCount++; }
     cur.push(i);
   }
   if (cur.length) runs.push(cur);
@@ -96918,32 +96935,53 @@ function routingBuildFilteredElevationModel(samples){
   let gradeSegCount = 0;
   let gradeDist = 0;
   let steep15 = 0;
+  const displaySegments = [];
 
   for (let r = 0; r < runs.length; r++){
     const pts = routingFilterRunBucketMedian(samples, runs[r], ROUTING_ELEV_FILTER_BUCKET_M);
     bucketCount += Math.max(0, pts.length - 2);
     for (let i = 0; i < pts.length; i++) allFiltered.push(pts[i]);
-    if (pts.length >= 2){
+    // Median buckets cannot cure provider elevation staircases. Split a
+    // bad filtered edge before the ascent/descent aggregation.
+    const spans = [];
+    let span = [];
+    for (let i = 0; i < pts.length; i++){
+      const point = pts[i];
+      if (span.length){
+        const previous = span[span.length - 1];
+        const d = Number(point.cumDistM) - Number(previous.cumDistM);
+        const jump = !(d > 0) ||
+          Math.abs(point.ele - previous.ele) * 100 / d > (ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT + ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT);
+        if (jump){ spans.push(span); span = []; }
+      }
+      span.push(point);
+    }
+    if (span.length) spans.push(span);
+    const mapped = [];
+    for (let ri = 0; ri < spans.length; ri++){
+      const part = spans[ri];
+      if (part.length < 2) continue;
       multiPointRuns++;
-      const dd = routingDeadbandAscentDescent(pts, ROUTING_ELEV_FILTER_DEADBAND_M);
+      const dd = routingDeadbandAscentDescent(part, ROUTING_ELEV_FILTER_DEADBAND_M);
       filtAsc += dd.ascentM;
       filtDes += dd.descentM;
       ascentOk = true;
-      for (let i = 1; i < pts.length; i++){
-        const a = pts[i - 1], b = pts[i];
+      for (let i = 1; i < part.length; i++){
+        const a = part[i - 1], b = part[i];
         const dist = Number(b.cumDistM) - Number(a.cumDistM);
-        if (!(dist > 0) || !Number.isFinite(a.ele) || !Number.isFinite(b.ele)) continue;
+        if (!(dist >= ROUTING_ELEV_MAX_GRADE_MIN_SEG_M) ||
+            !Number.isFinite(a.ele) || !Number.isFinite(b.ele)) continue;
         const grade = ((b.ele - a.ele) / dist) * 100;
-        if (!Number.isFinite(grade)) continue;
+        if (!Number.isFinite(grade) ||
+            Math.abs(grade) > (ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT + ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT)) continue;
         const absG = Math.abs(grade);
         gradeAbs.push(absG);
         gradeW.push(dist);
         gradeSegCount++;
         gradeDist += dist;
         if (absG > 15) steep15 += dist;
-        if (dist >= ROUTING_ELEV_MAX_GRADE_MIN_SEG_M){
-          if (maxGrade == null || absG > maxGrade) maxGrade = absG;
-        }
+        if (maxGrade == null || absG > maxGrade) maxGrade = absG;
+        mapped.push({ startM: a.cumDistM, endM: b.cumDistM, gradePct: grade });
         const bandId = routingClassifyGradeBand(absG);
         if (bandId && bands[bandId]){
           if (grade >= 0) bands[bandId].posM += dist;
@@ -96951,6 +96989,7 @@ function routingBuildFilteredElevationModel(samples){
         }
       }
     }
+    displaySegments[r] = mapped;
   }
 
   base.filteredPoints = allFiltered;
@@ -96986,6 +97025,25 @@ function routingBuildFilteredElevationModel(samples){
     Number.isFinite(base.filteredP95GradePct)
   );
   base.filterFallbackReason = base.filterAvailable ? "available" : reason;
+  // Labels and color bands use qualified filtered grades, never raw
+  // per-metre noise or suspected elevation discontinuities.
+  if (base.filterAvailable){
+    for (let r = 0; r < runs.length; r++){
+      const segments = displaySegments[r] || [];
+      let at = 0;
+      const indices = runs[r];
+      for (let i = 0; i < indices.length; i++){
+        const sample = samples[indices[i]];
+        if (!sample || sample.suspect) continue;
+        const pos = Number(sample.cumDistM);
+        while (at < segments.length && pos > segments[at].endM + 1e-6) at++;
+        const span = segments[at];
+        if (span && pos > span.startM + 1e-6 && pos <= span.endM + 1e-6){
+          sample.displayGradePct = span.gradePct;
+        }
+      }
+    }
+  }
   return base;
 }
 
@@ -97031,6 +97089,7 @@ function routingBuildElevationProfile(previewCoords, elevCoords){
       segLenM: null,
       deltaEleM: null,
       gradePct: null,
+      displayGradePct: null,
       gradeUsable: false,
       suspect: false
     });
@@ -97054,23 +97113,22 @@ function routingBuildElevationProfile(previewCoords, elevCoords){
     b.deltaEleM = dEle;
     if (dEle > 0){ ascent += dEle; ascentOk = true; }
     else if (dEle < 0){ descent += -dEle; ascentOk = true; }
-    if (!(segLen >= ROUTING_ELEV_MIN_SEG_M)){
+    // Check even sub-0.5 m/duplicate positions: a raw elevation jump
+    // must not be let into filtered ascent just because grade is hidden.
+    const suspect = (segLen <= 0 && Math.abs(dEle) > 1e-6) ||
+      (segLen > 0 && Math.abs(dEle) * 100 / segLen > (ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT + ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT)) ||
+      (segLen < ROUTING_ELEV_SUSPECT_MAX_SEG_M &&
+       Math.abs(dEle) > ROUTING_ELEV_SUSPECT_MAX_DELTA_M);
+    b.suspect = suspect;
+    if (suspect){
+      suspectCount++;
       b.gradeUsable = false;
       continue;
     }
+    if (!(segLen >= ROUTING_ELEV_MIN_SEG_M)) continue;
     const grade = (dEle / segLen) * 100;
     b.gradePct = grade;
     const absG = Math.abs(grade);
-    let suspect = false;
-    if (segLen < ROUTING_ELEV_SUSPECT_MAX_SEG_M && Math.abs(dEle) > ROUTING_ELEV_SUSPECT_MAX_DELTA_M){
-      suspect = true;
-      suspectCount++;
-    }
-    b.suspect = suspect;
-    if (suspect){
-      b.gradeUsable = false;
-      continue;
-    }
     b.gradeUsable = true;
     usableGradeCount++;
     absGrades.push(absG);
@@ -97176,7 +97234,8 @@ function routingComputeDifficulty(routeMetrics, elevationProfile, profileId){
     filteredP95GradePct: Number.isFinite(p95) ? p95 : null
   });
 
-  if (!(Number.isFinite(distanceM) && distanceM > 0) ||
+  if ((!filterOk && Number(st.suspectSegmentCount) > 0) ||
+      !(Number.isFinite(distanceM) && distanceM > 0) ||
       sampleCount < ROUTING_ELEV_MIN_SAMPLES_FOR_DIFFICULTY ||
       usable < ROUTING_ELEV_MIN_USABLE_GRADE_SEGS ||
       !Number.isFinite(ascentM) ||
@@ -97281,6 +97340,14 @@ function routingAuthorityAscentDescent(r){
       source: "filtered",
       serverAscentM: serverAsc,
       serverDescentM: serverDes
+    };
+  }
+  // A suspect route with too little reliable filtered distance must not
+  // silently fall back to the same potentially corrupted server gain.
+  if (st && Number(st.suspectSegmentCount) > 0){
+    return {
+      ascentM: null, descentM: null, source: "unreliable",
+      serverAscentM: serverAsc, serverDescentM: serverDes
     };
   }
   return {
@@ -97534,7 +97601,7 @@ function routingRenderAscentDetail(r){
       note.hidden = true;
       note.textContent = "";
     }
-  } else if (auth.source === "server" && note){
+  } else if ((auth.source === "server" || auth.source === "unreliable") && note){
     note.hidden = false;
     note.textContent = routingT("routing.filteredUnavailable", "Filtered profile unavailable");
   }
@@ -97638,6 +97705,9 @@ function routingRenderAltitudePanel(opts){
     if (ep.stats.suspectSegmentCount > 0){
       msgs.push(String(routingT("routing.altitudeSpikeRejected", "{0} suspect segment(s)")).replace("{0}", String(ep.stats.suspectSegmentCount)));
     }
+    if (auth.source === "unreliable"){
+      msgs.push(routingT("routing.filteredUnavailable", "Filtered profile unavailable"));
+    }
     if (auth.source === "filtered" && auth.serverAscentM != null && Number.isFinite(auth.ascentM)){
       const delta = Math.abs(auth.serverAscentM - auth.ascentM);
       const pct = delta / Math.max(1, Math.abs(auth.serverAscentM));
@@ -97710,8 +97780,10 @@ function routingDecimateElevationSamplesGapSafe(samples, maxPts){
   let cur = [];
   for (let i = 0; i < samples.length; i++){
     const s = samples[i];
-    if (s && s.ele != null && Number.isFinite(s.ele)) cur.push(s);
-    else if (cur.length){ runs.push(cur); cur = []; }
+    if (s && s.ele != null && Number.isFinite(s.ele)){
+      if (s.suspect && cur.length){ runs.push(cur); cur = []; }
+      cur.push(s);
+    } else if (cur.length){ runs.push(cur); cur = []; }
   }
   if (cur.length) runs.push(cur);
   if (!runs.length) return empty;
@@ -97779,9 +97851,17 @@ function routingElevBandCssVar(bandId){
   if (bandId === "extreme") return "var(--routing-elev-band-extreme)";
   return "var(--routing-elev-band-neutral, var(--routing-elev-axis, #888))";
 }
+function routingChartGradeForSample(sample){
+  if (!sample) return null;
+  // Saved-track profiles predate the filtered Routing display field.
+  const g = Object.prototype.hasOwnProperty.call(sample, "displayGradePct")
+    ? sample.displayGradePct
+    : (sample.gradeUsable === false ? null : sample.gradePct);
+  return g != null && Number.isFinite(g) ? g : null;
+}
 function routingElevBandForSample(sample){
-  if (!sample || sample.gradePct == null || !Number.isFinite(sample.gradePct)) return null;
-  return routingClassifyGradeBand(sample.gradePct);
+  const grade = routingChartGradeForSample(sample);
+  return grade == null ? null : routingClassifyGradeBand(grade);
 }
 function elevationProfileDrawChart(options){
   options = options || {};
@@ -97810,9 +97890,29 @@ function elevationProfileDrawChart(options){
   const samples = ep.samples;
   const drawn = routingDecimateElevationSamplesGapSafe(samples, ROUTING_ELEV_MAX_SVG_POINTS);
   let minEle = Infinity, maxEle = -Infinity;
-  for (let i = 0; i < samples.length; i++){
-    const e = samples[i].ele;
-    if (e != null && Number.isFinite(e)){ if (e < minEle) minEle = e; if (e > maxEle) maxEle = e; }
+  // One isolated spike between two rejected edges must not stretch the
+  // chart axis and visually flatten the remaining valid route.
+  const chartParts = drawn && Array.isArray(drawn.parts) ? drawn.parts : [];
+  for (let pi = 0; pi < chartParts.length; pi++){
+    const part = chartParts[pi];
+    if (!part || part.type === "gap" || !Array.isArray(part.samples) || part.samples.length < 2) continue;
+    for (let j = 0; j < part.samples.length; j++){
+      const e = part.samples[j].ele;
+      if (e != null && Number.isFinite(e)){
+        if (e < minEle) minEle = e;
+        if (e > maxEle) maxEle = e;
+      }
+    }
+  }
+  // Preserve the legacy standalone-point chart when no connected run exists.
+  if (!Number.isFinite(minEle)){
+    for (let i = 0; i < samples.length; i++){
+      const e = samples[i].ele;
+      if (e != null && Number.isFinite(e)){
+        if (e < minEle) minEle = e;
+        if (e > maxEle) maxEle = e;
+      }
+    }
   }
   if (!Number.isFinite(minEle)){ minEle = 0; maxEle = 1; }
   if (maxEle - minEle < 1){ maxEle = minEle + 1; }
@@ -98187,8 +98287,9 @@ function routingUpdateAltitudeSyncMarkerOnly(){
       label.setAttribute("x", String(localX + 10));
       label.setAttribute("y", String(localY - 8));
       let txt = routingFmtAltitudeForUnit(sample.ele);
-      if (sample.gradePct != null && Number.isFinite(sample.gradePct)){
-        txt += " · " + routingFmtGradePct(sample.gradePct);
+      const shownGrade = routingChartGradeForSample(sample);
+      if (shownGrade != null){
+        txt += " · " + routingFmtGradePct(shownGrade);
       }
       label.textContent = txt;
       g.appendChild(label);
@@ -98239,7 +98340,7 @@ function routingApplyAltitudeHoverVisuals(){
     layout.hDot.style.display = "";
     const eleTxt = routingFmtAltitudeForUnit(s.ele);
     const distTxt = routingFmtRouteDistanceForUnit(s.cumDistM);
-    const grTxt = (s.gradePct != null && Number.isFinite(s.gradePct)) ? routingFmtGradePct(s.gradePct) : null;
+    const grTxt = (s.displayGradePct != null && Number.isFinite(s.displayGradePct)) ? routingFmtGradePct(s.displayGradePct) : null;
     const line1 = eleTxt + " · " + distTxt;
     const line2 = grTxt || "";
     const tip = layout.tip;
