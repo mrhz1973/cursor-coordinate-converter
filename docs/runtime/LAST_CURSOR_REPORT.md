@@ -1,14 +1,13 @@
-# LAST_CURSOR_REPORT - GPT Build299 LIVE
+# LAST_CURSOR_REPORT - GPT Build300 LIVE grade 200m
 
-Nome storico del file: intervento eseguito tramite GPT con TMAR Desktop Commander Windows, NON Cursor. Fonte di stato vivo: docs/FRONTIER.md.
+Historical filename: executed by GPT through TMAR Desktop Commander Windows, NOT Cursor. Only authoritative live state is docs/FRONTIER.md.
 
-BLOCK: ROUTING-GRADE-OUTLIER-GUARD-A - Build299 LIVE, QA operatore su percorso reale PENDING.
-GATE: real-world routing grade QA; non inferire PASS da test sintetici.
-NEXT: confronto su una route hiking/MTB realmente interessata da pendenze fuori scala, solo quando dati/permessi disponibili. Follow-up separato per riepiloghi altimetrici persistiti nelle vecchie tracce: non migrati. I gate 298 D-Flight, 295 footer, 294 Escape restano QA umane pendenti e distinte.
-RUNTIME: source 4a9a61f6886f3cedbef83dcf7768db138351f96d, blob 9ac09afa5823d9d44bddab80dfd5c06a06772100, SHA256 0b4535fa8acb34cd49176f798774acd812be02a70b6638820e275889f54a802b, 11.135.062 byte / 192 CR.
-REVIEW: GPT-SOSTITUTIVA statica 25/25 PASS, esterna NOT_PERFORMED/post-hoc backstop.
-DEPLOY: GIS-only PASS, backup Build298 /var/backups/goi-gis-runtime/20261113T174217Z-build299, unico restart 1299971 -> 3203672, HTTP/HTTPS SHA PASS dopo retry readiness.
-ABQA HTTPS LIVE: numerici 18/18 PASS, geografici/performance 9/9 PASS, UI6 scenari coerenti, savedTrack e regressioni Escape7/7 PASS, 0 POST ed eccezioni JS.
-MOBILE: development PAUSA, layout parity 2/2 candidata; nessun test fisico iPhone.
-real_task_commit=4a9a61f6886f3cedbef83dcf7768db138351f96d; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
-[Dossier](../orchestrator/evidence/2026-11-13-routing-grade-299/REPORT.md).
+BLOCK: ROUTING-GRADE-AVERAGE-WINDOW-200M-B, Build300 LIVE, QA operator PENDING; DEM absolute ground truth HOLD.
+NEXT: confirm 200m maximum mean grade on the original affected real-world route if available. Do not redo already completed synthetic/E2E QA, do not infer operator PASS, do not change DEM backend or create Build301 without a verified finding. Other human gates Build299/298/295/294 remain separate pending. Mobile development paused.
+RUNTIME: source b6353ba11fa9bbf8cdb48243aefbec2e8aa59323, blob a12c00f8e43964fdd1cac023f34dbdbb0df1f9b3, SHA256 a65d6f96a8fbf26050d1a7a782671060c4cc6e723f29f7fd2e8089b5a6b796d7, 11,140,089 bytes, CR192.
+REVIEW: GPT-SOSTITUTIVA 36/36 PASS on full source SHA; external NOT_PERFORMED/post-hoc backstop.
+DEPLOY: GIS-only PASS, backup Build299 /var/backups/goi-gis-runtime/20261114T000629Z-build300, one service restart PID 3203672 -> 3822418, file/HTTP/HTTPS SHA matched.
+ABQA HTTPS LIVE: 19/19 numeric, 3/3 UI, 9/9 geo/perf, 5 GH and 3 ORS diagnostic real source fixtures, savedTrack, 7/7 Escape, 1/1 GH real Calculate button E2E with 1 authorized POST, 0 uncaught JS.
+METHOD: no user-data migrations, no new provider API, no silent GPS, no phone changes. DEM ground truth unconfirmed; 200m mean does not equal instantaneous trail gradient.
+real_task_commit=b6353ba11fa9bbf8cdb48243aefbec2e8aa59323; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
+[Dossier](../orchestrator/evidence/2026-11-14-grade-window-300/REPORT.md).
