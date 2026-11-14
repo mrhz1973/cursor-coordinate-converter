@@ -12969,6 +12969,11 @@ body.gis-mode.gis-fullscreen-active .gis-mobile-fullscreen-exit{
   body.gis-mode #gisMapMount .tile-map .gis-mobile-hud-row .gis-mobile-hud-combined{height:auto;min-height:32px;align-self:stretch;}
 }
 /* #endregion CSS — GIS FLOATING PANELS AND DIALOGS */
+  .routing-local-dtm{border:1px solid var(--border, #7776);border-radius:8px;padding:10px;margin:8px 0}
+  .routing-local-dtm-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+  .routing-local-dtm-actions label{display:flex;align-items:center;gap:4px}
+  .routing-local-dtm-file input{max-width:175px}
+  @media(max-width:700px){.routing-local-dtm{display:none!important}}
 </style>
 
 <style id="gis-desktop-tools-285">
@@ -16170,6 +16175,24 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
       </div>
       <details class="routing-altitude-wrap" id="routingAltitudeWrap" open>
         <summary class="routing-altitude-summary" id="routingAltitudeSummary" data-i18n="routing.altitudeTitle">Profilo altimetrico</summary>
+        <section class="routing-local-dtm" id="routingLocalDtmPanel" aria-label="Pendenza locale DTM 5 metri">
+          <strong>Pendenza locale 5/10 m ? DTM ad alta risoluzione</strong>
+          <div class="routing-local-dtm-actions">
+            <label for="routingLocalDtmWindow">Tratto
+              <select id="routingLocalDtmWindow" aria-label="Lunghezza tratto pendenza locale">
+                <option value="5">5 m</option><option value="10">10 m</option>
+              </select>
+            </label>
+            <button type="button" id="routingLocalDtmFetch">Carica DTM Liguria 5 m (rete)</button>
+            <label class="routing-local-dtm-file">GeoTIFF locale
+              <input type="file" id="routingLocalDtmFile" accept=".tif,.tiff,image/tiff">
+            </label>
+            <button type="button" id="routingLocalDtmClear">Rimuovi DTM</button>
+          </div>
+          <p id="routingLocalDtmStatus" class="hint" role="status" aria-live="polite">Per 5/10 m occorre un DTM a 5 m. Nessun download automatico.</p>
+          <p id="routingLocalDtmResult" class="hint" aria-live="polite">Pendenza locale non disponibile.</p>
+          <p class="hint">Le pendenze su 5/10 m sono indicative, non misure dirette. Fonte: <a href="https://www.regione.liguria.it/homepage-opendata/opendata-per-tipo/opendata-cartografia/item/22047-dtm-modello-digitale-terre-edizione-liguria-2017.html" target="_blank" rel="noopener noreferrer">DTM Liguria ed. 2023 (CC BY)</a>. Scaricamento solo su richiesta; file in memoria di sessione.</p>
+        </section>
         <div class="routing-altitude-chart-host" id="routingAltitudeChartHost">
           <div id="routingAltitudeChart" class="routing-altitude-chart" tabindex="0"></div>
           <p id="routingAltitudeTitleId" class="visually-hidden" data-i18n="routing.altitudeTitle">Profilo altimetrico</p>
@@ -16548,6 +16571,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 301 - Pendenze locali 5/10 m da DTM 5 m</h4><ul><li>Scarico regionale opt-in o importazione GeoTIFF locale; nessun GPS, nessun dato persistito. Pendenze su 5/10 m con fonte e limiti di accuratezza dichiarati, senza confondere la misura con la media su 200 m.</li></ul>
             <h4>Build 300 - Pendenze su finestra di 200 m</h4><ul><li>Pendenza massima, grafico e difficolta usano una media su 200 m continui ed esplicitamente etichettata. Se il tratto e interrotto o troppo breve, la pendenza e non disponibile. Le quote e il provider restano invariati.</li></ul>
             <h4>Build 299 - Controllo pendenze Routing</h4><ul><li>Salti altimetrici non plausibili non contano nel dislivello filtrato, nelle pendenze o nella difficolta stimata; grafico e tooltip usano pendenze filtrate. I vecchi profili delle tracce non mostrano pendenze estreme senza modificare i dati archiviati.</li></ul>
             <h4>Build 298 - Escape Dettaglio zona D-Flight desktop</h4><ul><li>Il dettaglio D-Flight minimizzato non intercetta Escape destinato a un pannello visibile su desktop. Nessuna modifica ai dati aeronautici, OPSEC o comportamento mobile.</li></ul>
@@ -26169,10 +26193,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-GRADE-AVERAGE-WINDOW-200M-B";
-const APP_BUILD_DETAIL = "Routing: pendenza media su 200 m esplicita, non picchi DEM locali.";
+const APP_BUILD_ID = "ROUTING-LOCAL-DTM-5M10M-A";
+const APP_BUILD_DETAIL = "Routing: pendenza locale 5/10 m da DTM regionale 5 m, opt-in rete o GeoTIFF offline.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 300;
+const APP_BUILD_NUM = 301;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -97130,6 +97154,310 @@ function routingBuildFilteredElevationModel(samples){
   return base;
 }
 
+/* ROUTING-LOCAL-DTM-5M10M-A: voluntary, session-only local high-resolution DTM. */
+let _routingLocalDtm = null;
+let _routingLocalDtmProfile = null;
+let _routingLocalDtmBusy = false;
+const ROUTING_LOCAL_DTM_STEP_M = 2.5;
+const ROUTING_LOCAL_DTM_MAX_BYTES = 48 * 1024 * 1024;
+const ROUTING_LOCAL_DTM_MAX_POINTS = 12000;
+const ROUTING_LOCAL_DTM_WCS = "https://geoservizi.regione.liguria.it/geoserver/M2056/wcs";
+function routingLocalDtmReadTiff(buffer){
+  if (!(buffer instanceof ArrayBuffer) || buffer.byteLength < 64 || buffer.byteLength > ROUTING_LOCAL_DTM_MAX_BYTES)
+    throw Error("GeoTIFF non valido o troppo grande (limite 48 MB).");
+  const v = new DataView(buffer),order=v.getUint16(0,false),le=order===0x4949;
+  if (order!==0x4949 && order!==0x4d4d) throw Error("Ordine byte TIFF non riconosciuto.");
+  if (v.getUint16(2,le)!==42) throw Error("Solo GeoTIFF classico, non BigTIFF.");
+  const start=v.getUint32(4,le);
+  if (start+2>v.byteLength) throw Error("IFD TIFF fuori file.");
+  const n=v.getUint16(start,le),tags=new Map();
+  if (n>256 || start+2+12*n+4>v.byteLength) throw Error("IFD TIFF corrotto.");
+  const units={1:1,2:1,3:2,4:4,5:8,12:8};
+  for(let i=0;i<n;i++){
+    const at=start+2+i*12,tag=v.getUint16(at,le),type=v.getUint16(at+2,le),count=v.getUint32(at+4,le),unit=units[type];
+    if (!unit || count>3000000 || count*unit>v.byteLength) continue;
+    const pos=count*unit<=4?at+8:v.getUint32(at+8,le);
+    if(pos+count*unit>v.byteLength) throw Error("Campo TIFF fuori file.");
+    tags.set(tag,{type,count,pos});
+  }
+  function vals(id){
+    const t=tags.get(id);if(!t)return null;
+    if(t.count>30000)throw Error("Campo TIFF eccessivo.");
+    const a=[];
+    for(let i=0;i<t.count;i++){
+      const p=t.pos+i*units[t.type];
+      if(t.type===1||t.type===2)a.push(v.getUint8(p));
+      else if(t.type===3)a.push(v.getUint16(p,le));
+      else if(t.type===4)a.push(v.getUint32(p,le));
+      else if(t.type===12)a.push(v.getFloat64(p,le));
+      else if(t.type===5){const d=v.getUint32(p+4,le);a.push(d?v.getUint32(p,le)/d:NaN);}
+    }
+    return a;
+  }
+  const one=(id,fallback)=>{const a=vals(id);return a&&a.length?a[0]:fallback;};
+  const width=one(256,0),height=one(257,0),bits=one(258,0),fmt=one(339,1);
+  if(!Number.isInteger(width)||!Number.isInteger(height)||width<2||height<2||width*height>8000000)
+    throw Error("Dimensioni del DTM non ammesse.");
+  if(one(259,1)!==1||one(277,1)!==1||!((bits===16&&fmt===2)||(bits===32&&fmt===3)))
+    throw Error("Richiesto GeoTIFF non compresso mono-banda signed Int16 o Float32.");
+  const keys=vals(34735);let epsg=0;
+  if(keys)for(let i=4;i+3<keys.length;i+=4)if(keys[i]===3072&&keys[i+1]===0&&keys[i+2]===1)epsg=keys[i+3];
+  if(epsg!==3003)throw Error("GeoTIFF non EPSG:3003 (Roma40 / Gauss-Boaga Ovest).");
+
+  const trans=vals(34264),scale=vals(33550),tie=vals(33922);
+  let originX,originY,stepX,stepY;
+  if(trans&&trans.length===16){
+    if(Math.abs(trans[1])>1e-8||Math.abs(trans[4])>1e-8||Math.abs(trans[12])>1e-8||Math.abs(trans[13])>1e-8)
+      throw Error("DTM ruotato non supportato.");
+    stepX=trans[0];stepY=-trans[5];originX=trans[3];originY=trans[7];
+  }else if(scale&&scale.length>=2&&tie&&tie.length>=6){
+    stepX=scale[0];stepY=scale[1];originX=tie[3]-tie[0]*stepX;originY=tie[4]+tie[1]*stepY;
+  }else throw Error("GeoTIFF privo di georeferenziazione.");
+  if(!(stepX>=4.9&&stepX<=5.1&&stepY>=4.9&&stepY<=5.1)||![originX,originY].every(Number.isFinite))
+    throw Error("Richiesta griglia nativa 5 m senza ricampionamento.");
+  const tileW=one(322,null),tileH=one(323,null),tiled=tileW!=null&&tileH!=null,stripRows=one(278,height);
+  const offsets=vals(tiled?324:273),sizes=vals(tiled?325:279);
+  if(!offsets||!sizes||!offsets.length||offsets.length!==sizes.length)throw Error("Tile TIFF assenti.");
+  const cols=tiled?Math.ceil(width/tileW):1,rows=tiled?Math.ceil(height/tileH):Math.ceil(height/stripRows);
+  if(!(tiled?Number.isInteger(tileW)&&Number.isInteger(tileH)&&tileW>=1&&tileW<=4096&&tileH>=1&&tileH<=4096
+       :Number.isInteger(stripRows)&&stripRows>0&&stripRows<=height)
+    ||offsets.length!==cols*rows)throw Error("Organizzazione tile TIFF incompatibile.");
+  const bytes=bits/8,stride=tiled?tileW:width;
+  for(let i=0;i<offsets.length;i++){
+    const need=(tiled?tileW*tileH:Math.min(stripRows,height-i*stripRows)*width)*bytes;
+    if(offsets[i]+need>v.byteLength||sizes[i]<need)throw Error("Tile TIFF troncato.");
+  }
+  let noData=null;
+  const raw=vals(42113);
+  if(raw){
+    if(raw.length>128)throw Error("NoData TIFF non valido.");
+    const txt=String.fromCharCode(...raw).replace(/\0/g,"").trim(),nv=Number(txt);
+    if(txt&&Number.isFinite(nv))noData=nv;
+  }
+  function pixel(row,col){
+    if(row<0||col<0||row>=height||col>=width)return null;
+    const ix=tiled?Math.floor(row/tileH)*cols+Math.floor(col/tileW):Math.floor(row/stripRows);
+    const rr=tiled?row%tileH:row%stripRows,cc=tiled?col%tileW:col;
+    const at=offsets[ix]+(rr*stride+cc)*bytes;
+    const z=bits===16?v.getInt16(at,le):v.getFloat32(at,le);
+    return Number.isFinite(z)&&(noData==null||z!==noData)?z:null;
+  }
+  return {epsg,originX,originY,stepX,stepY,width,height,format:"GeoTIFF EPSG:3003 / 5 m",
+    sampleXY(x,y){
+      const cx=(x-originX)/stepX-0.5,cy=(originY-y)/stepY-0.5;
+      const c=Math.floor(cx),r=Math.floor(cy);
+      if(r<0||c<0||r+1>=height||c+1>=width)return null;
+      const a=pixel(r,c),b=pixel(r,c+1),d=pixel(r+1,c),e=pixel(r+1,c+1);
+      if([a,b,d,e].some(z=>z==null))return null;
+      const fx=cx-c,fy=cy-r;
+      return a*(1-fx)*(1-fy)+b*fx*(1-fy)+d*(1-fx)*fy+e*fx*fy;
+    }
+  };
+}
+// Inverse of EPSG Monte Mario to WGS84 (4): seven-parameter Helmert.
+// Nominal operation accuracy ~4 m; raster resolution alone does not
+// guarantee 5 m positional accuracy or true sub-metre trail slopes.
+function routingLocalDtmProject3003(lat,lon){
+  if(!Number.isFinite(lat)||!Number.isFinite(lon)||lon<7.0||lon>11.2||lat<43.3||lat>45.2)return null;
+  const c=geoToECEF(lat,lon,ELL_WGS84),factor=1-11.68e-6;
+  const x=(c.X+104.1)/factor,y=(c.Y+49.1)/factor,z=(c.Z+9.9)/factor;
+  const arc=Math.PI/(180*3600),rx=.971*arc,ry=-2.917*arc,rz=.714*arc;
+  const geo=ecefToGeo(x+rz*y-ry*z,y-rz*x+rx*z,z+ry*x-rx*y,ELL_HAYFORD);
+  const pt=tmForwardGeneric(geo.lat,geo.lon,ELL_HAYFORD,0.9996,9,1500000,0);
+  return Number.isFinite(pt.easting)&&Number.isFinite(pt.northing)?{x:pt.easting,y:pt.northing}:null;
+}
+
+function routingLocalDtmBuildProfile(model,coords,windowM){
+  if(!model||!Array.isArray(coords)||coords.length<2||![5,10].includes(windowM))return null;
+  const dist=[0];
+  for(let i=1;i<coords.length;i++){
+    const a=coords[i-1],b=coords[i];
+    if(!a||!b||![a.lat,a.lon,b.lat,b.lon].every(Number.isFinite))return null;
+    const meters=routingSegmentDistanceM(a.lat,a.lon,b.lat,b.lon);
+    if(!Number.isFinite(meters)||meters<0)return null;
+    dist.push(dist[i-1]+meters);
+  }
+  const total=dist[dist.length-1];
+  if(!(total>=windowM)||total>ROUTING_LOCAL_DTM_MAX_POINTS*ROUTING_LOCAL_DTM_STEP_M)
+    return {total,valid:0,reason:total<windowM?"Tratto inferiore alla finestra richiesta.":"Percorso troppo esteso per un singolo DTM."};
+  const count=Math.floor(total/ROUTING_LOCAL_DTM_STEP_M);
+  const arr=[];
+  let seg=0;
+  for(let i=0;i<=count;i++){
+    const d=i*ROUTING_LOCAL_DTM_STEP_M;
+    while(seg+2<dist.length&&dist[seg+1]<d)seg++;
+    const a=coords[seg],b=coords[seg+1],span=dist[seg+1]-dist[seg];
+    const t=span>0?Math.max(0,Math.min(1,(d-dist[seg])/span)):0;
+    const lat=a.lat+(b.lat-a.lat)*t,lon=a.lon+(b.lon-a.lon)*t;
+    const xy=routingLocalDtmProject3003(lat,lon);
+    const ele=xy?model.sampleXY(xy.x,xy.y):null;
+    arr.push({distance:d,ele,grade:null});
+  }
+  const half=windowM/(2*ROUTING_LOCAL_DTM_STEP_M);
+  let valid=0,max=null,positive=null,negative=null;
+  const absGrades=[];
+  for(let i=half;i+half<arr.length;i++){
+    const a=arr[i-half],b=arr[i+half];
+    let ok=true;
+    for(let j=i-half;j<=i+half;j++)if(arr[j].ele==null){ok=false;break;}
+    if(!ok)continue;
+    const grade=(b.ele-a.ele)*100/windowM;
+    if(!Number.isFinite(grade))continue;
+    arr[i].grade=grade;
+    valid++;
+    absGrades.push(Math.abs(grade));
+    if(!max||Math.abs(grade)>Math.abs(max.grade))max={distance:arr[i].distance,grade};
+    if(grade>0&&(!positive||grade>positive.grade))positive={distance:arr[i].distance,grade};
+    if(grade<0&&(!negative||grade<negative.grade))negative={distance:arr[i].distance,grade};
+  }
+  absGrades.sort((a,b)=>a-b);
+  const p95=absGrades.length?absGrades[Math.ceil(absGrades.length*.95)-1]:null;
+  return {total,samples:arr,valid,max,positive,negative,p95,windowM,
+    possible:Math.max(0,arr.length-2*half)};
+}
+function routingLocalDtmFmt(grade){
+  if(grade==null||!Number.isFinite(grade))return "n/d";
+  const angle=Math.atan(Math.abs(grade)/100)*180/Math.PI;
+  return (grade>=0?"+":"") +grade.toFixed(1)+"% ("+angle.toFixed(1)+"°)";
+}
+function routingLocalDtmUpdateUi(){
+  const result=document.getElementById("routingLocalDtmResult");
+  if(!result)return;
+  const r=state._routing,coords=r&&r.previewCoordinates;
+  if(!_routingLocalDtm){result.textContent="Caricare un DTM 5 m per misurare su 5 o 10 m.";return;}
+  if(!Array.isArray(coords)||coords.length<2){result.textContent="Calcolare prima un percorso.";return;}
+  const select=document.getElementById("routingLocalDtmWindow");
+  const windowM=Number(select&&select.value)===10?10:5;
+  if(!_routingLocalDtmProfile||_routingLocalDtmProfile.model!==_routingLocalDtm||
+     _routingLocalDtmProfile.coords!==coords||_routingLocalDtmProfile.windowM!==windowM){
+    _routingLocalDtmProfile={model:_routingLocalDtm,coords,windowM,
+      data:routingLocalDtmBuildProfile(_routingLocalDtm,coords,windowM)};
+  }
+  const d=_routingLocalDtmProfile.data;
+  if(!d||!d.valid){
+    result.textContent=d&&d.reason?d.reason:"Nessuna finestra "+windowM+" m coperta dal DTM (quota assente o fuori area).";
+    return;
+  }
+  const max=d.max,coverage=Math.round(d.valid/Math.max(1,d.possible)*100);
+  let text="Massima assoluta su "+windowM+" m: "+routingLocalDtmFmt(max&&max.grade)+
+    " al km "+(max.distance/1000).toFixed(3)+
+    " · P95: "+(d.p95==null?"n/d":d.p95.toFixed(1)+"%")+
+    " · copertura: "+coverage+"%.";
+  const hover=r.altitudeHover,profile=r.elevationProfile&&r.elevationProfile.samples;
+  if(hover&&profile&&profile[hover.sampleIndex]){
+    const distance=profile[hover.sampleIndex].cumDistM;
+    const ix=Math.round(distance/ROUTING_LOCAL_DTM_STEP_M);
+    const sample=d.samples&&d.samples[ix];
+    text+=" Al cursore ("+distance.toFixed(1)+" m): "+routingLocalDtmFmt(sample&&sample.grade);
+  }
+  if(max && Math.abs(max.grade)>100){
+    text+=" ATTENZIONE: pendenza >100% nel DTM; possibile discontinuita o errore di posizione. Non e misura certificata del sentiero.";
+  }
+  result.textContent=text;
+}
+
+function routingLocalDtmGradeAt(distanceM){
+  const r=state._routing,cache=_routingLocalDtmProfile;
+  if(!_routingLocalDtm||!cache||!r||cache.model!==_routingLocalDtm||
+     cache.coords!==r.previewCoordinates||!Number.isFinite(distanceM))return null;
+  const samples=cache.data&&cache.data.samples;
+  const entry=samples&&samples[Math.round(distanceM/ROUTING_LOCAL_DTM_STEP_M)];
+  return entry&&Number.isFinite(entry.grade)?entry.grade:null;
+}
+function routingLocalDtmStatus(message){
+  const el=document.getElementById("routingLocalDtmStatus");
+  if(el)el.textContent=message;
+}
+function routingLocalDtmInstall(model,origin){
+  _routingLocalDtm=model;
+  _routingLocalDtmProfile=null;
+  routingLocalDtmStatus("DTM 5 m EPSG:3003 ("+origin+") in memoria, senza salvataggio. "+
+    "Pendenze indicative: griglia 5 m, trasformazione con accuratezza nominale ~4 m; piccoli errori di quota o posizione incidono molto su 5 m.");
+  routingLocalDtmUpdateUi();
+  try { routingApplyAltitudeHoverVisuals(); } catch(_){}
+}
+function routingLocalDtmMakeWcsUrl(coords){
+  if(!Array.isArray(coords)||coords.length<2||coords.length>ROUTING_LOCAL_DTM_MAX_POINTS)
+    throw Error("Troppi punti per una singola richiesta DTM.");
+  const pts=coords.map(p=>routingLocalDtmProject3003(p.lat,p.lon));
+  if(pts.some(p=>!p))throw Error("Percorso esterno alla Liguria supportata (EPSG:3003).");
+  const minX=Math.min(...pts.map(p=>p.x)),maxX=Math.max(...pts.map(p=>p.x));
+  const minY=Math.min(...pts.map(p=>p.y)),maxY=Math.max(...pts.map(p=>p.y));
+  const left=Math.floor((minX-40)/5)*5,bottom=Math.floor((minY-40)/5)*5;
+  const right=Math.ceil((maxX+40)/5)*5,top=Math.ceil((maxY+40)/5)*5;
+  const width=Math.round((right-left)/5),height=Math.round((top-bottom)/5);
+  if(width<2||height<2||width>900||height>900||width*height>350000)
+    throw Error("Area del percorso troppo grande per uno scarico singolo: usare un ritaglio DTM locale.");
+  const query=new URLSearchParams({service:"WCS",version:"1.0.0",request:"GetCoverage",
+    coverage:"M2056:L6952",CRS:"EPSG:3003",
+    BBOX:[left,bottom,right,top].join(","),WIDTH:String(width),HEIGHT:String(height),FORMAT:"GeoTIFF"});
+  return ROUTING_LOCAL_DTM_WCS+"?"+query.toString();
+}
+function routingLocalDtmWire(){
+  const file=document.getElementById("routingLocalDtmFile");
+  if(!file||file._routingDtmWired)return;
+  file._routingDtmWired=true;
+  const win=document.getElementById("routingLocalDtmWindow");
+  if(win)win.addEventListener("change",()=>{
+    _routingLocalDtmProfile=null;routingLocalDtmUpdateUi();
+    try { routingApplyAltitudeHoverVisuals(); } catch(_){}
+  });
+  const clear=document.getElementById("routingLocalDtmClear");
+  if(clear)clear.addEventListener("click",()=>{
+    _routingLocalDtm=null;_routingLocalDtmProfile=null;file.value="";
+    routingLocalDtmStatus("DTM rimosso dalla memoria. Nessun dato conservato.");
+    routingLocalDtmUpdateUi();
+    try { routingApplyAltitudeHoverVisuals(); } catch(_){}
+  });
+  file.addEventListener("change",async()=>{
+    const selected=file.files&&file.files[0];
+    if(!selected)return;
+    _routingLocalDtm=null;_routingLocalDtmProfile=null;
+    if(selected.size>ROUTING_LOCAL_DTM_MAX_BYTES){
+      routingLocalDtmStatus("File troppo grande (massimo 48 MB); nessun DTM caricato.");
+      routingLocalDtmUpdateUi();return;
+    }
+    try{
+      const buffer=await selected.arrayBuffer();
+      routingLocalDtmInstall(routingLocalDtmReadTiff(buffer),"file scelto");
+    }catch(e){routingLocalDtmStatus("DTM non caricato: "+String(e&&e.message||e));routingLocalDtmUpdateUi();}
+  });
+  const download=document.getElementById("routingLocalDtmFetch");
+  if(download)download.addEventListener("click",async()=>{
+    if(_routingLocalDtmBusy)return;
+    if(state.opsecStrict||state.forceOffline){
+      routingLocalDtmStatus("Rete vietata da OPSEC Strict/offline. Importare un GeoTIFF già disponibile.");
+      return;
+    }
+    const coords=state._routing&&state._routing.previewCoordinates;
+    if(!Array.isArray(coords)||coords.length<2){
+      routingLocalDtmStatus("Prima calcolare un percorso, poi richiedere il DTM della sua area.");return;
+    }
+    let url;
+    try{url=routingLocalDtmMakeWcsUrl(coords);}
+    catch(e){routingLocalDtmStatus(String(e&&e.message||e));return;}
+    if(!window.confirm("Inviare una sola richiesta alla Regione Liguria per il ritaglio DTM 5 m delle coordinate del percorso? Nessun GPS e nessun download futuro automatico."))return;
+    _routingLocalDtmBusy=true;download.disabled=true;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),25000);
+    try{
+      routingLocalDtmStatus("Richiesta opt-in al WCS regionale in corso...");
+      const response=await fetch(url,{method:"GET",mode:"cors",credentials:"omit",
+        cache:"no-store",redirect:"error",signal:controller.signal});
+      if(!response.ok)throw Error("WCS HTTP "+response.status);
+      const contentLength=Number(response.headers.get("Content-Length")||0);
+      if(contentLength>ROUTING_LOCAL_DTM_MAX_BYTES)throw Error("Ritaglio DTM troppo grande.");
+      const buffer=await response.arrayBuffer();
+      routingLocalDtmInstall(routingLocalDtmReadTiff(buffer),"Regione Liguria, richiesta volontaria");
+    }catch(e){
+      routingLocalDtmStatus("DTM non scaricato: "+String(e&&e.message||e)+
+        ". In alternativa importare manualmente il GeoTIFF EPSG:3003.");
+    }finally{
+      clearTimeout(timeout);_routingLocalDtmBusy=false;download.disabled=false;
+    }
+  });
+}
+
 function routingBuildElevationProfile(previewCoords, elevCoords){
   const samples = [];
   const n = Array.isArray(previewCoords) ? previewCoords.length : 0;
@@ -97711,6 +98039,7 @@ function routingRenderAltitudePanel(opts){
     return;
   }
   if (altWrap) altWrap.hidden = false;
+  try { routingLocalDtmUpdateUi(); } catch(_){}
   const m = r.routeMetrics;
   const auth = routingAuthorityAscentDescent(r);
   if (sum){
@@ -98406,6 +98735,7 @@ function routingSetAltitudeHover(sampleIndex, source){
   routingUpdateAltitudeSyncMarkerOnly();
 }
 function routingApplyAltitudeHoverVisuals(){
+  try { routingLocalDtmUpdateUi(); } catch(_){}
   const r = state._routing;
   const layout = r && r._altitudeChartLayout;
   if (!layout) return;
@@ -98431,7 +98761,11 @@ function routingApplyAltitudeHoverVisuals(){
     const distTxt = routingFmtRouteDistanceForUnit(s.cumDistM);
     const grTxt = (s.displayGradePct != null && Number.isFinite(s.displayGradePct)) ? routingFmtGradePct(s.displayGradePct) : null;
     const line1 = eleTxt + " · " + distTxt;
-    const line2 = grTxt ? grTxt + " / 200 m" : "";
+    const localValue=routingLocalDtmGradeAt(s.cumDistM);
+    const dtmWindow=(_routingLocalDtmProfile&&_routingLocalDtmProfile.windowM)||5;
+    const line2=_routingLocalDtm
+      ? ("DTM "+dtmWindow+" m: "+routingLocalDtmFmt(localValue))
+      : (grTxt ? grTxt + " / 200 m" : "");
     const tip = layout.tip;
     const tipGroup = layout.tipGroup;
     const tipBg = layout.tipBg;
@@ -99071,6 +99405,7 @@ function openRoutingPlannerPanel(service){
   if (!document.body.classList.contains("gis-mode")) return false;
   const dlg = document.getElementById("routingPlannerPanel");
   if (!dlg) return false;
+  try { routingLocalDtmWire(); } catch(_){}
   // MAP-TOOL-COORDINATOR-A: disarm any active map consumer (e.g. track drawing)
   // but do NOT register "routing-panel-open" — the panel itself does not
   // intercept map click/drag until the user enters a pick mode.
