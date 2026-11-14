@@ -16571,6 +16571,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 302 - Pendenza locale indipendente dal verso</h4><ul><li>Campionamento delle finestre 5/10 m da entrambe le estremita del percorso: massima assoluta e P95 invarianti per inversione A/B, con segno salita/discesa coerente. Nessuna nuova fonte dati o chiamata di rete.</li></ul>
             <h4>Build 301 - Pendenze locali 5/10 m da DTM 5 m</h4><ul><li>Scarico regionale opt-in o importazione GeoTIFF locale; nessun GPS, nessun dato persistito. Pendenze su 5/10 m con fonte e limiti di accuratezza dichiarati, senza confondere la misura con la media su 200 m.</li></ul>
             <h4>Build 300 - Pendenze su finestra di 200 m</h4><ul><li>Pendenza massima, grafico e difficolta usano una media su 200 m continui ed esplicitamente etichettata. Se il tratto e interrotto o troppo breve, la pendenza e non disponibile. Le quote e il provider restano invariati.</li></ul>
             <h4>Build 299 - Controllo pendenze Routing</h4><ul><li>Salti altimetrici non plausibili non contano nel dislivello filtrato, nelle pendenze o nella difficolta stimata; grafico e tooltip usano pendenze filtrate. I vecchi profili delle tracce non mostrano pendenze estreme senza modificare i dati archiviati.</li></ul>
@@ -26193,10 +26194,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-LOCAL-DTM-5M10M-A";
-const APP_BUILD_DETAIL = "Routing: pendenza locale 5/10 m da DTM regionale 5 m, opt-in rete o GeoTIFF offline.";
+const APP_BUILD_ID = "ROUTING-LOCAL-DTM-DIRECTION-INVARIANCE-B";
+const APP_BUILD_DETAIL = "Routing: pendenza locale 5/10 m invariata se si inverte il verso del percorso.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 301;
+const APP_BUILD_NUM = 302;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -97280,41 +97281,62 @@ function routingLocalDtmBuildProfile(model,coords,windowM){
   const total=dist[dist.length-1];
   if(!(total>=windowM)||total>ROUTING_LOCAL_DTM_MAX_POINTS*ROUTING_LOCAL_DTM_STEP_M)
     return {total,valid:0,reason:total<windowM?"Tratto inferiore alla finestra richiesta.":"Percorso troppo esteso per un singolo DTM."};
-  const count=Math.floor(total/ROUTING_LOCAL_DTM_STEP_M);
-  const arr=[];
-  let seg=0;
-  for(let i=0;i<=count;i++){
-    const d=i*ROUTING_LOCAL_DTM_STEP_M;
-    while(seg+2<dist.length&&dist[seg+1]<d)seg++;
-    const a=coords[seg],b=coords[seg+1],span=dist[seg+1]-dist[seg];
-    const t=span>0?Math.max(0,Math.min(1,(d-dist[seg])/span)):0;
-    const lat=a.lat+(b.lat-a.lat)*t,lon=a.lon+(b.lon-a.lon)*t;
-    const xy=routingLocalDtmProject3003(lat,lon);
-    const ele=xy?model.sampleXY(xy.x,xy.y):null;
-    arr.push({distance:d,ele,grade:null});
+  const step=ROUTING_LOCAL_DTM_STEP_M;
+  const count=Math.floor(total/step+1e-9);
+  const remainder=Math.max(0,total-count*step);
+  // Evaluate the same spatial 5/10 m windows in both travel directions.
+  // A single grid anchored to point A otherwise shifts by the route
+  // length remainder when the route is reversed, changing max and P95.
+  function grid(origin){
+    const samples=[];
+    let seg=0;
+    for(let i=0;i<=count;i++){
+      const d=Math.min(total,origin+i*step);
+      while(seg+2<dist.length&&dist[seg+1]<d)seg++;
+      const a=coords[seg],b=coords[seg+1],span=dist[seg+1]-dist[seg];
+      const t=span>0?Math.max(0,Math.min(1,(d-dist[seg])/span)):0;
+      const lat=a.lat+(b.lat-a.lat)*t,lon=a.lon+(b.lon-a.lon)*t;
+      const xy=routingLocalDtmProject3003(lat,lon);
+      const ele=xy?model.sampleXY(xy.x,xy.y):null;
+      samples.push({distance:d,ele,grade:null});
+    }
+    return samples;
   }
-  const half=windowM/(2*ROUTING_LOCAL_DTM_STEP_M);
-  let valid=0,max=null,positive=null,negative=null;
+  const arr=grid(0);
+  const grids=remainder>1e-6?[arr,grid(remainder)]:[arr];
+  const half=windowM/(2*step);
+  const visitedCenters=new Set();
+  let valid=0,possible=0,max=null,positive=null,negative=null;
   const absGrades=[];
-  for(let i=half;i+half<arr.length;i++){
-    const a=arr[i-half],b=arr[i+half];
-    let ok=true;
-    for(let j=i-half;j<=i+half;j++)if(arr[j].ele==null){ok=false;break;}
-    if(!ok)continue;
-    const grade=(b.ele-a.ele)*100/windowM;
-    if(!Number.isFinite(grade))continue;
-    arr[i].grade=grade;
-    valid++;
-    absGrades.push(Math.abs(grade));
-    if(!max||Math.abs(grade)>Math.abs(max.grade))max={distance:arr[i].distance,grade};
-    if(grade>0&&(!positive||grade>positive.grade))positive={distance:arr[i].distance,grade};
-    if(grade<0&&(!negative||grade<negative.grade))negative={distance:arr[i].distance,grade};
+  for(const samples of grids){
+    for(let i=half;i+half<samples.length;i++){
+      const middle=samples[i],key=middle.distance.toFixed(6);
+      if(visitedCenters.has(key))continue;
+      visitedCenters.add(key);
+      possible++;
+      const a=samples[i-half],b=samples[i+half];
+      let ok=true;
+      for(let j=i-half;j<=i+half;j++){
+        if(samples[j].ele==null){ok=false;break;}
+      }
+      if(!ok)continue;
+      const grade=(b.ele-a.ele)*100/windowM;
+      if(!Number.isFinite(grade))continue;
+      middle.grade=grade;
+      valid++;
+      absGrades.push(Math.abs(grade));
+      if(!max||Math.abs(grade)>Math.abs(max.grade))max={distance:middle.distance,grade};
+      if(grade>0&&(!positive||grade>positive.grade))positive={distance:middle.distance,grade};
+      if(grade<0&&(!negative||grade<negative.grade))negative={distance:middle.distance,grade};
+    }
   }
   absGrades.sort((a,b)=>a-b);
   const p95=absGrades.length?absGrades[Math.ceil(absGrades.length*.95)-1]:null;
-  return {total,samples:arr,valid,max,positive,negative,p95,windowM,
-    possible:Math.max(0,arr.length-2*half)};
+  return {total,samples:arr,otherSamples:grids.length>1?grids[1]:null,
+    valid,max,positive,negative,p95,windowM,possible};
 }
+
+
 function routingLocalDtmFmt(grade){
   if(grade==null||!Number.isFinite(grade))return "n/d";
   const angle=Math.atan(Math.abs(grade)/100)*180/Math.PI;
@@ -97346,9 +97368,8 @@ function routingLocalDtmUpdateUi(){
   const hover=r.altitudeHover,profile=r.elevationProfile&&r.elevationProfile.samples;
   if(hover&&profile&&profile[hover.sampleIndex]){
     const distance=profile[hover.sampleIndex].cumDistM;
-    const ix=Math.round(distance/ROUTING_LOCAL_DTM_STEP_M);
-    const sample=d.samples&&d.samples[ix];
-    text+=" Al cursore ("+distance.toFixed(1)+" m): "+routingLocalDtmFmt(sample&&sample.grade);
+    text+=" Al cursore ("+distance.toFixed(1)+" m): "+
+      routingLocalDtmFmt(routingLocalDtmGradeAt(distance));
   }
   if(max && Math.abs(max.grade)>100){
     text+=" ATTENZIONE: pendenza >100% nel DTM; possibile discontinuita o errore di posizione. Non e misura certificata del sentiero.";
@@ -97360,9 +97381,18 @@ function routingLocalDtmGradeAt(distanceM){
   const r=state._routing,cache=_routingLocalDtmProfile;
   if(!_routingLocalDtm||!cache||!r||cache.model!==_routingLocalDtm||
      cache.coords!==r.previewCoordinates||!Number.isFinite(distanceM))return null;
-  const samples=cache.data&&cache.data.samples;
-  const entry=samples&&samples[Math.round(distanceM/ROUTING_LOCAL_DTM_STEP_M)];
-  return entry&&Number.isFinite(entry.grade)?entry.grade:null;
+  const data=cache.data;
+  const groups=data?[data.samples,data.otherSamples]:[];
+  let grade=null,nearest=ROUTING_LOCAL_DTM_STEP_M/2+1e-6;
+  for(const samples of groups){
+    if(!Array.isArray(samples)||!samples.length)continue;
+    const offset=samples[0].distance;
+    const ix=Math.round((distanceM-offset)/ROUTING_LOCAL_DTM_STEP_M);
+    if(ix<0||ix>=samples.length)continue;
+    const entry=samples[ix],delta=Math.abs(entry.distance-distanceM);
+    if(Number.isFinite(entry.grade)&&delta<nearest){nearest=delta;grade=entry.grade;}
+  }
+  return grade;
 }
 function routingLocalDtmStatus(message){
   const el=document.getElementById("routingLocalDtmStatus");
