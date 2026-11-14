@@ -16548,6 +16548,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 300 - Pendenze su finestra di 200 m</h4><ul><li>Pendenza massima, grafico e difficolta usano una media su 200 m continui ed esplicitamente etichettata. Se il tratto e interrotto o troppo breve, la pendenza e non disponibile. Le quote e il provider restano invariati.</li></ul>
             <h4>Build 299 - Controllo pendenze Routing</h4><ul><li>Salti altimetrici non plausibili non contano nel dislivello filtrato, nelle pendenze o nella difficolta stimata; grafico e tooltip usano pendenze filtrate. I vecchi profili delle tracce non mostrano pendenze estreme senza modificare i dati archiviati.</li></ul>
             <h4>Build 298 - Escape Dettaglio zona D-Flight desktop</h4><ul><li>Il dettaglio D-Flight minimizzato non intercetta Escape destinato a un pannello visibile su desktop. Nessuna modifica ai dati aeronautici, OPSEC o comportamento mobile.</li></ul>
             <h4>Build 297 - Escape Guida e Strumenti desktop</h4><ul><li>Guida e Strumenti minimizzati non intercettano Escape destinato a un pannello visibile; modalit? inserimento e comportamento mobile invariati.</li></ul>
@@ -20024,6 +20025,8 @@ const I18N = {
     "routing.altitudeDistance":"Distanza",
     "routing.altitudeElevation":"Quota",
     "routing.altitudeGrade":"Pendenza",
+    "routing.avgGradeWindowLabel":"Pendenza media su 200 m",
+    "routing.avgGradeUnavailable":"Pendenza media su 200 m non disponibile",
     "routing.altitudeAscent":"Dislivello positivo",
     "routing.altitudeDescent":"Dislivello negativo",
     "routing.altitudeDiscrepancy":"Discrepanza altimetria",
@@ -20040,8 +20043,8 @@ const I18N = {
     "routing.difficultyFactorDistance":"Distanza",
     "routing.difficultyFactorAscent":"Dislivello positivo",
     "routing.difficultyFactorAscentPerKm":"Dislivello positivo per km",
-    "routing.difficultyFactorMaxGrade":"Pendenza massima",
-    "routing.difficultyFactorSteepLen":"Tratti >15%",
+    "routing.difficultyFactorMaxGrade":"Pendenza media massima (200 m)",
+    "routing.difficultyFactorSteepLen":"Tratti >15% (media 200 m)",
     "routing.positiveClimb":"Dislivello positivo",
     "routing.negativeClimb":"Dislivello negativo",
     "routing.estimatedTime":"Tempo stimato",
@@ -22265,6 +22268,8 @@ const I18N = {
     "routing.altitudeDistance":"Distance",
     "routing.altitudeElevation":"Elevation",
     "routing.altitudeGrade":"Grade",
+    "routing.avgGradeWindowLabel":"200 m average grade",
+    "routing.avgGradeUnavailable":"200 m average grade unavailable",
     "routing.altitudeAscent":"Positive elevation",
     "routing.altitudeDescent":"Negative elevation",
     "routing.altitudeDiscrepancy":"Elevation discrepancy",
@@ -22281,8 +22286,8 @@ const I18N = {
     "routing.difficultyFactorDistance":"Distance",
     "routing.difficultyFactorAscent":"Positive elevation",
     "routing.difficultyFactorAscentPerKm":"Positive elevation per km",
-    "routing.difficultyFactorMaxGrade":"Maximum grade",
-    "routing.difficultyFactorSteepLen":"Sections >15%",
+    "routing.difficultyFactorMaxGrade":"Maximum average grade (200 m)",
+    "routing.difficultyFactorSteepLen":"Sections >15% (200 m average)",
     "routing.positiveClimb":"Positive elevation",
     "routing.negativeClimb":"Negative elevation",
     "routing.estimatedTime":"Estimated time",
@@ -26164,10 +26169,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-GRADE-OUTLIER-GUARD-A";
-const APP_BUILD_DETAIL = "Routing: pendenze filtrate robuste e guardia sui profili delle tracce salvate.";
+const APP_BUILD_ID = "ROUTING-GRADE-AVERAGE-WINDOW-200M-B";
+const APP_BUILD_DETAIL = "Routing: pendenza media su 200 m esplicita, non picchi DEM locali.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 299;
+const APP_BUILD_NUM = 300;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -96566,6 +96571,9 @@ const ROUTING_ELEV_MAP_COARSE_MAX = 140;
 const ROUTING_ELEV_FILTER_BUCKET_M = 25;
 const ROUTING_ELEV_FILTER_DEADBAND_M = 3;
 const ROUTING_ELEV_MAX_GRADE_MIN_SEG_M = 15;
+// DEM height uncertainty dominates grades on 25 m cells. The primary
+// display is a mean over a declared 200 m continuous path distance.
+const ROUTING_ELEV_GRADE_DISPLAY_WINDOW_M = 200;
 const ROUTING_SPEED_PRESETS = {
   relaxed: 2.1,
   steady: 2.4,
@@ -96684,7 +96692,8 @@ function routingFmtSegmentDistance(meters){
   return routingFmtRouteDistanceKm(m);
 }
 function routingFmtGradePct(value){
-  const n = Number(value);
+  if (value == null || typeof value !== "number") return "\u2014";
+  const n = value;
   if (!Number.isFinite(n)) return "—";
   return routingNumberFormatter({ maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(n) + "%";
 }
@@ -96828,6 +96837,37 @@ function routingFilterRunBucketMedian(samples, runIdx, bucketM){
   }
   return dedup;
 }
+function routingFilteredElevationAtDistance(part, targetM){
+  if (!Array.isArray(part) || part.length < 2 || !Number.isFinite(targetM)) return null;
+  const first = Number(part[0].cumDistM), last = Number(part[part.length - 1].cumDistM);
+  if (!(targetM >= first - 1e-6 && targetM <= last + 1e-6)) return null;
+  let lo = 0, hi = part.length - 1;
+  while (hi - lo > 1){
+    const mid = (lo + hi) >>> 1;
+    if (Number(part[mid].cumDistM) < targetM) lo = mid;
+    else hi = mid;
+  }
+  const a = part[lo], b = part[hi];
+  const d = Number(b.cumDistM) - Number(a.cumDistM);
+  if (!(d > 0) || !Number.isFinite(a.ele) || !Number.isFinite(b.ele)) return null;
+  const t = Math.max(0, Math.min(1, (targetM - Number(a.cumDistM)) / d));
+  return a.ele + (b.ele - a.ele) * t;
+}
+function routingMeanGradeAtDistance(part, atM, windowM){
+  if (!Array.isArray(part) || part.length < 2) return null;
+  const start = Number(part[0].cumDistM);
+  const end = Number(part[part.length - 1].cumDistM);
+  if (!(windowM > 0) || !(end - start >= windowM - 1e-6)) return null;
+  const half = windowM / 2;
+  const center = Math.max(start + half, Math.min(end - half, atM));
+  const a = routingFilteredElevationAtDistance(part, center - half);
+  const b = routingFilteredElevationAtDistance(part, center + half);
+  const grade = (a != null && b != null) ? (b - a) * 100 / windowM : null;
+  if (grade == null || !Number.isFinite(grade) ||
+      Math.abs(grade) > ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT + ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT) return null;
+  return grade;
+}
+
 function routingBuildFilteredElevationModel(samples){
   const emptyBands = routingEmptyGradeBands();
   const base = {
@@ -96837,6 +96877,14 @@ function routingBuildFilteredElevationModel(samples){
     filteredP95GradePct: null,
     maxFilteredGradePct: null,
     gradeBands: emptyBands,
+    avgGradeWindowM: ROUTING_ELEV_GRADE_DISPLAY_WINDOW_M,
+    avgGradeAvailable: false,
+    avgP95GradePct: null,
+    avgMaxGradePct: null,
+    avgGradeBands: routingEmptyGradeBands(),
+    avgGradeSegmentCount: 0,
+    avgGradeDistanceM: 0,
+    avgLengthOver15pctM: 0,
     filteredGradeSegmentCount: 0,
     filteredGradeDistanceM: 0,
     filteredLengthOver15pctM: 0,
@@ -96936,6 +96984,9 @@ function routingBuildFilteredElevationModel(samples){
   let gradeDist = 0;
   let steep15 = 0;
   const displaySegments = [];
+  const avgGradeAbs = [], avgGradeWeights = [];
+  const avgBands = routingEmptyGradeBands();
+  let avgMax = null, avgSegCount = 0, avgDist = 0, avgSteepLen = 0;
 
   for (let r = 0; r < runs.length; r++){
     const pts = routingFilterRunBucketMedian(samples, runs[r], ROUTING_ELEV_FILTER_BUCKET_M);
@@ -96981,11 +97032,33 @@ function routingBuildFilteredElevationModel(samples){
         gradeDist += dist;
         if (absG > 15) steep15 += dist;
         if (maxGrade == null || absG > maxGrade) maxGrade = absG;
-        mapped.push({ startM: a.cumDistM, endM: b.cumDistM, gradePct: grade });
         const bandId = routingClassifyGradeBand(absG);
         if (bandId && bands[bandId]){
           if (grade >= 0) bands[bandId].posM += dist;
           else bands[bandId].negM += dist;
+        }
+      }
+      // A sample with a valid 25 m grade does not automatically have a
+      // trustworthy 200 m mean. Never shorten the window silently.
+      for (let i = 1; i < part.length; i++){
+        const a = part[i - 1], b = part[i];
+        const dist = Number(b.cumDistM) - Number(a.cumDistM);
+        if (!(dist >= ROUTING_ELEV_MAX_GRADE_MIN_SEG_M)) continue;
+        const meanGrade = routingMeanGradeAtDistance(part,
+          (a.cumDistM + b.cumDistM) / 2, ROUTING_ELEV_GRADE_DISPLAY_WINDOW_M);
+        if (meanGrade == null) continue;
+        const absMean = Math.abs(meanGrade);
+        avgGradeAbs.push(absMean);
+        avgGradeWeights.push(dist);
+        avgSegCount++;
+        avgDist += dist;
+        if (absMean > 15) avgSteepLen += dist;
+        if (avgMax == null || absMean > avgMax) avgMax = absMean;
+        mapped.push({ startM: a.cumDistM, endM: b.cumDistM, gradePct: meanGrade });
+        const avgBand = routingClassifyGradeBand(absMean);
+        if (avgBand && avgBands[avgBand]){
+          if (meanGrade >= 0) avgBands[avgBand].posM += dist;
+          else avgBands[avgBand].negM += dist;
         }
       }
     }
@@ -97007,6 +97080,13 @@ function routingBuildFilteredElevationModel(samples){
   base.filteredGradeSegmentCount = gradeSegCount;
   base.filteredGradeDistanceM = gradeDist;
   base.filteredLengthOver15pctM = steep15;
+  base.avgP95GradePct = avgGradeAbs.length
+    ? routingPercentileWeighted(avgGradeAbs, avgGradeWeights, 0.95) : null;
+  base.avgMaxGradePct = avgMax;
+  base.avgGradeBands = avgBands;
+  base.avgGradeSegmentCount = avgSegCount;
+  base.avgGradeDistanceM = avgDist;
+  base.avgLengthOver15pctM = avgSteepLen;
 
   let reason = "available";
   if (!multiPointRuns) reason = "no_run";
@@ -97025,9 +97105,12 @@ function routingBuildFilteredElevationModel(samples){
     Number.isFinite(base.filteredP95GradePct)
   );
   base.filterFallbackReason = base.filterAvailable ? "available" : reason;
-  // Labels and color bands use qualified filtered grades, never raw
-  // per-metre noise or suspected elevation discontinuities.
-  if (base.filterAvailable){
+  base.avgGradeAvailable = base.filterAvailable &&
+    avgSegCount >= ROUTING_ELEV_MIN_USABLE_GRADE_SEGS &&
+    avgDist > 0 && Number.isFinite(base.avgP95GradePct);
+  // Labels and colors use the declared 200 m mean. Raw 25 m grades
+  // remain diagnostics only, with no cross-gap interpolation.
+  if (base.avgGradeAvailable){
     for (let r = 0; r < runs.length; r++){
       const segments = displaySegments[r] || [];
       let at = 0;
@@ -97157,6 +97240,14 @@ function routingBuildElevationProfile(previewCoords, elevCoords){
       filteredGradeSegmentCount: filtered.filteredGradeSegmentCount,
       filteredGradeDistanceM: filtered.filteredGradeDistanceM,
       filteredLengthOver15pctM: filtered.filteredLengthOver15pctM,
+      avgGradeWindowM: filtered.avgGradeWindowM,
+      avgGradeAvailable: !!filtered.avgGradeAvailable,
+      avgP95GradePct: filtered.avgP95GradePct,
+      avgMaxGradePct: filtered.avgMaxGradePct,
+      avgGradeBands: filtered.avgGradeBands,
+      avgGradeSegmentCount: filtered.avgGradeSegmentCount,
+      avgGradeDistanceM: filtered.avgGradeDistanceM,
+      avgLengthOver15pctM: filtered.avgLengthOver15pctM,
       filterAvailable: !!filtered.filterAvailable,
       filterFallbackReason: filtered.filterFallbackReason,
       filterMeta: filtered.filterMeta,
@@ -97209,21 +97300,14 @@ function routingComputeDifficulty(routeMetrics, elevationProfile, profileId){
   const samples = elevationProfile && elevationProfile.samples;
   const sampleCount = Array.isArray(samples) ? samples.length : 0;
   const filterOk = !!st.filterAvailable;
-  const ascentM = filterOk
-    ? Number(st.filteredAscentM)
-    : Number(m.ascentM);
-  const p95 = filterOk
-    ? Number(st.filteredP95GradePct)
-    : (Number.isFinite(st.p95AbsGradePct) ? Number(st.p95AbsGradePct) : null);
-  const steepLenM = filterOk
-    ? Number(st.filteredLengthOver15pctM) || 0
-    : (Number(st.lengthOver15pctM) || 0);
-  const maxG = (st.maxFilteredGradePct != null && Number.isFinite(st.maxFilteredGradePct))
-    ? Number(st.maxFilteredGradePct)
-    : null;
-  const usable = filterOk
-    ? (Number(st.filteredGradeSegmentCount) || 0)
-    : (Number(st.usableGradeSegmentCount) || 0);
+  const gradeOk = filterOk && st.avgGradeAvailable === true;
+  const ascentM = filterOk ? Number(st.filteredAscentM) : Number(m.ascentM);
+  // The local 25 m value is not the same as a reliable 200 m mean.
+  const p95 = gradeOk ? Number(st.avgP95GradePct) : null;
+  const steepLenM = gradeOk ? (Number(st.avgLengthOver15pctM) || 0) : 0;
+  const maxG = gradeOk && Number.isFinite(st.avgMaxGradePct)
+    ? Number(st.avgMaxGradePct) : null;
+  const usable = gradeOk ? (Number(st.avgGradeSegmentCount) || 0) : 0;
 
   const unknown = () => ({
     level: "unknown",
@@ -97234,7 +97318,7 @@ function routingComputeDifficulty(routeMetrics, elevationProfile, profileId){
     filteredP95GradePct: Number.isFinite(p95) ? p95 : null
   });
 
-  if ((!filterOk && Number(st.suspectSegmentCount) > 0) ||
+  if (!gradeOk || (!filterOk && Number(st.suspectSegmentCount) > 0) ||
       !(Number.isFinite(distanceM) && distanceM > 0) ||
       sampleCount < ROUTING_ELEV_MIN_SAMPLES_FOR_DIFFICULTY ||
       usable < ROUTING_ELEV_MIN_USABLE_GRADE_SEGS ||
@@ -97545,7 +97629,8 @@ function routingRenderAscentDetail(r){
   if (!r || !r.routeMetrics) return;
   const auth = routingAuthorityAscentDescent(r);
   const st = r.elevationProfile && r.elevationProfile.stats;
-  const bands = (st && st.gradeBands) || routingEmptyGradeBands();
+  const avgGradeOk = !!(st && st.avgGradeAvailable);
+  const bands = avgGradeOk ? st.avgGradeBands : null;
   const addRow = (labelHtml, posTxt, negTxt) => {
     const tr = document.createElement("tr");
     const td0 = document.createElement("td");
@@ -97564,13 +97649,13 @@ function routingRenderAscentDetail(r){
   );
   for (let i = 0; i < ROUTING_GRADE_BAND_DEFS.length; i++){
     const def = ROUTING_GRADE_BAND_DEFS[i];
-    const b = bands[def.id] || { posM: 0, negM: 0 };
+    const b = (bands && bands[def.id]) || { posM: 0, negM: 0 };
     const label = '<span class="routing-band-pill ' + def.pill + '" aria-hidden="true"></span>' +
       routingT(def.labelKey, def.labelFb);
     addRow(
       label,
-      routingFmtSegmentDistanceForUnit(b.posM || 0),
-      routingFmtSegmentDistanceForUnit(b.negM || 0)
+      bands ? routingFmtSegmentDistanceForUnit(b.posM || 0) : "\u2014",
+      bands ? routingFmtSegmentDistanceForUnit(b.negM || 0) : "\u2014"
     );
   }
   if (auth.source === "filtered" && note){
@@ -97708,6 +97793,9 @@ function routingRenderAltitudePanel(opts){
     if (auth.source === "unreliable"){
       msgs.push(routingT("routing.filteredUnavailable", "Filtered profile unavailable"));
     }
+    if (ep.stats.avgGradeAvailable !== true){
+      msgs.push(routingT("routing.avgGradeUnavailable", "200 m mean grade unavailable"));
+    }
     if (auth.source === "filtered" && auth.serverAscentM != null && Number.isFinite(auth.ascentM)){
       const delta = Math.abs(auth.serverAscentM - auth.ascentM);
       const pct = delta / Math.max(1, Math.abs(auth.serverAscentM));
@@ -97720,7 +97808,8 @@ function routingRenderAltitudePanel(opts){
   }
   if (leg){
     leg.textContent = routingT("routing.altitudeAscent", "Positive elevation") + " " + routingFmtAltitudeForUnit(auth.ascentM) +
-      " · " + routingT("routing.altitudeDescent", "Negative elevation") + " " + routingFmtAltitudeForUnit(auth.descentM);
+      " · " + routingT("routing.altitudeDescent", "Negative elevation") + " " + routingFmtAltitudeForUnit(auth.descentM) +
+      " \u00b7 " + routingT("routing.avgGradeWindowLabel", "200 m average grade");
   }
   if (te){
     te.textContent = routingT("routing.distance", "Distance") + " " + routingFmtRouteDistanceForUnit(m.distanceM) +
@@ -98289,7 +98378,7 @@ function routingUpdateAltitudeSyncMarkerOnly(){
       let txt = routingFmtAltitudeForUnit(sample.ele);
       const shownGrade = routingChartGradeForSample(sample);
       if (shownGrade != null){
-        txt += " · " + routingFmtGradePct(shownGrade);
+        txt += " · " + routingFmtGradePct(shownGrade) + " / 200 m";
       }
       label.textContent = txt;
       g.appendChild(label);
@@ -98342,7 +98431,7 @@ function routingApplyAltitudeHoverVisuals(){
     const distTxt = routingFmtRouteDistanceForUnit(s.cumDistM);
     const grTxt = (s.displayGradePct != null && Number.isFinite(s.displayGradePct)) ? routingFmtGradePct(s.displayGradePct) : null;
     const line1 = eleTxt + " · " + distTxt;
-    const line2 = grTxt || "";
+    const line2 = grTxt ? grTxt + " / 200 m" : "";
     const tip = layout.tip;
     const tipGroup = layout.tipGroup;
     const tipBg = layout.tipBg;
