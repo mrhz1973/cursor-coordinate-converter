@@ -11947,7 +11947,17 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   max-width:100%;
 }
 .saved-tracks-table .btn-saved-fly{ padding:3px 8px; font-size:.78rem; }
+/* GIS-TRACK-SAVE-CTA-DESKTOP-A: visible archive Save on desktop; mobile remains unchanged. */
 .track-saved-toolbar{ margin-top:8px; }
+.track-save-need-points{
+  color:var(--muted); font-size:.81rem; line-height:1.35;
+}
+@media (min-width:769px){
+  #track-points-head [data-role="track-save-current"]{ display:none !important; }
+}
+@media (max-width:768px){
+  #btnTrackSaveLibrary, #trackSaveNeedPoints{ display:none !important; }
+}
 .saved-tracks-batch-bar{
   display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px;
   margin-top:8px;
@@ -14286,6 +14296,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
         <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.savedHint">Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» è solo uno stato (visibile/nascosta sulla mappa); la visibilità si cambia con i pulsanti sopra la tabella; la prima colonna serve per selezionare le righe (batch ed export). «Centra» sposta la vista; puoi rinominare ed eliminare.</p>
         <div class="track-toolbar track-saved-toolbar">
           <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary track-save-cta" disabled data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
+          <span id="trackSaveNeedPoints" class="hint track-save-need-points" data-i18n="track.saveNeedPoints">Aggiungi almeno 2 punti per salvare.</span>
           <span id="savedTracksSelectionMeta" class="hint" style="margin-left:auto;font-size:.85rem;color:var(--muted);white-space:nowrap;"></span>
         </div>
         <div id="savedTracksBatchBar" class="saved-tracks-batch-bar" hidden>
@@ -18243,6 +18254,7 @@ const I18N = {
     "track.savedHint":"Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» è solo uno stato (visibile/nascosta sulla mappa); la visibilità si cambia con i pulsanti sopra la tabella; la prima colonna serve per selezionare le righe (batch ed export). «Centra» sposta la vista; puoi rinominare ed eliminare.",
     "track.savedRowCtxHint":"Tasto destro per azioni · lungo tocco su touch",
     "track.saveLibrary":"💾 Salva traccia in archivio…",
+    "track.saveNeedPoints":"Aggiungi almeno 2 punti per salvare.",
     "track.updateLibrary":"Aggiorna traccia",
     "track.closeLoseSavedEditConfirm":"Le modifiche non salvate verranno annullate. La traccia salvata nell’archivio resterà intatta. Continuare?",
     "track.editDiscardedNotify":"Modifiche alla traccia annullate.",
@@ -18370,6 +18382,7 @@ const I18N = {
     "tip.trackExpShpZip":"Scarica shapefile elementari (.shp/.shx) in un archivio ZIP.",
     "tip.trackExportOpen":"Esporta la traccia corrente in GPX, KML, KMZ, GeoJSON, CSV, WKT o SHP ZIP.",
     "tip.trackSaveLibrary":"Salva una copia della traccia corrente nell'archivio (max 50).",
+    "tip.trackSaveNeedPoints":"Aggiungi almeno due punti alla traccia corrente per abilitare Salva.",
     "tip.trackUpdateLibrary":"Aggiorna la traccia selezionata nell’archivio.",
     "tip.trackDeleteLastSaved":"Rimuove l'ultima traccia aggiunta all'archivio (ordine di salvataggio).",
     "tip.trackDeleteSelected":"Elimina le tracce spuntate nella colonna a sinistra.",
@@ -20760,6 +20773,7 @@ const I18N = {
     "track.savedHint":"Save the current track to the archive. In the table: the “Show” column is only a status (visible/hidden on the map); use the buttons above the table to change visibility; the first column selects rows (batch and export). “Center” moves the view; you can rename and delete.",
     "track.savedRowCtxHint":"Right-click for actions · long-press on touch",
     "track.saveLibrary":"💾 Save track to archive…",
+    "track.saveNeedPoints":"Add at least 2 points before saving.",
     "track.updateLibrary":"Update track",
     "track.closeLoseSavedEditConfirm":"Unsaved changes will be discarded. The saved track in the archive will remain unchanged. Continue?",
     "track.editDiscardedNotify":"Track edits discarded.",
@@ -20887,6 +20901,7 @@ const I18N = {
     "tip.trackExpShpZip":"Download basic shapefiles (.shp/.shx) inside a ZIP archive.",
     "tip.trackExportOpen":"Export the current track as GPX, KML, KMZ, GeoJSON, CSV, WKT or SHP ZIP.",
     "tip.trackSaveLibrary":"Save a snapshot of the current track to the archive (max 50).",
+    "tip.trackSaveNeedPoints":"Add at least two points to the current track to enable Save.",
     "tip.trackUpdateLibrary":"Update the selected track in the archive.",
     "tip.trackDeleteLastSaved":"Remove the most recently saved archive entry.",
     "tip.trackDeleteSelected":"Delete the tracks checked in the left column.",
@@ -22999,6 +23014,7 @@ const I18N = {
     "track.savedHint":"Enregistrez la trace courante dans l’archive. Dans le tableau : la colonne « Aff. » indique seulement l’état (visible/masquée sur la carte) ; la visibilité se règle avec les boutons au-dessus du tableau ; la première colonne sert à sélectionner les lignes (lot et export). « Centrer » déplace la vue ; vous pouvez renommer et supprimer.",
     "track.savedRowCtxHint":"Clic droit pour les actions · appui long au tactile",
     "track.saveLibrary":"💾 Enregistrer la trace…",
+    "track.saveNeedPoints":"Ajoutez au moins 2 points avant d\u0027enregistrer.",
     "track.updateLibrary":"Mettre à jour la trace",
     "track.closeLoseSavedEditConfirm":"Les modifications non enregistrées seront annulées. La trace enregistrée dans l'archive restera intacte. Continuer ?",
     "track.editDiscardedNotify":"Modifications de la trace annulées.",
@@ -23117,6 +23133,7 @@ const I18N = {
     "tip.trackExpShpZip":"Télécharger des shapefiles simples (.shp/.shx) dans une archive ZIP.",
     "tip.trackExportOpen":"Exporter la trace actuelle en GPX, KML, KMZ, GeoJSON, CSV, WKT ou SHP ZIP.",
     "tip.trackSaveLibrary":"Enregistre une copie de la trace courante dans l'archive (max 50).",
+    "tip.trackSaveNeedPoints":"Ajoutez au moins deux points \u00e0 la trace courante pour activer Enregistrer.",
     "tip.trackUpdateLibrary":"Mettre à jour la trace sélectionnée dans l'archive.",
     "tip.trackDeleteLastSaved":"Supprime la dernière trace ajoutée à l'archive.",
     "tip.trackDeleteSelected":"Supprime les traces cochées dans la colonne de gauche.",
@@ -26206,10 +26223,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A";
-const APP_BUILD_DETAIL = "Importa e salva: quote GPX/KML conservate anche se parziali o presenti in un solo punto.";
+const APP_BUILD_ID = "GIS-TRACK-SAVE-CTA-DESKTOP-A";
+const APP_BUILD_DETAIL = "Desktop: Salva in archivio visibile anche a traccia vuota, disponibile da due punti; layout mobile invariato.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 305;
+const APP_BUILD_NUM = 306;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -70910,19 +70927,22 @@ function syncTrackSaveLibraryActionsState(){
   const libEdit = trackIsEditingSavedLibrary();
   const bMain = document.getElementById("btnTrackSaveLibrary");
   if (bMain){
-    // UX: keep a single canonical Save/Update CTA in the "Punti" header.
-    // Keep this legacy button in the DOM (bindings) but never show it.
-    bMain.hidden = true;
-    bMain.disabled = true;
-    // Still keep its content/tips coherent (in case some code reads it).
+    // Desktop uses the visible Save CTA next to "Tracce salvate".
+    // CSS preserves the existing point-header CTA on mobile (<=768px).
+    bMain.hidden = false;
+    bMain.disabled = !canSave || !!state._trackPromptOpen;
     const lbl = libEdit ? (t("track.updateLibrary") || "") : (t("track.saveLibrary") || "");
-    const tip = libEdit ? (t("tip.trackUpdateLibrary") || "") : (t("tip.trackSaveLibrary") || "");
+    const tip = !canSave
+      ? (t("tip.trackSaveNeedPoints") || "")
+      : (libEdit ? (t("tip.trackUpdateLibrary") || "") : (t("tip.trackSaveLibrary") || ""));
     if (lbl) bMain.textContent = lbl;
     if (tip){
       bMain.setAttribute("data-tip", tip);
       bMain.setAttribute("aria-label", tip);
     }
   }
+  const needHint = document.getElementById("trackSaveNeedPoints");
+  if (needHint) needHint.hidden = canSave;
   const p = document.getElementById("track-completion-prompt");
   const bPrompt = p && p.querySelector ? p.querySelector('[data-role="track-prompt-save"]') : null;
   if (bPrompt){
