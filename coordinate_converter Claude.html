@@ -16571,6 +16571,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 303 - Conservazione quote GPX/KML nelle Tracce salvate</h4><ul><li>Un allegato altimetrico dedicato conserva le quote originali GPX senza attribuire una precisione DTM. Importazione Tracce salvate, riapertura e GPX esportato conservano i campioni validi e i vuoti. KML 3D conserva le quote quando il profilo e completo, con altitudeMode absolute; le tracce solo 2D restano compatibili.</li></ul>
             <h4>Build 302 - Pendenza locale indipendente dal verso</h4><ul><li>Campionamento delle finestre 5/10 m da entrambe le estremita del percorso: massima assoluta e P95 invarianti per inversione A/B, con segno salita/discesa coerente. Nessuna nuova fonte dati o chiamata di rete.</li></ul>
             <h4>Build 301 - Pendenze locali 5/10 m da DTM 5 m</h4><ul><li>Scarico regionale opt-in o importazione GeoTIFF locale; nessun GPS, nessun dato persistito. Pendenze su 5/10 m con fonte e limiti di accuratezza dichiarati, senza confondere la misura con la media su 200 m.</li></ul>
             <h4>Build 300 - Pendenze su finestra di 200 m</h4><ul><li>Pendenza massima, grafico e difficolta usano una media su 200 m continui ed esplicitamente etichettata. Se il tratto e interrotto o troppo breve, la pendenza e non disponibile. Le quote e il provider restano invariati.</li></ul>
@@ -26194,10 +26195,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-LOCAL-DTM-DIRECTION-INVARIANCE-B";
-const APP_BUILD_DETAIL = "Routing: pendenza locale 5/10 m invariata se si inverte il verso del percorso.";
+const APP_BUILD_ID = "GIS-GPX-KML-TRACK-ELEVATION-ROUNDTRIP-A";
+const APP_BUILD_DETAIL = "Tracce salvate: quote GPX originali conservate su import/export e KML 3D quando complete.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 302;
+const APP_BUILD_NUM = 303;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28696,6 +28697,8 @@ function saveStore(){
           if (typeof st.lineStyle === "string" && typeof RR_LINE_STYLES !== "undefined" && RR_LINE_STYLES.has(st.lineStyle)) row.lineStyle = st.lineStyle;
           const ep = savedTrackSanitizeElevationProfile(st.elevationProfile, st);
           if (ep) row.elevationProfile = savedTrackCloneElevationProfilePlain(ep) || ep;
+          const imported=savedTrackSanitizeImportedElevations(st.importedElevations,st);
+          if(imported)row.importedElevations=imported;
           return row;
         });
       })(),
@@ -34505,10 +34508,12 @@ function spatialGpxToFeatureCollection(text){
     const lon = parseFloat(n.getAttribute("lon"));
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
     const name = spatialFirstText(n, "name") || null;
+    const coord=[lon,lat],elevation=spatialReadXmlElevation(n);
+    if(elevation!=null)coord.push(elevation);
     fc.features.push({
       type: "Feature",
       properties: { kind: "waypoint", name, source: "gpx-wpt" },
-      geometry: { type: "Point", coordinates: [lon, lat] }
+      geometry: { type: "Point", coordinates: coord }
     });
   }
   for (const trk of doc.getElementsByTagName("trk")){
@@ -34519,7 +34524,9 @@ function spatialGpxToFeatureCollection(text){
         const lat = parseFloat(pt.getAttribute("lat"));
         const lon = parseFloat(pt.getAttribute("lon"));
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-        coords.push([lon, lat]);
+        const coord=[lon,lat],elevation=spatialReadXmlElevation(pt);
+        if(elevation!=null)coord.push(elevation);
+        coords.push(coord);
       }
       if (coords.length >= 2){
         fc.features.push({
@@ -34543,7 +34550,9 @@ function spatialGpxToFeatureCollection(text){
       const lat = parseFloat(pt.getAttribute("lat"));
       const lon = parseFloat(pt.getAttribute("lon"));
       if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-      coords.push([lon, lat]);
+      const coord=[lon,lat],elevation=spatialReadXmlElevation(pt);
+      if(elevation!=null)coord.push(elevation);
+      coords.push(coord);
     }
     if (coords.length >= 2){
       fc.features.push({
@@ -34555,7 +34564,7 @@ function spatialGpxToFeatureCollection(text){
   }
   return fc;
 }
-function spatialParseKmlCoordinatesBlock(txt){
+function spatialParseKmlCoordinatesBlock(txt, retainAltitude){
   const tuples = String(txt || "").trim().split(/\s+/).filter(Boolean);
   const coords = [];
     for (const tpl of tuples){
@@ -34564,7 +34573,10 @@ function spatialParseKmlCoordinatesBlock(txt){
       const lon = parseFloat(parts[0]);
       const lat = parseFloat(parts[1]);
       if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-    coords.push([lon, lat]);
+    const c=[lon,lat];
+    const z=parts.length>=3 && parts[2].trim()?Number(parts[2]):null;
+    if(retainAltitude && spatialImportedElevationNumber(z))c.push(z);
+    coords.push(c);
   }
   return coords;
 }
@@ -34576,14 +34588,16 @@ function spatialKmlWalkPlacemarks(node, fn){
 }
 function spatialKmlGeometryFromNode(gn, name){
   const tag = spatialLocalName(gn);
+  const modeNode=Array.from(gn.children||[]).find(ch=>spatialLocalName(ch)==="altitudemode");
+  const elevationIsAbsolute=!!modeNode && String(modeNode.textContent||"").trim().toLowerCase()==="absolute";
   if (tag === "point"){
     const cEl = gn.getElementsByTagNameNS("*", "coordinates")[0] || gn.getElementsByTagName("coordinates")[0];
-    const coords = spatialParseKmlCoordinatesBlock(cEl ? cEl.textContent : "");
+    const coords = spatialParseKmlCoordinatesBlock(cEl ? cEl.textContent : "", elevationIsAbsolute);
     if (coords.length) return { type: "Point", coordinates: coords[0] };
   }
   if (tag === "linestring"){
     const cEl = gn.getElementsByTagNameNS("*", "coordinates")[0] || gn.getElementsByTagName("coordinates")[0];
-    const coords = spatialParseKmlCoordinatesBlock(cEl ? cEl.textContent : "");
+    const coords = spatialParseKmlCoordinatesBlock(cEl ? cEl.textContent : "", elevationIsAbsolute);
     if (coords.length >= 2) return { type: "LineString", coordinates: coords };
   }
   if (tag === "polygon"){
@@ -34983,6 +34997,8 @@ function spatialGeoJSONToGpx(fc){
       const [lon, lat] = g.coordinates;
       if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
       body += "  <wpt lat=\"" + round(lat, 7) + "\" lon=\"" + round(lon, 7) + "\">\n";
+      if (spatialImportedElevationNumber(g.coordinates[2]))
+        body += "    <ele>" + String(g.coordinates[2]) + "</ele>\n";
       if (name) body += "    <name>" + spatialXmlEsc(name) + "</name>\n";
       if (pr.icon) body += "    <type>" + spatialXmlEsc(String(pr.icon)) + "</type>\n";
       body += "  </wpt>\n";
@@ -34998,13 +35014,13 @@ function spatialGeoJSONToGpx(fc){
       if (isRoute){
         body += "  <rte>\n    <name>" + spatialXmlEsc(name) + "</name>\n";
         for (const c of g.coordinates){
-          body += "    <rtept lat=\"" + round(c[1], 7) + "\" lon=\"" + round(c[0], 7) + "\"></rtept>\n";
+          body += "    <rtept lat=\"" + round(c[1], 7) + "\" lon=\"" + round(c[0], 7) + "\">" + (spatialImportedElevationNumber(c[2]) ? "<ele>"+String(c[2])+"</ele>" : "") + "</rtept>\n";
         }
         body += "  </rte>\n";
       } else {
         body += "  <trk>\n    <name>" + spatialXmlEsc(name) + "</name>\n    <trkseg>\n";
         for (const c of g.coordinates){
-          body += "      <trkpt lat=\"" + round(c[1], 7) + "\" lon=\"" + round(c[0], 7) + "\"></trkpt>\n";
+          body += "      <trkpt lat=\"" + round(c[1], 7) + "\" lon=\"" + round(c[0], 7) + "\">" + (spatialImportedElevationNumber(c[2]) ? "<ele>"+String(c[2])+"</ele>" : "") + "</trkpt>\n";
         }
         body += "    </trkseg>\n  </trk>\n";
       }
@@ -35013,7 +35029,7 @@ function spatialGeoJSONToGpx(fc){
       for (const line of g.coordinates){
         if (!line || line.length < 2) continue;
         body += "    <trkseg>\n";
-        for (const c of line) body += "      <trkpt lat=\"" + round(c[1], 7) + "\" lon=\"" + round(c[0], 7) + "\"></trkpt>\n";
+        for (const c of line) body += "      <trkpt lat=\"" + round(c[1], 7) + "\" lon=\"" + round(c[0], 7) + "\">" + (spatialImportedElevationNumber(c[2]) ? "<ele>"+String(c[2])+"</ele>" : "") + "</trkpt>\n";
         body += "    </trkseg>\n";
       }
       body += "  </trk>\n";
@@ -35040,16 +35056,25 @@ function spatialGeoJSONToKml(fc){
     if (name) marks += "    <name>" + esc(name) + "</name>\n";
     if (g.type === "Point" && g.coordinates){
       const [lon, lat] = g.coordinates;
-      marks += "    <Point><coordinates>" + round(lon, 7) + "," + round(lat, 7) + ",0</coordinates></Point>\n";
+      const is3d=spatialImportedElevationNumber(g.coordinates[2]);
+      marks += "    <Point>" + (is3d ? "<altitudeMode>absolute</altitudeMode>" : "") +
+        "<coordinates>" + round(lon, 7) + "," + round(lat, 7) + "," +
+        (is3d ? String(g.coordinates[2]) : "0") + "</coordinates></Point>\n";
     } else if (g.type === "LineString" && g.coordinates.length >= 2){
-      const cs = g.coordinates.map(c => round(c[0], 7) + "," + round(c[1], 7) + ",0").join(" ");
-      marks += "    <LineString><coordinates>" + cs + "</coordinates></LineString>\n";
+      const is3d=g.coordinates.every(c=>spatialImportedElevationNumber(c[2]));
+      const cs = g.coordinates.map(c=>round(c[0],7)+","+round(c[1],7)+","+
+        (is3d ? String(c[2]) : "0")).join(" ");
+      marks += "    <LineString>"+(is3d?"<altitudeMode>absolute</altitudeMode>":"")+
+        "<coordinates>" + cs + "</coordinates></LineString>\n";
     } else if (g.type === "MultiLineString"){
       marks += "    <MultiGeometry>\n";
       for (const line of g.coordinates){
         if (!line || line.length < 2) continue;
-        const cs = line.map(c => round(c[0], 7) + "," + round(c[1], 7) + ",0").join(" ");
-        marks += "      <LineString><coordinates>" + cs + "</coordinates></LineString>\n";
+        const line3d=line.every(c=>spatialImportedElevationNumber(c[2]));
+        const cs=line.map(c=>round(c[0],7)+","+round(c[1],7)+","+
+          (line3d?String(c[2]):"0")).join(" ");
+        marks += "      <LineString>"+(line3d?"<altitudeMode>absolute</altitudeMode>":"")+
+          "<coordinates>" + cs + "</coordinates></LineString>\n";
       }
       marks += "    </MultiGeometry>\n";
     } else if (g.type === "Polygon" && g.coordinates[0]){
@@ -35097,11 +35122,12 @@ function spatialBuildFeatureCollectionFromAppState(){
   };
 }
 function spatialLineToTrackPoints(coords, meta){
-  return coords.map(([lon, lat]) => ({
+  return coords.map(c => ({
     id: uidNamed(),
-    lat, lon,
+    lat:c[1], lon:c[0],
     name: "",
-    meta: meta || { from: "spatial-import" }
+    meta: meta || { from: "spatial-import" },
+    _importEle: spatialImportedElevationNumber(c[2])?c[2]:null
   }));
 }
 /** Nome traccia suggerito dopo import spaziale (testo semplice, no HTML). */
@@ -35590,6 +35616,8 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitAcc){
           visible: true
         });
         if (res && res.ok){
+          const imported=savedTrackBuildImportedElevations(res.track,allPts);
+          if(imported)res.track.importedElevations=imported;
           // Verify the mutation actually reached localStorage; rollback on failure.
           const rep = saveStoreReported();
           let confirmed = rep.ok;
@@ -61197,6 +61225,50 @@ function savedTrackCloneElevationProfilePlain(ep){
  * Sanitize persisted elevationProfile addon. Returns plain object or null.
  * Fail-soft: never throws; never mutates geometry.
  */
+/* GPX-ALTITUDE-PRESERVE-A: untrusted file heights, not a 5m DTM. */
+const SAVED_TRACK_IMPORTED_ELEVATION_SCHEMA = 1;
+const SAVED_TRACK_IMPORTED_ELEVATION_SOURCE = "spatial-file";
+function spatialImportedElevationNumber(v){
+  return typeof v === "number" && Number.isFinite(v) &&
+    v>=SAVED_TRACK_ELEVATION_MIN_M && v<=SAVED_TRACK_ELEVATION_MAX_M;
+}
+function spatialReadXmlElevation(node){
+  const txt=spatialFirstText(node,"ele");
+  if(typeof txt!=="string" || !txt.trim()) return null;
+  const n=Number(txt);
+  return spatialImportedElevationNumber(n)?n:null;
+}
+function savedTrackSanitizeImportedElevations(raw,track){
+  if(!raw || typeof raw!=="object" || !track || track.closed ||
+     !Array.isArray(track.points))return null;
+  if(raw.schema!==SAVED_TRACK_IMPORTED_ELEVATION_SCHEMA ||
+     raw.source!==SAVED_TRACK_IMPORTED_ELEVATION_SOURCE)return null;
+  const pts=track.points,arr=raw.heights;
+  if(pts.length<2 || pts.length>TRACK_POINTS_CAP ||
+     !Array.isArray(arr) || arr.length!==pts.length)return null;
+  if(String(raw.geometryHash||"")!==savedTrackGeometryHash(track))return null;
+  const heights=[];let good=0;
+  for(const v of arr){
+    if(v===null){heights.push(null);continue;}
+    if(!spatialImportedElevationNumber(v))return null;
+    heights.push(v);good++;
+  }
+  if(good<2)return null;
+  return {schema:SAVED_TRACK_IMPORTED_ELEVATION_SCHEMA,
+    source:SAVED_TRACK_IMPORTED_ELEVATION_SOURCE,
+    geometryHash:savedTrackGeometryHash(track),heights};
+}
+function savedTrackBuildImportedElevations(track,rawPoints){
+  if(!track || track.closed || !Array.isArray(rawPoints) ||
+     rawPoints.length!==track.points.length)return null;
+  const heights=rawPoints.map(p=>spatialImportedElevationNumber(p&&p._importEle)?p._importEle:null);
+  return savedTrackSanitizeImportedElevations({
+    schema:SAVED_TRACK_IMPORTED_ELEVATION_SCHEMA,
+    source:SAVED_TRACK_IMPORTED_ELEVATION_SOURCE,
+    geometryHash:savedTrackGeometryHash(track),heights
+  },track);
+}
+
 function savedTrackSanitizeElevationProfile(rawProfile, track){
   try {
     if (!rawProfile || typeof rawProfile !== "object") return null;
@@ -62614,6 +62686,9 @@ function ensureSavedTracksState(){
     const sanitizedElevation = savedTrackSanitizeElevationProfile(st.elevationProfile, st);
     if (sanitizedElevation) st.elevationProfile = sanitizedElevation;
     else delete st.elevationProfile;
+    const imported = savedTrackSanitizeImportedElevations(st.importedElevations,st);
+    if(imported)st.importedElevations=imported;
+    else delete st.importedElevations;
   }
   if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
   const _stIdSet = new Set(state.savedTracks.map(s => String(s.id)));
@@ -64596,6 +64671,10 @@ function savedTrackPersistShapeForVerify(st){
     closed: row.closed
   });
   if (ep) row.elevationProfile = ep;
+  const imported=savedTrackSanitizeImportedElevations(clean.importedElevations,{
+    points:row.points,closed:row.closed
+  });
+  if(imported)row.importedElevations=imported;
   return row;
 }
 function savedTrackPointMetaEqualForVerify(a, b){
@@ -64663,6 +64742,13 @@ function savedTrackPersistedEqualCanonical(expectedSt, actualSt){
   const actEp = act.elevationProfile || null;
   if (!!expEp !== !!actEp) return false;
   if (expEp && !savedTrackElevationProfilesEquivalent(expEp, actEp)) return false;
+  const ei=exp.importedElevations||null,ai=act.importedElevations||null;
+  if(!!ei!==!!ai)return false;
+  if(ei){
+    if(ei.schema!==ai.schema||ei.source!==ai.source||
+       ei.geometryHash!==ai.geometryHash||ei.heights.length!==ai.heights.length)return false;
+    for(let i=0;i<ei.heights.length;i++)if(ei.heights[i]!==ai.heights[i])return false;
+  }
   return true;
 }
 function savedTrackReadPersistedById(id){
@@ -70809,7 +70895,12 @@ function savedTrackToFeatureCollection(st){
   ensureSavedTracksState();
   if (!st || !Array.isArray(st.points) || st.points.length < 2) return null;
   const nm = String(st.name || "Track").slice(0, 120);
-  const coords = st.points.map(p => [round(p.lon, 7), round(p.lat, 7)]);
+  const z=savedTrackSanitizeImportedElevations(st.importedElevations,st);
+  const coords=st.points.map((p,i)=>{
+    const c=[round(p.lon,7),round(p.lat,7)];
+    if(z && spatialImportedElevationNumber(z.heights[i]))c.push(z.heights[i]);
+    return c;
+  });
   let geom = null;
   if (st.closed && st.points.length >= 3){
     const ring = coords.concat([coords[0]]);
