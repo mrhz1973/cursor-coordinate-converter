@@ -4,21 +4,25 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Tracce desktop: comandi Importa/Esporta per corrente e archivio, pulsante Salva, profilo XY. |
+| **WORKSTREAM ATTIVO** | Tracce desktop: Salva reso visibile con Build306; I/O Importa/Esporta corrente vs archivio e profilo solo XY ancora backlog. |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | Nessun bundle runtime attivo: Build305 CLOSED. |
-| **STATO BLOCCO** | GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A CLOSED / QA PASS operatore 15/11/2026. Build305 ancora LIVE, chiusura docs-only. |
-| **GATE CORRENTE** | REVIEW GPT-SOSTITUTIVA PASS, deploy GIS-only PASS, ABQA HTTPS nativa 49/49 tracce + 16/16 poligoni PASS, QA operatore Build305 PASS esatto. Reviewer esterno NOT_PERFORMED; DTM terreno HOLD, altre QA umane distinte. |
-| **RUNTIME LIVE** | Build305 — source `95080bac23a1642c1a2c6f8c0bdd4885b7bac960`; blob `e9b949cdb3d444128f70a6188122bf05fb715d09`; SHA-256 `5ffa64ff3ba9746de9a5463cc4adfc058ceb7de77e095aacdd51259e39d72464`; 11.170.887 byte, CR192, CRLF0. File VPS, HTTP interno, HTTPS e documenti nativi Edge concordi. |
-| **RUNTIME CANDIDATE** | Nessun candidato successivo a Build305 verificato. Il candidato preliminare `2664bb1fc1f34732758e6fbf1668e25792744f7a` è superato dal source LIVE; non distribuirlo. |
+| **BLOCCO ATTIVO** | GIS-TRACK-SAVE-CTA-DESKTOP-A |
+| **STATO BLOCCO** | **Build306 LIVE**, deploy GIS-only PASS e ABQA HTTPS nativa **13/13 PASS**; **QA operatore PENDING**. |
+| **GATE CORRENTE** | ROUTINE UI: JS 2/2 PASS, Edge candidato 13/13 e HTTPS nativo 13/13 PASS, zero POST/eccezioni JS/errori console. **QA FINALE CHATGPT PENDING**. Reviewer esterno N/A. |
+| **RUNTIME LIVE** | **Build306** source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, blob `dcf143d899c2c074f32dae03edd0058326c5ebef`, SHA256 `47a770d9cb8ed963e2c8171311f638c1f72ef1bf90090fe18c545d8809480d9b`, 11.172.093 byte, CR192, CRLF0; file VPS, HTTP interno e HTTPS concordi. |
+| **RUNTIME CANDIDATE** | Nessun candidato successivo verificato; source branch `task/gis-track-save-cta-desktop-306`. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A - Build305, QA PASS operatore 15/11/2026; [ricevuta](orchestrator/evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md). |
-| **NEXT** | B0 audit statico UX Traccia desktop completato (evidence puntata). NEXT: progettare il delta ROUTINE desktop Salva sempre scopribile; separare nel gate DELICATO le azioni I/O Importa/Esporta corrente vs archivio con prova storage. Nessun candidato dopo Build305 ancora verificato. Profilo solo XY senza quote e DTM terreno separati, mobile PAUSA. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | CTA Salva corrente nascosta con zero punti; renderla scopribile. Esporta alto opera sulla selezione archivio: distinguere Importa/Esporta superiori (corrente) e inferiori (lista salvata). Profilo senza quote XY non implementato; nessun DTM automatico. |
+| **NEXT** | QA operatore desktop Build306: 0/1 punti tasto Salva visibile ma disabled; da 2 attivo, salvataggio e in Modifica etichetta Aggiorna. Riga richiesta: `QA GIS-TRACK-SAVE-CTA-DESKTOP-A PASS operatore`. Dopo Regola H: bundle I/O DELICATO separato. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | CTA Salva desktop corretta Build306; ancora aperta separazione Importa/Esporta in alto per corrente e in basso per archivio, con QA persistenza. Profilo da soli XY senza quote non disponibile; DTM terreno HOLD. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX conserva quote valide e mancanti; KML3D solo con geometria interamente elevata, altrimenti 2D. Una sola quota si conserva ma non genera profilo/pendenza. Un punto importato spostato perde la propria quota originaria; assegnazioni equivalenti la conservano. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
-| **ACCESSO / DEPLOY** | 15/11/2026: TMAR Desktop Commander Win su AsusDesktop e SSH `ionos-n8n-new` verificati. VPS `31.70.139.73` / tailnet `100.99.54.93`; [HTTPS GIS](https://ionos-n8n-new.tailc01234.ts.net/gis?v=5ffa64ff). Solo restart GIS; backup304 `/var/backups/goi-gis-runtime/20261115T171540Z-build305`. |
-| **EVIDENCE** | [Audit B0 UX Tracce](orchestrator/evidence/2026-11-15-track-panel-ux-b0/REPORT.md) - [Handoff e rapporto305](orchestrator/evidence/2026-11-15-chat49-handoff-305/REPORT.md) · [QA LIVE tracce](orchestrator/evidence/2026-11-15-chat49-handoff-305/live-result.json) · [QA LIVE poligoni](orchestrator/evidence/2026-11-15-chat49-handoff-305/live-polygons-result.json) · [Deploy](orchestrator/evidence/2026-11-15-chat49-handoff-305/deploy-result.json) - [Chiusura 305](orchestrator/evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md). |
+| **ACCESSO / DEPLOY** | 15/11/2026: TMAR Desktop Commander Win + SSH ionos-n8n-new, GIS-only deploy Build306 PASS, backup305 /var/backups/goi-gis-runtime/20261115T225548Z-prebuild306, un solo restart GIS. [HTTPS Build306](https://ionos-n8n-new.tailc01234.ts.net/gis?v=47a770d9). |
+| **EVIDENCE** | [Build306 e QA](orchestrator/evidence/2026-11-15-track-save-cta-desktop-306/REPORT.md) - [Audit B0](orchestrator/evidence/2026-11-15-track-panel-ux-b0/REPORT.md) - [Chiusura Build305](orchestrator/evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md). |
+
+## Build306: QA tecnica PASS, QA operatore PENDING
+
+Build306 ROUTINE `GIS-TRACK-SAVE-CTA-DESKTOP-A`, Salva scopribile sul desktop. Candidate + HTTPS nativa 13/13 PASS, zero POST/JS errors; la QA umana per Build306 non e stata ancora attestata. [Dossier](orchestrator/evidence/2026-11-15-track-save-cta-desktop-306/REPORT.md).
 
 ## Chiusura operatore Build305 - 15 novembre 2026
 

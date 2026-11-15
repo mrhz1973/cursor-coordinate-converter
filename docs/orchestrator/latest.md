@@ -1,13 +1,12 @@
 # Ultimo checkpoint orchestratore
 
-LIVE STATE: [FRONTIER](../FRONTIER.md). Build305 LIVE, GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A CLOSED / QA operatore PASS (15/11/2026).
+Fonte LIVE [FRONTIER](../FRONTIER.md).
 
-Attestazione esatta `QA GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A PASS operatore`. Regola H dopo review GPT sostitutiva, GIS-only deploy e ABQA HTTPS native 49/49 tracce + 16/16 poligoni PASS. Chiusura solo documentale; reviewer esterno NOT_PERFORMED. DTM terreno HOLD, mobile PAUSA e QA storiche separate.
+Build306 LIVE, block `GIS-TRACK-SAVE-CTA-DESKTOP-A`: deploy GIS-only e ABQA HTTPS native **13/13 PASS**, QA operatore **PENDING**. Build305 e CLOSED con PASS umano distinto.
 
-NEXT: audit UX desktop, Salva scopribile e Importa/Esporta corrente vs archivio. Profilo solo XY senza quote backlog separato.
+Runtime source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, SHA256 `47a770d9cb8ed963e2c8171311f638c1f72ef1bf90090fe18c545d8809480d9b`. CTA Salva archivio visibile desktop anche senza punti; si abilita da due, mobile invariato.
 
-[Ricevuta](evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md) - [Report](../runtime/LAST_CURSOR_REPORT.md) - [Inbox](inbox/2026-11-15_operator-closure-build305.md).
+NEXT QA operatore Build306, poi Regola H; successivo bundle DELICATO I/O Importa/Esporta archivio vs corrente. Profilo XY senza quote backlog, DTM terreno HOLD, telefono PAUSA.
 
-RUNTIME_SOURCE_SHA=95080bac23a1642c1a2c6f8c0bdd4885b7bac960; REMOTE_HEAD_AT_EVIDENCE_TIME=98ed9286668b5b3da3e5df920486ee921adc6ce4; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
-
-B0 desktop read-only 15/11: confermati bottone Salva nascosto, export alto legato alla selezione salvata e mancanza Importa/Esporta archivio. NEXT: delta routine solo UI, poi I/O DELICATO separato con persistenza. [Dossier B0](evidence/2026-11-15-track-panel-ux-b0/REPORT.md). Nessun HTML, QA o deploy in questo pass.
+[Evidence](evidence/2026-11-15-track-save-cta-desktop-306/REPORT.md) - [Inbox](inbox/2026-11-15_build306-track-save-cta.md).
+Current report container=PENDING_SELF_REFERENCE; final remote HEAD after push=EXTERNAL_ONLY.

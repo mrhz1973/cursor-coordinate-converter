@@ -6,13 +6,13 @@ Il nome file è storico: questo pass è stato eseguito da ChatGPT con subagenti,
 
 | Campo | Valore |
 | --- | --- |
-| BLOCK | GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A |
-| GATE | Build305 CLOSED / QA operatore PASS (15/11/2026); review GPT sostitutiva, deploy GIS-only e ABQA HTTPS scoped PASS. Reviewer esterno NOT_PERFORMED; DTM terreno HOLD. |
-| NEXT | B0 audit statico UX Tracce desktop completato; predisporre delta ROUTINE Salva, poi gate DELICATO I/O archivio/corrente separato. |
-| Runtime LIVE | Build305, source `95080bac23a1642c1a2c6f8c0bdd4885b7bac960`, blob `e9b949cdb3d444128f70a6188122bf05fb715d09`. |
-| Candidate FULL SHA | Nessun candidato ulteriore verificato. `2664bb1…` è superato e non va distribuito. |
-| Deployed state | GIS-only PASS; HTTPS nativo 49+16 PASS; backup304 preservato. |
-| Result | Handoff ricostruito, difetti corretti, LIVE riconciliata; nessun PASS operatore o chiusura del blocco305 inventati. |
+| BLOCK | GIS-TRACK-SAVE-CTA-DESKTOP-A |
+| GATE | Build306 LIVE, Automated Browser QA HTTPS 13/13 PASS; QA operatore PENDING; reviewer esterno N/A ROUTINE; DTM terreno HOLD. |
+| NEXT | QA operatore Build306, poi Regola H; I/O archivio/corrente DELICATO separato. |
+| Runtime LIVE | Build306 source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, blob `dcf143d899c2c074f32dae03edd0058326c5ebef`, SHA256 `47a770d9cb8ed963e2c8171311f638c1f72ef1bf90090fe18c545d8809480d9b`. |
+| Candidate FULL SHA | Nessun candidato successivo alla Build306 verificato. |
+| Deployed state | GIS-only PASS con backup305; HTTPS nativo 13/13 e hash identico. |
+| Result | CTA Salva archivio scopribile desktop e dialog Save/Update verificato. QA umana Build306 non attestata. |
 | Working tree | Pulito prima del contenitore autosync; pulizia post-push verificata esternamente. |
 
 ### Identità SHA, non autoreferenziali
@@ -94,3 +94,11 @@ Ricevuta il 15 novembre 2026 la riga esatta `QA GIS-SAVED-TRACK-IMPORT-ELEVATION
 ## E. B0 UX Tracce - audit read-only (15/11/2026)
 
 Sul codice LIVE305 risultano confermati: bottone Salva legacy forzato hidden; CTA dinamica Punti non presente con zero punti; Esporta alto dipende dagli ID di archivio; toolbar archivio senza Importa/Esporta. L'Import Hub include gia applicazione transazionale per savedTracks, ma la nuova azione UI deve essere verificata. Nessuna nuova QA browser, build o deploy. [Rapporto B0](../orchestrator/evidence/2026-11-15-track-panel-ux-b0/REPORT.md).
+
+## F. Build306 ROUTINE UI - 2026-11-16 00:03 CET
+
+Source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, blob `dcf143d899c2c074f32dae03edd0058326c5ebef`, SHA256 `47a770d9cb8ed963e2c8171311f638c1f72ef1bf90090fe18c545d8809480d9b`. L'unico file runtime modificato e il monolite HTML: CTA Salva archivio visibile desktop (disabled a 0/1 punti), aiuto IT/EN/FR, CTA header Punti nascosta solo desktop, regressione viewport mobile invariata. No storage/rete/GPS nuovi.
+
+JS syntax 2/2 PASS; candidate Edge 13/13 PASS, HTTPS native 13/13 PASS, zero POST/eccezioni/console/harness, tutti profili isolati rimossi. GIS-only deploy PASS dopo backup305; un solo restart GIS; HTTP e HTTPS hash coincidenti. Reviewer esterno N/A ROUTINE. [Report](../orchestrator/evidence/2026-11-15-track-save-cta-desktop-306/REPORT.md).
+
+QA operatore Build306 PENDING, nessuna chiusura Regola H anticipata. NEXT: QA umana poi bundle I/O DELICATO; DTM terreno HOLD, telefono PAUSA, profilo XY senza quote backlog. Contenitore del presente report PENDING_SELF_REFERENCE; final HEAD EXTERNAL_ONLY.
