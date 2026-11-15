@@ -6,13 +6,13 @@ Il nome file è storico: questo pass è stato eseguito da ChatGPT con subagenti,
 
 | Campo | Valore |
 | --- | --- |
-| BLOCK | GIS-TRACK-SAVE-CTA-DESKTOP-A |
-| GATE | Build306 LIVE, Automated Browser QA HTTPS 13/13 PASS; QA operatore PENDING; reviewer esterno N/A ROUTINE; DTM terreno HOLD. |
-| NEXT | QA operatore Build306, poi Regola H; I/O archivio/corrente DELICATO separato. |
+| BLOCK | GIS-TRACK-SAVE-CTA-DESKTOP-A - CLOSED 16/11/2026 |
+| GATE | Build306 LIVE: JS 2/2, Edge candidato 13/13, HTTPS 13/13 e deploy GIS-only PASS; QA operatore PASS ricevuta 16/11/2026; DTM terreno HOLD. |
+| NEXT | Gate DELICATO I/O Importa/Esporta corrente vs archivio; profilo solo XY e DTM terreno separati. |
 | Runtime LIVE | Build306 source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, blob `dcf143d899c2c074f32dae03edd0058326c5ebef`, SHA256 `47a770d9cb8ed963e2c8171311f638c1f72ef1bf90090fe18c545d8809480d9b`. |
 | Candidate FULL SHA | Nessun candidato successivo alla Build306 verificato. |
 | Deployed state | GIS-only PASS con backup305; HTTPS nativo 13/13 e hash identico. |
-| Result | CTA Salva archivio scopribile desktop e dialog Save/Update verificato. QA umana Build306 non attestata. |
+| Result | Build306 UI Salva con PASS tecnico e PASS operatore; chiusura docs-only Regola H, nessun nuovo deploy. |
 | Working tree | Pulito prima del contenitore autosync; pulizia post-push verificata esternamente. |
 
 ### Identità SHA, non autoreferenziali
@@ -102,3 +102,7 @@ Source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, blob `dcf143d899c2c074f32dae0
 JS syntax 2/2 PASS; candidate Edge 13/13 PASS, HTTPS native 13/13 PASS, zero POST/eccezioni/console/harness, tutti profili isolati rimossi. GIS-only deploy PASS dopo backup305; un solo restart GIS; HTTP e HTTPS hash coincidenti. Reviewer esterno N/A ROUTINE. [Report](../orchestrator/evidence/2026-11-15-track-save-cta-desktop-306/REPORT.md).
 
 QA operatore Build306 PENDING, nessuna chiusura Regola H anticipata. NEXT: QA umana poi bundle I/O DELICATO; DTM terreno HOLD, telefono PAUSA, profilo XY senza quote backlog. Contenitore del presente report PENDING_SELF_REFERENCE; final HEAD EXTERNAL_ONLY.
+
+## G. Chiusura QA operatore Build306 - 2026-11-16 00:32 CET
+
+Riga ricevuta esattamente: `QA GIS-TRACK-SAVE-CTA-DESKTOP-A PASS operatore`. Il blocco attivo in FRONTIER era coincidente. Gate tecnici e deploy gia PASS (node --check 2/2, Edge 13/13 e HTTPS 13/13). Regola H applicata: **CLOSED docs-only** senza modifiche al runtime, nuovo deploy o restart. Il PASS non qualifica gli altri task; DTM terrain HOLD, sviluppo mobile PAUSA, profilo da XY senza quote non implementato. [Ricevuta](../orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). La HEAD finale del contenitore autosync resta da verificare esternamente.
