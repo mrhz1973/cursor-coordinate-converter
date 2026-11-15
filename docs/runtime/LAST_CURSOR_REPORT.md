@@ -8,7 +8,7 @@ Il nome file è storico: questo pass è stato eseguito da ChatGPT con subagenti,
 | --- | --- |
 | BLOCK | GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A |
 | GATE | Build305 CLOSED / QA operatore PASS (15/11/2026); review GPT sostitutiva, deploy GIS-only e ABQA HTTPS scoped PASS. Reviewer esterno NOT_PERFORMED; DTM terreno HOLD. |
-| NEXT | B0 UX Tracce desktop: Salva sempre visibile e Importa/Esporta corrente vs archivio. Profilo XY senza quote separato. |
+| NEXT | B0 audit statico UX Tracce desktop completato; predisporre delta ROUTINE Salva, poi gate DELICATO I/O archivio/corrente separato. |
 | Runtime LIVE | Build305, source `95080bac23a1642c1a2c6f8c0bdd4885b7bac960`, blob `e9b949cdb3d444128f70a6188122bf05fb715d09`. |
 | Candidate FULL SHA | Nessun candidato ulteriore verificato. `2664bb1…` è superato e non va distribuito. |
 | Deployed state | GIS-only PASS; HTTPS nativo 49+16 PASS; backup304 preservato. |
@@ -90,3 +90,7 @@ Il contenitore corrente non prova il proprio push. HEAD finale e PASS remoto: EX
 ## D. Chiusura successiva del gate Build305
 
 Ricevuta il 15 novembre 2026 la riga esatta `QA GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A PASS operatore`. Verificata HEAD remota prima della chiusura `98ed9286668b5b3da3e5df920486ee921adc6ce4` e runtime SHA256 `5ffa64ff3ba9746de9a5463cc4adfc058ceb7de77e095aacdd51259e39d72464`; review GPT sostitutiva, deploy GIS-only e ABQA HTTPS native 49/49+16/16 PASS gia acquisiti. Regola H: CLOSED docs-only. Nessun nuovo deploy, restart o test runtime. Reviewer esterno NOT_PERFORMED; accuratezza DTM e gate storici non chiusi. [Ricevuta](../orchestrator/evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md). Il container corrente non prova il proprio SHA; verifica HEAD finale da remoto.
+
+## E. B0 UX Tracce - audit read-only (15/11/2026)
+
+Sul codice LIVE305 risultano confermati: bottone Salva legacy forzato hidden; CTA dinamica Punti non presente con zero punti; Esporta alto dipende dagli ID di archivio; toolbar archivio senza Importa/Esporta. L'Import Hub include gia applicazione transazionale per savedTracks, ma la nuova azione UI deve essere verificata. Nessuna nuova QA browser, build o deploy. [Rapporto B0](../orchestrator/evidence/2026-11-15-track-panel-ux-b0/REPORT.md).

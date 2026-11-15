@@ -9,3 +9,5 @@ NEXT: audit UX desktop, Salva scopribile e Importa/Esporta corrente vs archivio.
 [Ricevuta](evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md) - [Report](../runtime/LAST_CURSOR_REPORT.md) - [Inbox](inbox/2026-11-15_operator-closure-build305.md).
 
 RUNTIME_SOURCE_SHA=95080bac23a1642c1a2c6f8c0bdd4885b7bac960; REMOTE_HEAD_AT_EVIDENCE_TIME=98ed9286668b5b3da3e5df920486ee921adc6ce4; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
+
+B0 desktop read-only 15/11: confermati bottone Salva nascosto, export alto legato alla selezione salvata e mancanza Importa/Esporta archivio. NEXT: delta routine solo UI, poi I/O DELICATO separato con persistenza. [Dossier B0](evidence/2026-11-15-track-panel-ux-b0/REPORT.md). Nessun HTML, QA o deploy in questo pass.
