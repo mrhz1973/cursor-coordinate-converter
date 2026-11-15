@@ -11952,11 +11952,15 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
 .track-save-need-points{
   color:var(--muted); font-size:.81rem; line-height:1.35;
 }
+/* Desktop track-current vs archive scope: mobile keeps the old labels and actions. */
 @media (min-width:769px){
-  #track-points-head [data-role="track-save-current"]{ display:none !important; }
+  #track-points-head [data-role="track-save-current"],
+  #sec-track .track-io-mobile{ display:none !important; }
 }
 @media (max-width:768px){
-  #btnTrackSaveLibrary, #trackSaveNeedPoints{ display:none !important; }
+  #btnTrackSaveLibrary, #trackSaveNeedPoints,
+  #btnTrackArchiveImport, #btnTrackArchiveExport,
+  #sec-track .track-io-desktop{ display:none !important; }
 }
 .saved-tracks-batch-bar{
   display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px;
@@ -14118,10 +14122,10 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           <button type="button" id="btnTrackFinish" class="btn btn-sm" data-i18n="track.finish" data-i18n-tip="tip.trackFinish" hidden>✅ Termina traccia</button>
           <button type="button" id="btnTrackPaste" class="btn btn-sm" hidden aria-hidden="true" tabindex="-1" data-i18n="track.paste" data-i18n-tip="tip.trackPaste">📋 Incolla lista punti</button>
           <span class="sep track-toolbar-sep" aria-hidden="true"></span>
-          <button type="button" id="btnTrackImport" class="btn btn-sm" data-i18n="track.import" data-i18n-tip="tip.trackImport">Importa</button>
+          <button type="button" id="btnTrackImport" class="btn btn-sm" data-i18n-tip="tip.trackImport"><span class="track-io-desktop" data-i18n="track.importCurrent">Importa corrente</span><span class="track-io-mobile" data-i18n="track.import">Importa</span></button>
           <input type="file" id="trackFileInput" class="file-input-hidden" accept=".gpx,.kml,.kmz,.geojson,.json,.csv,.txt,.shp,.wkt,application/gpx+xml,application/vnd.google-earth.kml+xml,application/json,application/zip">
           <button type="button" id="btnTrackExportOpenBtn" class="btn btn-sm"
-                  data-i18n="track.exportOpen" data-i18n-tip="tip.trackExportOpen" data-i18n-aria="track.exportOpenAria">Esporta</button>
+                  data-i18n-tip="tip.trackExportOpen" data-i18n-aria="track.exportOpenAria"><span class="track-io-desktop" data-i18n="track.exportCurrent">Esporta corrente</span><span class="track-io-mobile" data-i18n="track.exportOpen">Esporta</span></button>
           <span class="sep track-toolbar-sep" aria-hidden="true"></span>
           <button type="button" id="btnTrackUndo" class="btn btn-sm" data-i18n="track.undo" data-i18n-tip="tip.trackUndo">↶ Annulla ultimo punto</button>
           <button type="button" id="btnTrackClear" class="btn btn-sm btn-danger-subtle" data-i18n-tip="tip.trackClear"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="track.clear">Elimina traccia corrente</span></button>
@@ -14297,6 +14301,8 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
         <div class="track-toolbar track-saved-toolbar">
           <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary track-save-cta" disabled data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
           <span id="trackSaveNeedPoints" class="hint track-save-need-points" data-i18n="track.saveNeedPoints">Aggiungi almeno 2 punti per salvare.</span>
+          <button type="button" id="btnTrackArchiveImport" class="btn btn-sm" data-i18n="track.importArchive" data-i18n-tip="tip.trackImportArchive">Importa in archivio</button>
+          <button type="button" id="btnTrackArchiveExport" class="btn btn-sm" data-i18n="track.exportArchive" data-i18n-tip="tip.trackExportArchive">Esporta selezionate</button>
           <span id="savedTracksSelectionMeta" class="hint" style="margin-left:auto;font-size:.85rem;color:var(--muted);white-space:nowrap;"></span>
         </div>
         <div id="savedTracksBatchBar" class="saved-tracks-batch-bar" hidden>
@@ -18223,6 +18229,10 @@ const I18N = {
     "track.paste":"📋 Incolla lista punti",
     "track.pastePrompt":"Incolla qui le coordinate (una per riga, qualsiasi formato):",
     "track.import":"Importa",
+    "track.importCurrent":"Importa corrente",
+    "track.exportCurrent":"Esporta corrente",
+    "track.importArchive":"Importa in archivio",
+    "track.exportArchive":"Esporta selezionate",
     "track.clear":"Elimina traccia corrente",
     "track.clearConfirm":"Eliminare la traccia corrente (tutti i punti in modifica)?",
     "track.clearDialogTitle":"Elimina traccia corrente",
@@ -18249,11 +18259,15 @@ const I18N = {
     "track.exportSelectSavedFirst":"Seleziona una o più tracce salvate nell’archivio (spunta nella tabella) per esportare.",
     "track.exportNeedTwoPoints":"Una o più tracce selezionate non hanno abbastanza punti per l’export (servono almeno 2 punti).",
     "track.exportDialogBody":"Esporta le tracce selezionate nell’archivio ({0}). Se ne selezioni più di una, verrà generato un file .zip con un file per traccia.",
+    "track.exportCurrentDialogBody":"Esporta solo i punti della traccia corrente, senza includere le tracce selezionate nell\u2019archivio.",
+    "track.exportCurrentDialogEmpty":"Aggiungi almeno 2 punti alla traccia corrente prima di esportare.",
+    "track.exportCurrentNeedTwo":"Servono almeno 2 punti nella traccia corrente.",
     "track.exportDialogEmpty":"Nessuna traccia selezionata nell’archivio. Spunta una o più righe nella tabella “Tracce salvate”.",
     "track.savedTitle":"Tracce salvate",
     "track.savedHint":"Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» è solo uno stato (visibile/nascosta sulla mappa); la visibilità si cambia con i pulsanti sopra la tabella; la prima colonna serve per selezionare le righe (batch ed export). «Centra» sposta la vista; puoi rinominare ed eliminare.",
     "track.savedRowCtxHint":"Tasto destro per azioni · lungo tocco su touch",
     "track.saveLibrary":"💾 Salva traccia in archivio…",
+    "track.currentName":"Traccia corrente",
     "track.saveNeedPoints":"Aggiungi almeno 2 punti per salvare.",
     "track.updateLibrary":"Aggiorna traccia",
     "track.closeLoseSavedEditConfirm":"Le modifiche non salvate verranno annullate. La traccia salvata nell’archivio resterà intatta. Continuare?",
@@ -18371,6 +18385,8 @@ const I18N = {
     "tip.mapUndo":"Annulla ultimo punto (misura sulla mappa o traccia in modalità clic)",
     "tip.trackPaste":"Apre un box per incollare una lista di coordinate da aggiungere in blocco.",
     "tip.trackImport":"Importa tracce da GPX, KML, KMZ, GeoJSON, CSV, WKT o SHP se supportati.",
+    "tip.trackImportArchive":"Apre Import GIS con Tracce salvate preselezionato. Controlla anteprima e conferma prima di salvare.",
+    "tip.trackExportArchive":"Esporta soltanto le righe spuntate nella lista Tracce salvate.",
     "tip.trackUndo":"Rimuove l'ultimo punto aggiunto alla traccia.",
     "tip.trackClear":"Elimina tutti i punti della traccia corrente in modifica.",
     "tip.trackExpGpx":"Scarica la traccia come file GPX (elemento <trk>).",
@@ -20742,6 +20758,10 @@ const I18N = {
     "track.paste":"📋 Paste point list",
     "track.pastePrompt":"Paste coordinates here (one per line, any format):",
     "track.import":"Import",
+    "track.importCurrent":"Import current",
+    "track.exportCurrent":"Export current",
+    "track.importArchive":"Import to archive",
+    "track.exportArchive":"Export selected",
     "track.clear":"Delete current track",
     "track.clearConfirm":"Delete the current track (all points being edited)?",
     "track.clearDialogTitle":"Delete current track",
@@ -20768,11 +20788,15 @@ const I18N = {
     "track.exportSelectSavedFirst":"Select one or more saved tracks in the archive (checkboxes in the table) to export.",
     "track.exportNeedTwoPoints":"One or more selected tracks do not have enough points to export (need at least 2 points).",
     "track.exportDialogBody":"Export the selected tracks from the archive ({0}). If you select more than one, a .zip file will be generated with one file per track.",
+    "track.exportCurrentDialogBody":"Export only the current track points, independently of saved-track selections.",
+    "track.exportCurrentDialogEmpty":"Add at least 2 points to the current track before exporting.",
+    "track.exportCurrentNeedTwo":"At least 2 points are required in the current track.",
     "track.exportDialogEmpty":"No saved track selected. Tick one or more rows in the “Saved tracks” table.",
     "track.savedTitle":"Saved tracks",
     "track.savedHint":"Save the current track to the archive. In the table: the “Show” column is only a status (visible/hidden on the map); use the buttons above the table to change visibility; the first column selects rows (batch and export). “Center” moves the view; you can rename and delete.",
     "track.savedRowCtxHint":"Right-click for actions · long-press on touch",
     "track.saveLibrary":"💾 Save track to archive…",
+    "track.currentName":"Current track",
     "track.saveNeedPoints":"Add at least 2 points before saving.",
     "track.updateLibrary":"Update track",
     "track.closeLoseSavedEditConfirm":"Unsaved changes will be discarded. The saved track in the archive will remain unchanged. Continue?",
@@ -20890,6 +20914,8 @@ const I18N = {
     "tip.mapUndo":"Undo last point (on-map measure or track while click-to-add is on)",
     "tip.trackPaste":"Opens a box to paste a list of coordinates to be added at once.",
     "tip.trackImport":"Import tracks from GPX, KML, KMZ, GeoJSON, CSV, WKT or SHP when supported.",
+    "tip.trackImportArchive":"Opens Import GIS with Saved tracks preselected. Review preview and confirm before saving.",
+    "tip.trackExportArchive":"Exports only checked rows from the Saved tracks list.",
     "tip.trackUndo":"Remove the last point added to the track.",
     "tip.trackClear":"Delete all points from the current track being edited.",
     "tip.trackExpGpx":"Download the track as a GPX file (<trk> element).",
@@ -22983,6 +23009,10 @@ const I18N = {
     "track.paste":"📋 Coller une liste",
     "track.pastePrompt":"Collez les coordonnées ici (une par ligne, tout format) :",
     "track.import":"Importer",
+    "track.importCurrent":"Importer la trace courante",
+    "track.exportCurrent":"Exporter la trace courante",
+    "track.importArchive":"Importer dans les archives",
+    "track.exportArchive":"Exporter la selection",
     "track.clear":"Supprimer la trace courante",
     "track.clearConfirm":"Supprimer la trace courante (tous les points en modification) ?",
     "track.clearDialogTitle":"Supprimer la trace courante",
@@ -23009,11 +23039,15 @@ const I18N = {
     "track.exportSelectSavedFirst":"Sélectionnez une ou plusieurs traces enregistrées dans l’archive (cases dans le tableau) pour exporter.",
     "track.exportNeedTwoPoints":"Une ou plusieurs traces sélectionnées n’ont pas assez de points pour l’export (il faut au moins 2 points).",
     "track.exportDialogBody":"Exporter les traces sélectionnées dans l’archive ({0}). Si vous en sélectionnez plusieurs, un fichier .zip sera généré avec un fichier par trace.",
+    "track.exportCurrentDialogBody":"Exporter uniquement les points de la trace courante, sans inclure les traces archiv\u00e9es s\u00e9lectionn\u00e9es.",
+    "track.exportCurrentDialogEmpty":"Ajoutez au moins 2 points a la trace courante avant d\u0027exporter.",
+    "track.exportCurrentNeedTwo":"Il faut au moins 2 points dans la trace courante.",
     "track.exportDialogEmpty":"Aucune trace enregistrée sélectionnée. Cochez une ou plusieurs lignes du tableau « Traces enregistrées ».",
     "track.savedTitle":"Traces enregistrées",
     "track.savedHint":"Enregistrez la trace courante dans l’archive. Dans le tableau : la colonne « Aff. » indique seulement l’état (visible/masquée sur la carte) ; la visibilité se règle avec les boutons au-dessus du tableau ; la première colonne sert à sélectionner les lignes (lot et export). « Centrer » déplace la vue ; vous pouvez renommer et supprimer.",
     "track.savedRowCtxHint":"Clic droit pour les actions · appui long au tactile",
     "track.saveLibrary":"💾 Enregistrer la trace…",
+    "track.currentName":"Trace courante",
     "track.saveNeedPoints":"Ajoutez au moins 2 points avant d\u0027enregistrer.",
     "track.updateLibrary":"Mettre à jour la trace",
     "track.closeLoseSavedEditConfirm":"Les modifications non enregistrées seront annulées. La trace enregistrée dans l'archive restera intacte. Continuer ?",
@@ -23122,6 +23156,8 @@ const I18N = {
     "tip.mapUndo":"Annuler le dernier point (mesure sur la carte ou trace en mode clic)",
     "tip.trackPaste":"Ouvre une boîte pour coller une liste de coordonnées à ajouter en bloc.",
     "tip.trackImport":"Importer des traces depuis GPX, KML, KMZ, GeoJSON, CSV, WKT ou SHP si pris en charge.",
+    "tip.trackImportArchive":"Ouvre Import GIS avec Traces enregistr\u00e9es pr\u00e9s\u00e9lectionn\u00e9es. V\u00e9rifiez et confirmez.",
+    "tip.trackExportArchive":"Exporte uniquement les lignes coch\u00e9es dans les traces enregistr\u00e9es.",
     "tip.trackUndo":"Supprime le dernier point ajouté à la trace.",
     "tip.trackClear":"Supprime tous les points de la trace courante en modification.",
     "tip.trackExpGpx":"Télécharger la trace en fichier GPX (élément <trk>).",
@@ -26223,10 +26259,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-TRACK-SAVE-CTA-DESKTOP-A";
-const APP_BUILD_DETAIL = "Desktop: Salva in archivio visibile anche a traccia vuota, disponibile da due punti; layout mobile invariato.";
+const APP_BUILD_ID = "GIS-TRACK-IO-CURRENT-ARCHIVE-A";
+const APP_BUILD_DETAIL = "Desktop: Importa ed Esporta distinti per traccia corrente e archivio, con preview import e quote preservate.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 306;
+const APP_BUILD_NUM = 307;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36421,6 +36457,10 @@ function gisImportHubMutateApply(h, sel){
         visible: true
       });
       if (!res || !res.ok) throw new Error("savedTrackAddFromPoints:" + (res && res.reason ? res.reason : "fail"));
+      // Preserve 3D GPX/KML/GeoJSON heights through the existing hash-bound
+      // addon sanitizer, using the original _importEle values before persistence.
+      const imported = savedTrackBuildImportedElevations(res.track, allPts);
+      if (imported) res.track.importedElevations = imported;
       const rep = (typeof saveStoreReported === "function") ? saveStoreReported() : { ok: false };
       let confirmed = !!(rep && rep.ok);
       if (confirmed && typeof trackVerifyPersistedSavedTrack === "function"){
@@ -71132,6 +71172,31 @@ function exportSavedTracksZipBundle(tracks, kind){
   downloadBlob(z, "tracks-export-" + ts + ".zip", "application/zip");
 }
 
+/** Export only the active draft. Reuse the persisted-track geometry/elevation rules,
+ * without changing archive selection, state.mapWaypoints or storage. */
+function exportCurrentTrackOnly(kind){
+  ensureTrackState();
+  const pts = (state.track && Array.isArray(state.track.points)) ? state.track.points : [];
+  if (pts.length < 2){
+    setBadge("info", t("track.exportCurrentNeedTwo") || t("track.exportNeedTwoPoints") || "");
+    return false;
+  }
+  const snap = pts.map(p => ({
+    id: String(p.id || ""),
+    lat: p.lat, lon: p.lon,
+    name: String(p.name || "").slice(0, 60),
+    meta: p.meta && typeof p.meta === "object" ? JSON.parse(JSON.stringify(p.meta)) : null
+  }));
+  const closed = !!state.track.closed;
+  const imported = savedTrackBuildImportedElevations({ closed, points: snap }, pts);
+  const sess = state._trackEditSession;
+  const nm = sess && sess.workingName ? String(sess.workingName) : (t("track.currentName") || "Traccia corrente");
+  const current = { name: nm.slice(0, 80), points: snap, closed };
+  if (imported) current.importedElevations = imported;
+  exportSavedTrackSingleFile(current, kind);
+  return true;
+}
+
 /** Export selected saved tracks from the library list (GIS Track panel). */
 function exportTrack(kind){
   ensureSavedTracksState();
@@ -80725,7 +80790,19 @@ function bindUI(){
   const btnTxOpen = document.getElementById("btnTrackExportOpenBtn");
   if (btnTxOpen) btnTxOpen.addEventListener("click", (ev) => {
     ev.preventDefault();
-    if (typeof openTrackExportDialog === "function") openTrackExportDialog();
+    // Mobile keeps its original archive export semantics during development PAUSA.
+    const desktop = window.matchMedia("(min-width: 769px)").matches;
+    if (typeof openTrackExportDialog === "function") openTrackExportDialog(desktop ? "current" : "archive");
+  });
+  const archiveImport = document.getElementById("btnTrackArchiveImport");
+  if (archiveImport) archiveImport.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof openTrackArchiveImportHub === "function") openTrackArchiveImportHub();
+  });
+  const archiveExport = document.getElementById("btnTrackArchiveExport");
+  if (archiveExport) archiveExport.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof openTrackExportDialog === "function") openTrackExportDialog("archive");
   });
   const txDlg = document.getElementById("trackExportDialog");
   const txClose = document.getElementById("trackExportDialogClose");
@@ -80749,7 +80826,10 @@ function bindUI(){
         if (!b || b.disabled) return;
         ev.preventDefault();
         const k = b.getAttribute("data-track-export-fmt");
-        if (k && typeof exportTrack === "function") exportTrack(k);
+        if (k){
+          if (_trackExportScope === "current") exportCurrentTrackOnly(k);
+          else exportTrack(k);
+        }
         if (typeof closeTrackExportDialog === "function") closeTrackExportDialog();
       });
     }
@@ -100910,6 +100990,12 @@ function openGisWorkbenchPanel(){
 function closeGisWorkbenchPanel(){
   const dlg = document.getElementById("gisWorkbenchPanel");
   if (!state.workbenchPanelOpen && !(dlg && dlg.open)) return;
+  const archiveHub = state._gisImportHub;
+  if (archiveHub && archiveHub._trackArchivePrevSelection){
+    archiveHub.selection = archiveHub._trackArchivePrevSelection;
+    delete archiveHub._trackArchivePrevSelection;
+    try { gisImportHubSyncSelectionToDom(); gisImportHubRenderPreview(); } catch(_){}
+  }
   try { workbenchExitPickMode({ keepStatus: true }); } catch(_){}
   try { workbenchClearSelection({ skipList: true }); } catch(_){}
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("gisWorkbenchPanel"); } catch(_){}
@@ -102644,40 +102730,51 @@ function _closeTrackModalCore(opts){
   return true;
 }
 
+/** UI-only export context, deliberately not written to persistence. */
+let _trackExportScope = "archive";
 function syncTrackExportDialogUi(){
-  ensureSavedTracksState();
-  const ids = getSelectedSavedTrackIdsForExport();
-  const n = ids.length;
+  const current = _trackExportScope === "current";
+  if (current) ensureTrackState();
+  else ensureSavedTracksState();
+  const n = current
+    ? ((state.track && Array.isArray(state.track.points)) ? state.track.points.length : 0)
+    : getSelectedSavedTrackIdsForExport().length;
+  const hasSel = current ? n >= 2 : n > 0;
   const emptyEl = document.getElementById("trackExportDialogEmpty");
   const descEl = document.getElementById("trackExportDialogDesc");
-  const hasSel = n > 0;
   if (emptyEl){
     emptyEl.hidden = hasSel;
-    const emptyMsg = (typeof t === "function") ? (t("track.exportDialogEmpty") || "") : "";
-    if (emptyMsg) emptyEl.textContent = emptyMsg;
+    const key = current ? "track.exportCurrentDialogEmpty" : "track.exportDialogEmpty";
+    const msg = (typeof t === "function") ? (t(key) || "") : "";
+    if (msg) emptyEl.textContent = msg;
   }
   if (descEl){
     descEl.hidden = !hasSel;
-    const descTpl = (typeof t === "function") ? (t("track.exportDialogBody") || "") : "";
-    if (descTpl) descEl.textContent = String(descTpl).replace("{0}", String(n));
+    const key = current ? "track.exportCurrentDialogBody" : "track.exportDialogBody";
+    const desc = (typeof t === "function") ? (t(key) || "") : "";
+    if (desc) descEl.textContent = String(desc).replace("{0}", String(n));
   }
   document.querySelectorAll("#trackExportDialogFormats .track-export-fmt").forEach((b) => {
     b.disabled = !hasSel;
   });
 }
 
-function openTrackExportDialog(){
+function openTrackExportDialog(scope){
   const dlg = document.getElementById("trackExportDialog");
   if (!dlg) return;
+  _trackExportScope = scope === "current" ? "current" : "archive";
   syncTrackExportDialogUi();
   if (typeof applyLanguage === "function"){
     try { applyLanguage(state.lang); } catch(_){}
   }
-  if (typeof dlg.showModal === "function"){
-    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
-  } else {
-    dlg.setAttribute("open", "");
-  }
+  const gis = document.body.classList.contains("gis-mode");
+  const desktop = window.matchMedia("(min-width: 769px)").matches;
+  dlg.setAttribute("aria-modal", gis && desktop ? "false" : "true");
+  try {
+    if (gis && desktop && typeof dlg.show === "function") dlg.show();
+    else if (typeof dlg.showModal === "function") dlg.showModal();
+    else dlg.setAttribute("open", "");
+  } catch(_){ dlg.setAttribute("open", ""); }
   try {
     const first = dlg.querySelector("#trackExportDialogFormats .track-export-fmt:not([disabled])");
     if (first) first.focus();
@@ -102692,10 +102789,41 @@ function closeTrackExportDialog(){
   const dlg = document.getElementById("trackExportDialog");
   if (!dlg) return;
   try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
-  const opener = document.getElementById("btnTrackExportOpenBtn");
+  const opener = document.getElementById(_trackExportScope === "current"
+    ? "btnTrackExportOpenBtn" : "btnTrackArchiveExport");
+  _trackExportScope = "archive";
   if (opener){
     try { opener.focus(); } catch(_){}
   }
+}
+
+/** Bring existing transactional Import GIS into view; scope selection to Saved tracks.
+ * Existing preview, sanitizer, persistence verification and rollback remain canonical. */
+function openTrackArchiveImportHub(){
+  const h = gisImportHubEnsureState();
+  if (h.phase === "parsing" || h.phase === "applying" || gisSpatialImportIsBusy()){
+    setBadge("info", t("importHub.busy") || "");
+    return false;
+  }
+  if (!openGisWorkbenchPanel()) return false;
+  const hub = document.getElementById("wbImportHub");
+  if (!hub) return false;
+  // Archive entrypoint is a temporary category filter; restore previous
+  // Workbench choices on close, without clearing any pending preview.
+  if (!h._trackArchivePrevSelection){
+    h._trackArchivePrevSelection = {
+      waypoints: h.selection.waypoints !== false,
+      savedTracks: h.selection.savedTracks !== false,
+      polygons: h.selection.polygons !== false
+    };
+  }
+  h.selection = { waypoints: false, savedTracks: true, polygons: false };
+  gisImportHubSyncSelectionToDom();
+  hub.open = true;
+  gisImportHubRenderPreview();
+  const picker = document.getElementById("wbImportHubPickBtn");
+  try { if (picker) picker.focus(); } catch(_){}
+  return true;
 }
 
 function syncSavedTracksSelectAllState(mount){
