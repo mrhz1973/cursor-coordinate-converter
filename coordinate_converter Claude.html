@@ -16571,6 +16571,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 305 - Quote importate conservate nel salvataggio</h4><ul><li>Importa nella traccia corrente e Salva traccia in archivio conservano le quote GPX/KML originali, anche parziali o presenti in un solo punto. Le quote restano associate alla geometria; il profilo e le pendenze richiedono comunque dati sufficienti e non acquisiscono precisione DTM.</li></ul>
             <h4>Build 304 - Profilo altimetrico delle tracce importate</h4><ul><li>Il pulsante Profilo utilizza le quote GPX/KML originali gia salvate, con dislivelli e quote min/max, distinguendo i vuoti dalle quote reali; nessun DTM o GPS automatico. Dati non equiparati a pendenze locali misurate su 5 m.</li></ul>
             <h4>Build 303 - Conservazione quote GPX/KML nelle Tracce salvate</h4><ul><li>Un allegato altimetrico dedicato conserva le quote originali GPX senza attribuire una precisione DTM. Importazione Tracce salvate, riapertura e GPX esportato conservano i campioni validi e i vuoti. KML 3D conserva le quote quando il profilo e completo, con altitudeMode absolute; le tracce solo 2D restano compatibili.</li></ul>
             <h4>Build 302 - Pendenza locale indipendente dal verso</h4><ul><li>Campionamento delle finestre 5/10 m da entrambe le estremita del percorso: massima assoluta e P95 invarianti per inversione A/B, con segno salita/discesa coerente. Nessuna nuova fonte dati o chiamata di rete.</li></ul>
@@ -25972,8 +25973,11 @@ function trackUpdatePointLatLon(id, lat, lon){
   const p = state.track.points.find(x => x.id === id);
   if (!p) return;
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-  p.lat = Math.max(-90, Math.min(90, lat));
-  p.lon = normalizeLon(lon);
+  const nextLat = Math.max(-90, Math.min(90, lat));
+  const nextLon = normalizeLon(lon);
+  if (p.lat !== nextLat || p.lon !== nextLon) delete p._importEle;
+  p.lat = nextLat;
+  p.lon = nextLon;
 }
 
 /** NATO-style tactical symbols on map (simplified geometry, not full APP-6). */
@@ -26202,10 +26206,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SAVED-TRACK-IMPORTED-ELEVATION-PROFILE-A";
-const APP_BUILD_DETAIL = "Tracce salvate: grafico profilo da quote originali GPX/KML, senza confonderle con DTM 5 m.";
+const APP_BUILD_ID = "GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A";
+const APP_BUILD_DETAIL = "Importa e salva: quote GPX/KML conservate anche se parziali o presenti in un solo punto.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 304;
+const APP_BUILD_NUM = 305;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61260,7 +61264,7 @@ function savedTrackSanitizeImportedElevations(raw,track){
     if(!spatialImportedElevationNumber(v))return null;
     heights.push(v);good++;
   }
-  if(good<2)return null;
+  if(good<1)return null;
   return {schema:SAVED_TRACK_IMPORTED_ELEVATION_SCHEMA,
     source:SAVED_TRACK_IMPORTED_ELEVATION_SOURCE,
     geometryHash:savedTrackGeometryHash(track),heights};
@@ -65199,6 +65203,11 @@ function saveCurrentTrackToLibrary(name, opts){
     name: String(p.name || "").slice(0, 60),
     meta: p.meta && typeof p.meta === "object" ? JSON.parse(JSON.stringify(p.meta)) : null
   }));
+  // Capture geometry and imported heights together; only the sanitized addon persists.
+  const snapshotClosed = !!state.track.closed;
+  const importedSnapshot = savedTrackBuildImportedElevations({
+    closed: snapshotClosed, points: snap
+  }, pts);
   const rid = opts.replaceSavedId ? String(opts.replaceSavedId) : "";
   let didReplace = false;
   let prevRaw = null;
@@ -65234,8 +65243,12 @@ function saveCurrentTrackToLibrary(name, opts){
     }
     didReplace = true;
     state.savedTracks[ix].name = nm;
-    state.savedTracks[ix].closed = !!state.track.closed;
+    state.savedTracks[ix].closed = snapshotClosed;
     state.savedTracks[ix].points = snap;
+    const imported = importedSnapshot || savedTrackSanitizeImportedElevations(
+      state.savedTracks[ix].importedElevations, state.savedTracks[ix]);
+    if (imported) state.savedTracks[ix].importedElevations = imported;
+    else delete state.savedTracks[ix].importedElevations;
     if (sess && sess.workingStyle){
       try { trackApplyWorkingStyleToTrackObject(state.savedTracks[ix], sess.workingStyle); } catch(_){}
     }
@@ -65271,10 +65284,11 @@ function saveCurrentTrackToLibrary(name, opts){
       id: uid(),
       name: nm,
       savedAt: Date.now(),
-      closed: !!state.track.closed,
+      closed: snapshotClosed,
       visible: true,
       points: snap
     };
+    if (importedSnapshot) createdRow.importedElevations = importedSnapshot;
     if (sess && sess.workingStyle){
       try { trackApplyWorkingStyleToTrackObject(createdRow, sess.workingStyle); } catch(_){}
     }
