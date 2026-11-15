@@ -16571,6 +16571,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
           </div>
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <h4>Build 304 - Profilo altimetrico delle tracce importate</h4><ul><li>Il pulsante Profilo utilizza le quote GPX/KML originali gia salvate, con dislivelli e quote min/max, distinguendo i vuoti dalle quote reali; nessun DTM o GPS automatico. Dati non equiparati a pendenze locali misurate su 5 m.</li></ul>
             <h4>Build 303 - Conservazione quote GPX/KML nelle Tracce salvate</h4><ul><li>Un allegato altimetrico dedicato conserva le quote originali GPX senza attribuire una precisione DTM. Importazione Tracce salvate, riapertura e GPX esportato conservano i campioni validi e i vuoti. KML 3D conserva le quote quando il profilo e completo, con altitudeMode absolute; le tracce solo 2D restano compatibili.</li></ul>
             <h4>Build 302 - Pendenza locale indipendente dal verso</h4><ul><li>Campionamento delle finestre 5/10 m da entrambe le estremita del percorso: massima assoluta e P95 invarianti per inversione A/B, con segno salita/discesa coerente. Nessuna nuova fonte dati o chiamata di rete.</li></ul>
             <h4>Build 301 - Pendenze locali 5/10 m da DTM 5 m</h4><ul><li>Scarico regionale opt-in o importazione GeoTIFF locale; nessun GPS, nessun dato persistito. Pendenze su 5/10 m con fonte e limiti di accuratezza dichiarati, senza confondere la misura con la media su 200 m.</li></ul>
@@ -18281,7 +18282,9 @@ const I18N = {
     "track.profile.actionAria":"Mostra il profilo altimetrico della traccia salvata",
     "track.profile.title":"Profilo altimetrico",
     "track.profile.close":"Chiudi profilo",
-    "track.profile.unavailable":"Profilo non disponibile per questa traccia. Il profilo altimetrico viene salvato solo quando la traccia proviene da un percorso calcolato.",
+    "track.profile.unavailable":"Profilo non disponibile: la traccia non contiene quote GPX/KML valide o un profilo di routing salvato.",
+    "track.profile.importedLabel":"Quote originali GPX/KML",
+    "track.profile.importedCaution":"Quote del file importato, non DTM a 5 m: pendenze riferite alla distanza tra punti originali, precisione non verificata.",
     "track.profile.stale":"Profilo non valido: geometria modificata dopo l’ultimo calcolo.",
     "track.profile.partial":"Profilo parziale: alcuni tratti senza quota.",
     "track.profile.distance":"Distanza",
@@ -20796,7 +20799,9 @@ const I18N = {
     "track.profile.actionAria":"Show the elevation profile for this saved track",
     "track.profile.title":"Elevation profile",
     "track.profile.close":"Close profile",
-    "track.profile.unavailable":"Elevation profile unavailable for this track. It is saved only when the track comes from a computed route.",
+    "track.profile.unavailable":"No elevation profile: the track has no valid GPX/KML heights or saved routing profile.",
+    "track.profile.importedLabel":"Original GPX/KML elevations",
+    "track.profile.importedCaution":"Heights from the imported file, not a 5 m DTM. Grades apply between original track points; accuracy is unverified.",
     "track.profile.stale":"Profile invalid: geometry changed after the last elevation capture.",
     "track.profile.partial":"Partial profile: some segments lack elevation.",
     "track.profile.distance":"Distance",
@@ -23036,7 +23041,9 @@ const I18N = {
     "track.profile.actionAria":"Afficher le profil altimétrique de la trace enregistrée",
     "track.profile.title":"Profil altimétrique",
     "track.profile.close":"Fermer le profil",
-    "track.profile.unavailable":"Profil indisponible pour cette trace. Le profil altimétrique n’est enregistré que lorsque la trace provient d’un itinéraire calculé.",
+    "track.profile.unavailable":"Profil indisponible : aucune altitude GPX/KML valide ni profil de routage sauvegarde.",
+    "track.profile.importedLabel":"Altitudes originales GPX/KML",
+    "track.profile.importedCaution":"Altitudes du fichier importe, pas un MNT a 5 m. Les pentes portent sur les points originaux ; precision non verifiee.",
     "track.profile.stale":"Profil non valide : géométrie modifiée après le dernier calcul.",
     "track.profile.partial":"Profil partiel : certains tronçons sans altitude.",
     "track.profile.distance":"Distance",
@@ -26195,10 +26202,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-GPX-KML-TRACK-ELEVATION-ROUNDTRIP-A";
-const APP_BUILD_DETAIL = "Tracce salvate: quote GPX originali conservate su import/export e KML 3D quando complete.";
+const APP_BUILD_ID = "GIS-SAVED-TRACK-IMPORTED-ELEVATION-PROFILE-A";
+const APP_BUILD_DETAIL = "Tracce salvate: grafico profilo da quote originali GPX/KML, senza confonderle con DTM 5 m.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 303;
+const APP_BUILD_NUM = 304;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61801,6 +61808,67 @@ function savedTrackGeometryDistToProfileDist(geometryDistM, geometryTotalM, prof
   else if (ratio > 1) ratio = 1;
   return ratio * pt;
 }
+/* SAVED-GPX-PROFILE-A: transient profile from geometry-bound imported GPX/KML
+ * elevations. Never persist inferred slopes or imply 5 m DEM accuracy. */
+function savedTrackBuildRuntimeImportedElevationProfile(st){
+  try {
+    const imported = savedTrackSanitizeImportedElevations(st && st.importedElevations, st);
+    const cache = imported ? savedTrackBuildGeometryCumCache(st) : null;
+    if (!cache || !Number.isFinite(cache.total) || cache.total <= 0 ||
+        !Array.isArray(cache.geo) || cache.geo.length !== imported.heights.length) return null;
+    const samples = [];
+    let minEle = Infinity, maxEle = -Infinity;
+    let ascent = 0, descent = 0, valid = 0, validPairs = 0, run = 0, prev = null;
+    const minSeg = (typeof ROUTING_ELEV_MIN_SEG_M === "number") ? ROUTING_ELEV_MIN_SEG_M : 0.5;
+    for (let i = 0; i < imported.heights.length; i++){
+      const ele = imported.heights[i], d = cache.cum[i];
+      if (!Number.isFinite(d)) return null;
+      if (ele === null){
+        if (prev !== null) run++;
+        samples.push({index:i,cumDistM:d,ele:null,gradePct:null,lat:null,lon:null,runIndex:null});
+        prev = null;
+        continue;
+      }
+      valid++;
+      minEle = Math.min(minEle, ele);
+      maxEle = Math.max(maxEle, ele);
+      let gradePct = null;
+      if (prev !== null){
+        const segment = d - prev.cumDistM;
+        if (segment > 0){
+          validPairs++;
+          const diff = ele - prev.ele;
+          if (diff > 0) ascent += diff;
+          else descent -= diff;
+          if (segment >= minSeg){
+            const rawGrade = 100 * diff / segment;
+            if (Number.isFinite(rawGrade) &&
+                Math.abs(rawGrade) <= ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT + ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT)
+              gradePct = rawGrade;
+          }
+        }
+      }
+      const geo = cache.geo[i];
+      samples.push({
+        index:i,cumDistM:d,ele,gradePct,
+        lat:geo.lat,lon:normalizeLon(geo.lon),runIndex:run
+      });
+      prev = samples[samples.length-1];
+    }
+    if (valid < 2 || validPairs < 1) return null;
+    const summary = {ascentM:ascent,descentM:descent,minEleM:minEle,maxEleM:maxEle};
+    return {
+      samples,
+      meta:{
+        hasAnyElevation:true,completeProfile:valid === imported.heights.length,
+        mapSyncEnabled:true,source:"imported-gpx-kml",
+        originalSamples:imported.heights.length,validSamples:valid
+      },
+      stats:{totalDistM:cache.total},summary
+    };
+  } catch(_){return null;}
+}
+
 function savedTrackBuildRuntimeElevationProfile(st){
   try {
     if (!st || typeof st !== "object") return null;
@@ -62420,7 +62488,8 @@ function renderSavedTrackElevationSection(){
   const tt = (k, fb) => ((typeof t === "function" && t(k)) ? String(t(k)) : (fb || ""));
 
   const ep = st.elevationProfile;
-  if (!ep){
+  const imported = !ep ? savedTrackSanitizeImportedElevations(st.importedElevations, st) : null;
+  if (!ep && !imported){
     sec.classList.add("is-unavailable");
     if (status) status.textContent = tt("track.profile.unavailable", "Profilo non disponibile");
     if (metrics) metrics.innerHTML = "";
@@ -62453,7 +62522,8 @@ function renderSavedTrackElevationSection(){
     return;
   }
 
-  const runtime = savedTrackBuildRuntimeElevationProfile(st);
+  const runtime = ep ? savedTrackBuildRuntimeElevationProfile(st)
+    : savedTrackBuildRuntimeImportedElevationProfile(st);
   view.runtimeProfile = runtime;
   view.geometryCache = savedTrackBuildGeometryCumCache(st);
   try { savedTrackInvalidateElevationMapPixelCache(); } catch(_){}
@@ -62470,14 +62540,21 @@ function renderSavedTrackElevationSection(){
   }
 
   const partial = !runtime.meta.completeProfile;
+  const fromFile = runtime.meta.source === "imported-gpx-kml";
+  const fileLabel = tt("track.profile.importedLabel", "Quote originali GPX/KML");
+  const fileCaution = tt("track.profile.importedCaution",
+    "Dati altimetrici del file importato, non DTM a 5 m. Le pendenze sono riferite alla distanza fra punti originali; precisione non verificata.");
   if (partial){
     sec.classList.add("is-partial");
-    if (status) status.textContent = tt("track.profile.partial", "Profilo parziale");
-    if (warn){ warn.hidden = false; warn.textContent = tt("track.profile.partial", ""); }
+    if (status) status.textContent = (fromFile ? fileLabel + " - " : "") +
+      tt("track.profile.partial", "Profilo parziale");
+    if (warn){ warn.hidden = false; warn.textContent = fromFile
+      ? fileCaution + " " + tt("track.profile.partial", "Profilo parziale") :
+      tt("track.profile.partial", "Profilo parziale"); }
   } else {
     sec.classList.add("is-valid");
-    if (status) status.textContent = "";
-    if (warn){ warn.hidden = true; warn.textContent = ""; }
+    if (status) status.textContent = fromFile ? fileLabel : "";
+    if (warn){ warn.hidden = !fromFile; warn.textContent = fromFile ? fileCaution : ""; }
   }
 
   if (metrics){
@@ -62490,7 +62567,7 @@ function renderSavedTrackElevationSection(){
       el.querySelector(".routing-metric-label").textContent = label;
       metrics.appendChild(el);
     };
-    const sum = ep.summary || {};
+    const sum = runtime.summary || (ep && ep.summary) || {};
     const distM = Number(runtime.stats && runtime.stats.totalDistM);
     if (Number.isFinite(distM)) addMetric(tt("track.profile.distance", "Distanza"), routingFmtRouteDistanceKm(distM));
     if (Number.isFinite(sum.ascentM)) addMetric(tt("track.profile.ascent", "Dislivello +"), routingFmtAltitudeMeters(sum.ascentM));
@@ -62503,8 +62580,9 @@ function renderSavedTrackElevationSection(){
   const prevHover = preserveHover ? Object.assign({}, view.hover) : null;
   if (te){
     const bits = [];
-    if (Number.isFinite(ep.summary && ep.summary.minEleM) && Number.isFinite(ep.summary && ep.summary.maxEleM)){
-      bits.push(routingFmtAltitudeMeters(ep.summary.minEleM) + "–" + routingFmtAltitudeMeters(ep.summary.maxEleM));
+    const sum = runtime.summary || (ep && ep.summary) || {};
+    if (Number.isFinite(sum.minEleM) && Number.isFinite(sum.maxEleM)){
+      bits.push(routingFmtAltitudeMeters(sum.minEleM) + "–" + routingFmtAltitudeMeters(sum.maxEleM));
     }
     if (Number.isFinite(runtime.stats.totalDistM)) bits.push(routingFmtRouteDistanceKm(runtime.stats.totalDistM));
     te.textContent = bits.join(" · ") || tt("track.profile.title", "Profilo altimetrico");
