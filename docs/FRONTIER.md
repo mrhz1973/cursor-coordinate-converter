@@ -4,21 +4,25 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Tracce desktop — quote importate, salvataggio e profilo altimetrico. |
+| **WORKSTREAM ATTIVO** | Tracce desktop: comandi Importa/Esporta per corrente e archivio, pulsante Salva, profilo XY. |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A |
-| **STATO BLOCCO** | **Build305 LIVE**, deploy GIS-only e Automated Browser QA HTTPS nativa PASS scoped. Chiusura operatore ancora PENDING. |
-| **GATE CORRENTE** | REVIEW GPT-SOSTITUTIVA tecnica PASS; browser candidato e LIVE: 49/49 controlli tracce + 16/16 poligono GIS, zero POST/eccezioni JS/errori console. QA FINALE CHATGPT — PENDING. Reviewer AI esterno formale NOT_PERFORMED/backstop post-hoc. |
+| **BLOCCO ATTIVO** | Nessun bundle runtime attivo: Build305 CLOSED. |
+| **STATO BLOCCO** | GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A CLOSED / QA PASS operatore 15/11/2026. Build305 ancora LIVE, chiusura docs-only. |
+| **GATE CORRENTE** | REVIEW GPT-SOSTITUTIVA PASS, deploy GIS-only PASS, ABQA HTTPS nativa 49/49 tracce + 16/16 poligoni PASS, QA operatore Build305 PASS esatto. Reviewer esterno NOT_PERFORMED; DTM terreno HOLD, altre QA umane distinte. |
 | **RUNTIME LIVE** | Build305 — source `95080bac23a1642c1a2c6f8c0bdd4885b7bac960`; blob `e9b949cdb3d444128f70a6188122bf05fb715d09`; SHA-256 `5ffa64ff3ba9746de9a5463cc4adfc058ceb7de77e095aacdd51259e39d72464`; 11.170.887 byte, CR192, CRLF0. File VPS, HTTP interno, HTTPS e documenti nativi Edge concordi. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo a Build305 verificato. Il candidato preliminare `2664bb1fc1f34732758e6fbf1668e25792744f7a` è superato dal source LIVE; non distribuirlo. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-MINIMIZED-HELP-TOOLS-ESCAPE-PRIORITY-D — Build297, PASS operatore 12/11/2026. Nessuna chiusura umana successiva dedotta da questo pass. |
-| **NEXT** | QA operatore breve sulla Build305: Importa nella traccia corrente → «💾 Salva traccia in archivio…» nell'intestazione Punti → «Profilo» della riga salvata; verificare utilità/leggibilità sul proprio file. Nessun PASS umano automatico. Dopo il gate, riprendere la riorganizzazione dei comandi Tracce richiesta nella chat49. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | Distinguere Importa/Esporta della traccia corrente dai comandi Importa/Esporta della lista salvata. Il comando Esporta alto usa ancora la selezione dell'archivio. Profilo da soli punti XY senza quote non implementato da Build305; nessun DTM automatico. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A - Build305, QA PASS operatore 15/11/2026; [ricevuta](orchestrator/evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md). |
+| **NEXT** | Audit B0 UX Tracce desktop: Salva archivio visibile/disabilitato quando non ci sono punti; Importa ed Esporta distinti tra traccia corrente e archivio. Definire TASK DELTA e gate prima di aprire una build successiva. Profilo senza quote XY separato; DTM terreno HOLD, mobile PAUSA. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | CTA Salva corrente nascosta con zero punti; renderla scopribile. Esporta alto opera sulla selezione archivio: distinguere Importa/Esporta superiori (corrente) e inferiori (lista salvata). Profilo senza quote XY non implementato; nessun DTM automatico. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX conserva quote valide e mancanti; KML3D solo con geometria interamente elevata, altrimenti 2D. Una sola quota si conserva ma non genera profilo/pendenza. Un punto importato spostato perde la propria quota originaria; assegnazioni equivalenti la conservano. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 15/11/2026: TMAR Desktop Commander Win su AsusDesktop e SSH `ionos-n8n-new` verificati. VPS `31.70.139.73` / tailnet `100.99.54.93`; [HTTPS GIS](https://ionos-n8n-new.tailc01234.ts.net/gis?v=5ffa64ff). Solo restart GIS; backup304 `/var/backups/goi-gis-runtime/20261115T171540Z-build305`. |
-| **EVIDENCE** | [Handoff e rapporto305](orchestrator/evidence/2026-11-15-chat49-handoff-305/REPORT.md) · [QA LIVE tracce](orchestrator/evidence/2026-11-15-chat49-handoff-305/live-result.json) · [QA LIVE poligoni](orchestrator/evidence/2026-11-15-chat49-handoff-305/live-polygons-result.json) · [Deploy](orchestrator/evidence/2026-11-15-chat49-handoff-305/deploy-result.json). |
+| **EVIDENCE** | [Handoff e rapporto305](orchestrator/evidence/2026-11-15-chat49-handoff-305/REPORT.md) · [QA LIVE tracce](orchestrator/evidence/2026-11-15-chat49-handoff-305/live-result.json) · [QA LIVE poligoni](orchestrator/evidence/2026-11-15-chat49-handoff-305/live-polygons-result.json) · [Deploy](orchestrator/evidence/2026-11-15-chat49-handoff-305/deploy-result.json) - [Chiusura 305](orchestrator/evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md). |
+
+## Chiusura operatore Build305 - 15 novembre 2026
+
+Attestazione esatta: `QA GIS-SAVED-TRACK-IMPORT-ELEVATION-SAVE-A PASS operatore`. Secondo OM sezione 4 Regola H: review GPT sostitutiva, deploy GIS-only, ABQA HTTPS gia PASS; CLOSED docs-only. Monolite e servizi invariati, DTM terreno HOLD, QA storiche distinte, reviewer esterno NOT_PERFORMED. [Ricevuta](orchestrator/evidence/2026-11-15-chat49-handoff-305/OPERATOR-CLOSURE-305.md).
 
 ## Passaggio dalla chat49 — 15 novembre 2026
 
