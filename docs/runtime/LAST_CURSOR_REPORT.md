@@ -1,14 +1,13 @@
-# LAST_CURSOR_REPORT - GPT Build302 LIVE
+# LAST_CURSOR_REPORT - GPT Build303 LIVE
 
-Il nome del file e storico: intervento eseguito da GPT tramite TMAR Desktop Commander Windows, NON da Cursor. Stato canonico LIVE esclusivamente in docs/FRONTIER.md.
+Il nome file e storico: review, deploy e QA di questo pass eseguiti via GPT e TMAR Desktop Commander Windows, NON Cursor. Fonte corrente di verita docs/FRONTIER.md.
 
-BLOCK: ROUTING-LOCAL-DTM-DIRECTION-INVARIANCE-B.
-GATE: Build302 HTTPS automated QA PASS scoped; QA operatore su percorso originale PENDING; DEM real-world ground truth accuracy HOLD.
-NEXT: acquisire un confronto reale su sentiero originario quando disponibile; non ripetere le prove automatiche di inversione e non dedurre QA PASS operatore. Non modificare provider, GPS o storage per aggirare il gate.
-RUNTIME: source 182b83a32dc9a32fa2a748458a9ad6f7b5b066a5, blob a58e1096feccb3df1fb1d24e3b6dccf494c38024, SHA256 35c1af1dcb30c44fa7f136a19f7d3df4618ffbbdf5a64c1722c222f3271c253f, 11,160,380 byte, CR192.
-REVIEW: GPT-SOSTITUTIVA 34/34 PASS da full source sha; reviewer esterno NOT_PERFORMED/post-hoc backstop.
-DEPLOY: GIS-only PASS backup301 /var/backups/goi-gis-runtime/20261114T183851Z-build302, restart 1043544->1427028, hash file/HTTP/HTTPS matched.
-QA HTTPS LIVE: inversione18/18, cursor4/4, parser8/8, offline/OPSEC, media200m numerici19/19, UI3/3, Escape7/7, 0 POST/JS exceptions. No new WCS GET in QA302.
-CONFLICT RESOLVED: FRONTIER live Build301 historical typo b6d373? corrected by current state row to full source Build302; true source301 6bd373f37b2b078cc9868bc6b32012b3ab769821.
-OTHER GATES: historical QA operator 301/300/299/298/295/294 PENDING independently. Phone development PAUSA.
-[Evidence](../orchestrator/evidence/2026-11-14-local-dtm-direction-302/REPORT.md).
+BLOCK: GIS-GPX-KML-TRACK-ELEVATION-ROUNDTRIP-A, Build303 LIVE.
+GATE: Automated Browser QA HTTPS PASS scoped, QA operatore GPX/KML PENDING, reviewer esterno NOT_PERFORMED/post-hoc backstop. DTM5/10m ground truth accuracy indipendente HOLD.
+NEXT: QA operatore import GPX di tracciato reale, SavedTracks, reopen, export GPX/KML, no falsa precisione 5m da GPX. Non reiterare 2312 campioni o i test consumati. Mobile PAUSA.
+RUNTIME: source 2f02a24c0320ee44f9814f7378a8392f901d7c75, blob d865651a9336afa143b6b040120dd7e4795cfd89, SHA256 0b117c13a96da9f8c421fba3772c19a297bd002ec60409d19703b329ac83b9f7, 11,165,656 byte, CR192.
+REVIEW: GPT-SOSTITUTIVA 43/43 PASS dal full Git SHA; esterna NOT_PERFORMED/backstop.
+DEPLOY: GIS-only PASS, backup302 /var/backups/goi-gis-runtime/20261115T141311Z-build303, restart PID1427028->3325976, SHA file/HTTP/HTTPS matched.
+ABQA LIVE: 4/4 GPX reali con 2,312 quote, vero import saved track198/reload/export, negative13/13, poligoni+2D5/5, numerica19/19, DTM bidirezionale18/18, Escape7/7 PASS, zero POST/JS exceptions nei test conclusivi. Un primo run native E2E 'Uncaught' non riprodotto al retry, conservato nel rapporto.
+USER DATA: soli file letti localmente, nessun GPX/coordinate privati aggiunti a GitHub. Test storage in profilo Edge isolato, pulito al termine.
+[Report](../orchestrator/evidence/2026-11-15-gpx-elevation-303/REPORT.md).
