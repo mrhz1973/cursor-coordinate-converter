@@ -3,7 +3,7 @@
 
 **Ruolo:** seed/pointer di handoff tra chat. **Non** è stato operativo vivo. **Non** aggiornare a ogni `finito` con gate/runtime/SHA/history.
 
-Stato vivo → [`docs/OPERATING_MEMORY.md`](OPERATING_MEMORY.md) **§7.1**. Metodo → OM **§4**. Audit → WU / inbox / `LAST_CURSOR_REPORT` / git history.
+Stato vivo → [`docs/FRONTIER.md`](FRONTIER.md). Metodo → [`docs/OPERATING_MEMORY.md`](OPERATING_MEMORY.md) **§4**. Audit → WU / inbox / `LAST_CURSOR_REPORT` / git history.
 
 ---
 
@@ -21,8 +21,8 @@ Autorità **finale**. RAW/CDN secondari (possono essere stale).
 
 1. Verifica `git ls-remote origin refs/heads/main`
 2. `README.md` — **solo** blocco `<!-- AI-BOOT: START -->` … `<!-- AI-BOOT: END -->`
-3. OM **§7.1 FRONTIER**
-4. Hot-header della WU attiva (`<!-- WU-HOT-HEADER -->`)
+3. [`docs/FRONTIER.md`](FRONTIER.md)
+4. Hot-header della WU attiva (`<!-- WU-HOT-HEADER -->`), solo se FRONTIER indica una WU e il relativo path; se `WU ATTIVA` è `—` / `NONE` / `N/A`, il passo è N/A. Non cercare o inferire il path.
 
 Poi: materiale ulteriore **solo on demand** (OM §4 Regola I).
 
@@ -65,7 +65,7 @@ Emettere in chat (fenced), **non** persistere come current-state in questo file:
 repo: mrhz1973/cursor-coordinate-converter
 HEAD verificato (ls-remote) @ <timestamp> = <full-sha>
 frontiera: <block-id> (<data>)
-CORE BOOT: README AI-BOOT → OM §7.1 → WU hot-header
+CORE BOOT: README AI-BOOT → docs/FRONTIER.md → WU hot-header (solo se WU ATTIVA non N/A)
 ```
 
 ---
