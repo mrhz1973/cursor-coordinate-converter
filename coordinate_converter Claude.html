@@ -102789,8 +102789,13 @@ function closeTrackExportDialog(){
   const dlg = document.getElementById("trackExportDialog");
   if (!dlg) return;
   try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
-  const opener = document.getElementById(_trackExportScope === "current"
-    ? "btnTrackExportOpenBtn" : "btnTrackArchiveExport");
+  const currentOpener = document.getElementById("btnTrackExportOpenBtn");
+  const archiveOpener = document.getElementById("btnTrackArchiveExport");
+  // Mobile retains its original top-bar archive export, so focus must never
+  // return to the archive-only button hidden on that viewport.
+  const opener = _trackExportScope === "current"
+    ? currentOpener
+    : (archiveOpener && archiveOpener.getClientRects().length ? archiveOpener : currentOpener);
   _trackExportScope = "archive";
   if (opener){
     try { opener.focus(); } catch(_){}
