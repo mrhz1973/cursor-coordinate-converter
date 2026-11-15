@@ -1,13 +1,11 @@
 # Ultimo checkpoint orchestratore
 
-Stato operativo LIVE: [FRONTIER](../FRONTIER.md). **Build295 LIVE, QA OPERATORE DESKTOP PENDING.**
+Fonte LIVE: [FRONTIER](../FRONTIER.md). **Build305 LIVE; QA operatore PENDING.**
 
-Blocco GIS-DESKTOP-FOOTER-HUD-REFLOW-A: footer GIS desktop ora single-row 30px, firma/versione a sinistra, cache sessione dinamica al centro, attribuzione reale layer a destra; PUNTO/CURSORE a 2px dal footer e shift laterale automatico su desktop bassi per evitare toolbar. Mobile layout invariato e sviluppo telefono in pausa.
+Passaggio dalla chat49 riconciliato: precedente LIVE reale304, documenti stale303/295. Corrette quote singole, salvataggio dal percorso Importa superiore e invalidazione sul punto spostato. Profilo304 conservato; richiesta UI Importa/Esporta e profilo da XY senza quote ancora aperti.
 
-Source b213b80fb8c006508e40d6d50e79a0036f3a8cfe, blob 57eb5cedf84982806bdd726c438d4d35acf473eb, SHA256 8bc8ce1bde2e448ba3b6f60f042d371520707c21b5f6cea581eacb8135724840, 11.127.935 byte. REVIEW GPT-SOSTITUTIVA 42/42 PASS, esterna NOT_PERFORMED/post-hoc backstop. Deploy GIS-only/backup294 e HTTP/HTTPS PASS; Automated Browser QA LIVE **170/170 PASS** (86 footer/HUD +25 Waypoint +42 Escape +17 D-Flight), POST 0.
+Review GPT sostitutiva tecnica PASS scoped. Edge candidato e HTTPS nativo: 49/49 tracce + 16/16 poligono GIS, zero POST/eccezioni JS/errori console nelle sessioni conclusive. Deploy GIS-only PASS. QA umana distinta; DTM terreno HOLD; mobile PAUSA.
 
-**NEXT:** QA umana desktop 295 sui quattro punti dello screenshot: credits all'estrema sinistra; provider all'estrema destra; riga offline nascosta e footer alto una riga; cache al centro, PUNTO/CURSORE aderenti al bordo superiore footer e fallback a sinistra se toolbar non entra. In caso di PASS inviare QA GIS-DESKTOP-FOOTER-HUD-REFLOW-A PASS operatore, poi chiusura H. Il blocco Escape294 precedente resta senza PASS operatore separato; non dedurlo dalle prove automatiche.
+[Rapporto completo](../runtime/LAST_CURSOR_REPORT.md) · [Dossier305](evidence/2026-11-15-chat49-handoff-305/REPORT.md) · [Inbox](inbox/2026-11-15_1830_chat49-handoff-build305.md).
 
-[Dossier](evidence/2026-11-12-footer-single-row-295/REPORT.md) · [Deploy](evidence/2026-11-12-footer-single-row-295/DEPLOY-RESULT-295.md) · [QA LIVE](evidence/2026-11-12-footer-single-row-295/QA-LIVE-295.md) · [Inbox](inbox/2026-11-12_2022_footer-295-live.md) · [LAST](../runtime/LAST_CURSOR_REPORT.md).
-
-real_task_commit=dc5155ac86bc10dcc6b925a5fc2c47a85f86a4c9; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
+real_task_commit=89b2c2621fb64972e47995f29fe3cb65527908e3; RUNTIME_SOURCE_SHA=95080bac23a1642c1a2c6f8c0bdd4885b7bac960; current_report_container=PENDING_SELF_REFERENCE; final_remote_head_after_report_push=EXTERNAL_ONLY.
