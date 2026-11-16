@@ -6,19 +6,19 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | Tracce desktop - FIX usabilita dopo feedback negativo Build307; semplificare in una sola finestra Traccia, senza passaggio obbligato a Oggetti GIS. |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-TRACK-IO-CURRENT-ARCHIVE-A |
-| **STATO BLOCCO** | Build307 LIVE ma NON ACCETTATA dall'operatore per confusione UX (16/11/2026). Blocco aperto, nessun finito; serve FIX prima di nuova QA. |
-| **GATE CORRENTE** | QA operatore NON ACCETTATA / FAIL UX da feedback e screenshot; non e una riga formale sintetizzata. PASS tecnici storici 27/27 restano scoped e non attestano usabilita. Reviewer AI esterno NOT_PERFORMED. FIX richiesto; no nuova QA sulla stessa UI. |
+| **BLOCCO ATTIVO** | GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX1 |
+| **STATO BLOCCO** | Build308 candidata single-panel pronta; Build307 ancora LIVE e non accettata. Nessun PASS umano del FIX. |
+| **GATE CORRENTE** | Review GPT-SOSTITUTIVA PASS su candidato remoto immutabile; browser candidato 27/27 PASS con clic nativi e screenshot ispezionati. Cleanup dati applicativi test PASS, rimozione directory temporanee parziale (limite Windows documentato). Reviewer AI esterno NOT_PERFORMED. |
 | **RUNTIME LIVE** | Build307 source `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` (review candidate `1aaa72ec6c3db7bb944c1b58108e456fb4eee611`), blob `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA-256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`, 11.180.622 byte, CR192/CRLF0; VPS, HTTP interno, HTTPS concordi. |
-| **RUNTIME CANDIDATE** | Nessun candidato successivo verificato; branch tecnico task/gis-track-io-current-archive-307 e review esterna post-hoc ancora aperta. |
+| **RUNTIME CANDIDATE** | Build308 source d347ec792d515c1ffaa1f8ddd5f8bf3d51d4d0c8, blob 6182162db2e39360cd42d33153769c0412df6902, SHA256 50dcedce9e51549f36136742bfd0dab4816ce7019710c969f06007ddaed95882. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-SAVE-CTA-DESKTOP-A - Build306, QA PASS operatore 16/11/2026; [ricevuta](orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). |
-| **NEXT** | FIX UX desktop: due zone Traccia in modifica / Tracce salvate; Salva nella zona corrente; Importa archivio con selettore file e conferma breve nel pannello Traccia, senza Oggetti GIS/categorie/lista waypoint. Ridurre testo e controlli non pertinenti; preservare dati e transazioni. Applicare review e QA browser visiva prima di nuovo gate operatore. Nessun candidato successivo verificato. |
+| **NEXT** | Backup307, deploy GIS-only del FIX single-panel e verifica HTTPS nativa; dopo PASS tecnico chiedere solo valutazione umana della nuova interfaccia. Nessun avanzamento backlog altimetrico. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | Separazione funzionale corrente/archivio presente nella307, ma percorso respinto per usabilita. Da semplificare in una sola finestra. Profilo XY senza quote non implementato; DTM terreno HOLD. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX conserva quote valide e mancanti; KML3D solo con geometria interamente elevata, altrimenti 2D. Una sola quota si conserva ma non genera profilo/pendenza. Un punto importato spostato perde la propria quota originaria; assegnazioni equivalenti la conservano. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 16/11/2026: GIS-only Build307 LIVE, backup306 /var/backups/goi-gis-runtime/20261116T000729Z-prebuild307, un solo restart GIS. [HTTPS Build307](https://ionos-n8n-new.tailc01234.ts.net/gis?v=d5274ebd). |
-| **EVIDENCE** | [Feedback operatore e FIX UX](orchestrator/evidence/2026-11-16-track-io-current-archive-307/OPERATOR-UX-NOT-ACCEPTED.md) - [Build307 release LIVE](orchestrator/evidence/2026-11-16-track-io-current-archive-307/RELEASE.md) - [Review GPT sostitutiva](orchestrator/evidence/2026-11-16-track-io-current-archive-307/REVIEW.md) - [QA HTTPS live](orchestrator/evidence/2026-11-16-track-io-current-archive-307/live-qa.json) - [QA operatore306](orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). |
+| **EVIDENCE** | [Review e test FIX1 Build308](orchestrator/evidence/2026-11-16-track-single-panel-308/REVIEW.md) - [Feedback307](orchestrator/evidence/2026-11-16-track-io-current-archive-307/OPERATOR-UX-NOT-ACCEPTED.md). |
 
 ## Build307 - QA operatore NON ACCETTATA (16 novembre 2026)
 
