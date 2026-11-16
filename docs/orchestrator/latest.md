@@ -1,9 +1,9 @@
 # Ultimo checkpoint orchestratore
 
-LIVE STATE: [FRONTIER](../FRONTIER.md). **Build306 LIVE; GIS-TRACK-SAVE-CTA-DESKTOP-A CLOSED - QA operatore PASS ricevuta il 16/11/2026.**
+LIVE STATE [FRONTIER](../FRONTIER.md). **Build307 LIVE**, block `GIS-TRACK-IO-CURRENT-ARCHIVE-A`, review GPT-SOSTITUTIVA PASS (esterna NOT_PERFORMED), deploy GIS-only PASS, ABQA HTTPS nativa **27/27 PASS**, **QA operatore PENDING**.
 
-Runtime source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, HTML SHA256 `47a770d9cb8ed963e2c8171311f638c1f72ef1bf90090fe18c545d8809480d9b`. JS 2/2, ABQA Edge candidato 13/13 + HTTPS LIVE 13/13 e deploy GIS-only PASS gia documentati. Regola H: chiusura docs-only senza restart e senza alterare runtime. Il PASS non si estende a DTM terreno, XY senza quote o altri blocchi.
+Runtime source `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e`, blob `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA-256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`. Sopra Traccia: Importa/Esporta corrente. Sotto Tracce salvate: Importa in archivio ed Esporta selezionate. Quote GPX/KML/GeoJSON associate al geometry hash, salvate con sanitizer canonico; Workbench con prevalidate/snapshot/verify/rollback. Mobile invariato.
 
-NEXT: I/O DELICATO Importa/Esporta corrente vs archivio, audit mirato, gate review/storage/roundtrip. Mobile PAUSA. [Rapporto di chiusura](evidence/2026-11-16-qa306-closure/REPORT.md) - [Inbox](inbox/2026-11-16_qa306-operator-pass.md).
+NEXT: QA operatore con attestazione esatta `QA GIS-TRACK-IO-CURRENT-ARCHIVE-A PASS operatore`; poi Regola H. DTM terrain HOLD, profilo XY-only backlog, telefono PAUSA. [Release](evidence/2026-11-16-track-io-current-archive-307/RELEASE.md) - [Inbox](inbox/2026-11-16_build307-track-io.md).
 
-Runtime_source_SHA=287d90c59cf6e77feb7144e79bdaa7087dccc490; Report container=PENDING_SELF_REFERENCE; final_remote_head_after_push=EXTERNAL_ONLY.
+Source=3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e; report container=PENDING_SELF_REFERENCE; final remote HEAD=EXTERNAL_ONLY.

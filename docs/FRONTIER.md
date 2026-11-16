@@ -4,21 +4,25 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Tracce desktop - dopo la chiusura Build306, Importa/Esporta corrente vs archivio come prossimo bundle DELICATO; profilo XY senza quote separato. |
+| **WORKSTREAM ATTIVO** | Tracce desktop: Importa/Esporta corrente vs archivio distribuiti Build307, QA operatore PENDING. Profilo da soli XY senza quote separato. |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | Nessun nuovo bundle runtime aperto (Build306 CLOSED). |
-| **STATO BLOCCO** | GIS-TRACK-SAVE-CTA-DESKTOP-A CLOSED / QA PASS operatore ricevuta il 16/11/2026. Build306 resta LIVE, chiusura docs-only. |
-| **GATE CORRENTE** | Build306: review ROUTINE N/A esterna, JS 2/2 PASS, browser candidato 13/13 PASS, HTTPS LIVE 13/13 PASS, deploy GIS-only PASS; QA operatore PASS esatto. DTM terreno HOLD e QA storiche separate. |
-| **RUNTIME LIVE** | **Build306** source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, blob `dcf143d899c2c074f32dae03edd0058326c5ebef`, SHA256 `47a770d9cb8ed963e2c8171311f638c1f72ef1bf90090fe18c545d8809480d9b`, 11.172.093 byte, CR192, CRLF0; file VPS, HTTP interno e HTTPS concordi. |
-| **RUNTIME CANDIDATE** | Nessun candidato successivo verificato; source branch `task/gis-track-save-cta-desktop-306`. |
+| **BLOCCO ATTIVO** | GIS-TRACK-IO-CURRENT-ARCHIVE-A |
+| **STATO BLOCCO** | Build307 LIVE; review GPT-SOSTITUTIVA scoped PASS, deploy GIS-only PASS, Edge HTTPS nativa 27/27 PASS. QA operatore PENDING. |
+| **GATE CORRENTE** | DELICATO I/O: REVIEW GPT-SOSTITUTIVA PASS su raw@FULL_SHA, reviewer AI esterno NOT_PERFORMED (backstop post-hoc), JS 2/2 PASS, candidata 27/27 PASS, HTTPS LIVE 27/27 PASS, 0 POST/errori; QA FINALE CHATGPT PENDING. |
+| **RUNTIME LIVE** | Build307 source `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` (review candidate `1aaa72ec6c3db7bb944c1b58108e456fb4eee611`), blob `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA-256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`, 11.180.622 byte, CR192/CRLF0; VPS, HTTP interno, HTTPS concordi. |
+| **RUNTIME CANDIDATE** | Nessun candidato successivo verificato; branch tecnico task/gis-track-io-current-archive-307 e review esterna post-hoc ancora aperta. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-SAVE-CTA-DESKTOP-A - Build306, QA PASS operatore 16/11/2026; [ricevuta](orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). |
-| **NEXT** | Aprire gate DELICATO I/O Tracce: separare Importa/Esporta della traccia corrente (barra superiore) da Importa/Esporta dell'archivio (sezione Tracce salvate). Audit mirato + TASK DELTA senza alterare schema, sanitizer o persistenza al di fuori del gate; roundtrip GPX/KML/GeoJSON e poligoni obbligatorio. Profilo XY senza quote e DTM terrain HOLD separati; mobile PAUSA. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | CTA Salva scoperta Build306 CLOSED. Resta il bundle DELICATO per Importa/Esporta superiore (corrente) e inferiore (archivio) e relative prove di persistenza. Profilo da soli XY senza quote non implementato, DTM terreno HOLD. |
+| **NEXT** | QA operatore Build307: Importa/Esporta corrente superiore operano solo sul draft; Importa in archivio inferiore apre Import GIS con sole Tracce salvate selezionate e anteprima/conferma; Esporta selezionate inferiore usa solo righe spuntate. Controllare quote/profilo GPX se disponibili. Riga richiesta: `QA GIS-TRACK-IO-CURRENT-ARCHIVE-A PASS operatore`. Dopo Regola H, backlog profilo XY senza quote; DTM terreno HOLD, mobile PAUSA. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | Comandi Importa/Esporta corrente vs archivio distribuiti in Build307, QA umana PENDING. Profilo da soli XY privi di quota ancora non implementato; precisione DTM terreno HOLD. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX conserva quote valide e mancanti; KML3D solo con geometria interamente elevata, altrimenti 2D. Una sola quota si conserva ma non genera profilo/pendenza. Un punto importato spostato perde la propria quota originaria; assegnazioni equivalenti la conservano. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
-| **ACCESSO / DEPLOY** | 15/11/2026: TMAR Desktop Commander Win + SSH ionos-n8n-new, GIS-only deploy Build306 PASS, backup305 /var/backups/goi-gis-runtime/20261115T225548Z-prebuild306, un solo restart GIS. [HTTPS Build306](https://ionos-n8n-new.tailc01234.ts.net/gis?v=47a770d9). |
-| **EVIDENCE** | [Chiusura Build306](orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md) - [Build306 QA tecnica](orchestrator/evidence/2026-11-15-track-save-cta-desktop-306/REPORT.md) - [Audit B0 UI](orchestrator/evidence/2026-11-15-track-panel-ux-b0/REPORT.md). |
+| **ACCESSO / DEPLOY** | 16/11/2026: GIS-only Build307 LIVE, backup306 /var/backups/goi-gis-runtime/20261116T000729Z-prebuild307, un solo restart GIS. [HTTPS Build307](https://ionos-n8n-new.tailc01234.ts.net/gis?v=d5274ebd). |
+| **EVIDENCE** | [Build307 release LIVE](orchestrator/evidence/2026-11-16-track-io-current-archive-307/RELEASE.md) - [Review GPT sostitutiva](orchestrator/evidence/2026-11-16-track-io-current-archive-307/REVIEW.md) - [QA HTTPS live](orchestrator/evidence/2026-11-16-track-io-current-archive-307/live-qa.json) - [QA operatore306](orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). |
+
+## Build307 - QA tecnica PASS, operatore PENDING
+
+Build307 GIS-TRACK-IO-CURRENT-ARCHIVE-A LIVE dopo review GPT-SOSTITUTIVA, deploy GIS-only e ABQA HTTPS nativa 27/27 PASS. User QA resta da acquisire; reviewer AI esterno NOT_PERFORMED/backstop. [Dossier](orchestrator/evidence/2026-11-16-track-io-current-archive-307/RELEASE.md).
 
 ## Build306: QA operatore PASS, blocco CLOSED (16 novembre 2026)
 

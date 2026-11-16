@@ -6,23 +6,23 @@ Il nome file è storico: questo pass è stato eseguito da ChatGPT con subagenti,
 
 | Campo | Valore |
 | --- | --- |
-| BLOCK | GIS-TRACK-SAVE-CTA-DESKTOP-A - CLOSED 16/11/2026 |
-| GATE | Build306 LIVE: JS 2/2, Edge candidato 13/13, HTTPS 13/13 e deploy GIS-only PASS; QA operatore PASS ricevuta 16/11/2026; DTM terreno HOLD. |
-| NEXT | Gate DELICATO I/O Importa/Esporta corrente vs archivio; profilo solo XY e DTM terreno separati. |
-| Runtime LIVE | Build306 source `287d90c59cf6e77feb7144e79bdaa7087dccc490`, blob `dcf143d899c2c074f32dae03edd0058326c5ebef`, SHA256 `47a770d9cb8ed963e2c8171311f638c1f72ef1bf90090fe18c545d8809480d9b`. |
-| Candidate FULL SHA | Nessun candidato successivo alla Build306 verificato. |
-| Deployed state | GIS-only PASS con backup305; HTTPS nativo 13/13 e hash identico. |
-| Result | Build306 UI Salva con PASS tecnico e PASS operatore; chiusura docs-only Regola H, nessun nuovo deploy. |
-| Working tree | Pulito prima del contenitore autosync; pulizia post-push verificata esternamente. |
+| BLOCK | GIS-TRACK-IO-CURRENT-ARCHIVE-A |
+| GATE | Build307 LIVE; REVIEW GPT-SOSTITUTIVA, deploy GIS-only e ABQA HTTPS 27/27 PASS; QA operatore PENDING; reviewer AI esterno NOT_PERFORMED, DTM terreno HOLD. |
+| NEXT | QA operatore Build307, poi Regola H; successivo backlog profilo da soli XY senza quote. DTM 5-10m terreno HOLD. |
+| Runtime LIVE | Build307 source `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e`, blob `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`. |
+| Candidate FULL SHA | Review candidata `1aaa72ec6c3db7bb944c1b58108e456fb4eee611`; nessun candidato successivo a Build307 verificato. |
+| Deployed state | GIS-only PASS (backup306, PID 7891 -> 124169); HTTPS SHA e browser 27/27 PASS. |
+| Result | Importa/Esporta corrente vs archivio separati; quote 3D preservate; QA operatore307 non attestata. |
+| Working tree | Release source e VPS puliti; document sync successivo ancora in corso. |
 
 ### Identità SHA, non autoreferenziali
 
 | Nome | Valore |
 | --- | --- |
-| RUNTIME_SOURCE_SHA | `95080bac23a1642c1a2c6f8c0bdd4885b7bac960` |
-| RUNTIME_CANDIDATE_SHA | N/A: nessun candidato successivo al LIVE. |
-| REMOTE_HEAD_AT_EVIDENCE_TIME | `89b2c2621fb64972e47995f29fe3cb65527908e3` |
-| real_task_commit | `89b2c2621fb64972e47995f29fe3cb65527908e3` — handoff, FRONTIER e dossier pubblicati; runtime source distinto. |
+| RUNTIME_SOURCE_SHA | `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` |
+| RUNTIME_CANDIDATE_SHA | `1aaa72ec6c3db7bb944c1b58108e456fb4eee611` (stesso HTML blob, reviewed) |
+| REMOTE_HEAD_AT_EVIDENCE_TIME | `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` (pre-doc-autosync) |
+| real_task_commit | `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` - runtime release Build307; post-report HEAD esterna |
 | docs/report HEAD | `PENDING_SELF_REFERENCE` |
 | current_report_container | `PENDING_SELF_REFERENCE` |
 | final_remote_head_after_report_push | `EXTERNAL_ONLY` |
@@ -106,3 +106,9 @@ QA operatore Build306 PENDING, nessuna chiusura Regola H anticipata. NEXT: QA um
 ## G. Chiusura QA operatore Build306 - 2026-11-16 00:32 CET
 
 Riga ricevuta esattamente: `QA GIS-TRACK-SAVE-CTA-DESKTOP-A PASS operatore`. Il blocco attivo in FRONTIER era coincidente. Gate tecnici e deploy gia PASS (node --check 2/2, Edge 13/13 e HTTPS 13/13). Regola H applicata: **CLOSED docs-only** senza modifiche al runtime, nuovo deploy o restart. Il PASS non qualifica gli altri task; DTM terrain HOLD, sviluppo mobile PAUSA, profilo da XY senza quote non implementato. [Ricevuta](../orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). La HEAD finale del contenitore autosync resta da verificare esternamente.
+
+## H. Build307 LIVE - 2026-11-16 01:11 CET
+
+Fonte origin/main release `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e`, review raw@FULL_SHA `1aaa72ec6c3db7bb944c1b58108e456fb4eee611`, blob comune `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`, 11.180.622 byte. Bundle DELICATO: import/export Traccia corrente vs archivio, preservazione delle quote importate con addon hash-bound, Workbench prevalidate/rollback. JS 2/2 PASS; Edge candidato 27/27 e HTTPS LIVE 27/27, zero POST/eccezioni/errori. Reviewer AI esterno NOT_PERFORMED, GPT-SOSTITUTIVA review PASS checklist in dossier. Backup306 e un solo restart GIS, hash HTTP e HTTPS coincidenti. [Report](../orchestrator/evidence/2026-11-16-track-io-current-archive-307/RELEASE.md).
+
+QA operatore Build307 PENDING; dopo PASS Regola H docs-only, nessun PASS umano dedotto dalle prove tecniche. Profilo XY senza quote non implementato, DTM terreno HOLD, mobile PAUSA. Questo report non predice il proprio commit SHA; final HEAD EXTERNAL_ONLY.
