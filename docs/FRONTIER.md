@@ -4,26 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Tracce desktop - FIX2 Centra Build309 LIVE; valutazione operatore PENDING. |
+| **WORKSTREAM ATTIVO** | Profilo altimetrico di tracce XY desktop - analisi/implementazione dopo chiusura Build309. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2 |
-| **STATO BLOCCO** | Build309 LIVE: pulsante Centra nella traccia corrente, disponibile dopo importazione e prima del salvataggio. Build308 superseded dal finding operatore sul comando mancante; nessun PASS umano308. |
-| **GATE CORRENTE** | Bundle ROUTINE: review mirata PASS; JS 2/2, candidato 17/17 e HTTPS LIVE 17/17 PASS con clic nativi e screenshot reali. QA FINALE CHATGPT PENDING. Cleanup dati e profili di prova PASS. Backstop reviewer esterno Build308 resta storico e separato. |
+| **BLOCCO ATTIVO** | GIS-SAVED-TRACK-PROFILE-XY-A |
+| **STATO BLOCCO** | Build309 FIX2 CLOSED con QA PASS operatore 16/11/2026. Profilo XY senza quote ora in sviluppo; nessun nuovo candidato o deploy attestato. |
+| **GATE CORRENTE** | Build309 ROUTINE review PASS, JS 2/2, candidato 17/17, HTTPS 17/17, QA operatore FIX2 PASS. Regola H chiusura docs-only. Nuovo blocco profilo XY DELICATO: review, QA e deploy PENDING. |
 | **RUNTIME LIVE** | Build309 source `8ddb70f1e02f24207c50baa3622b344023e5155c`, blob `263e377652a9445634da253a3074e2175c419d49`, SHA256 `ad07d54d3a9e0242dfc482468feba32f0b3527e2b4101536daae0bc4b842c683`, 11.201.572 byte, CR192/CRLF0. VPS/HTTP/HTTPS concordi. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build309 verificato. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-SAVE-CTA-DESKTOP-A - Build306, QA PASS operatore 16/11/2026; [ricevuta](orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). |
-| **NEXT** | QA operatore mirata FIX2: importare la seconda traccia nella zona Traccia in modifica, premere Centra e verificare che l'intero percorso sia visibile nello spazio libero della mappa. Riga prevista: QA GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2 PASS operatore. Backlog batch/XY/DTM non anticipato. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | FIX usabilita distribuito Build309, accettazione umana PENDING. Profilo XY senza quote e accuratezza DTM terreno restano separati/HOLD. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2 - Build309, QA PASS operatore 16/11/2026; [ricevuta](orchestrator/evidence/2026-11-16-qa309-closure/REPORT.md). |
+| **NEXT** | GIS-SAVED-TRACK-PROFILE-XY-A: Profilo di una traccia creata con pennello o importata XY; calcolo quote solo con DTM offline disponibile o Open-Meteo previa azione e consenso, preservando geometria/quote originali. Review/ABQA prima della QA operatore. Batch/tabelle non cancellati dal backlog. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | Interfaccia Traccia Build309 accettata; profilo XY ora in lavorazione. Accuratezza DTM 5/10m separata/HOLD. |
 | **BACKLOG OPERATORE 16/11** | [Menu Nuova traccia FUTURO, tabelle in tutte le tab, batch archivio, profilo XY con provider, unico HTTPS e cleanup sicuro](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md). Prossimo blocco dopo QA operatore Build309; backlog invariato. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX conserva quote valide e mancanti; KML3D solo con geometria interamente elevata, altrimenti 2D. Una sola quota si conserva ma non genera profilo/pendenza. Un punto importato spostato perde la propria quota originaria; assegnazioni equivalenti la conservano. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 16/11/2026: GIS-only Build309 LIVE, backup308 `/var/backups/goi-gis-runtime/20261116T202949Z-prebuild309`, restart solo GIS. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ad07d54d). |
-| **EVIDENCE** | [Build309 Centra LIVE e finding operatore308](orchestrator/evidence/2026-11-16-track-center-309/REPORT.md) - [Build308 storico](orchestrator/evidence/2026-11-16-track-single-panel-308/RELEASE.md) - [Feedback307](orchestrator/evidence/2026-11-16-track-io-current-archive-307/OPERATOR-UX-NOT-ACCEPTED.md). |
+| **EVIDENCE** | [QA operatore FIX2](orchestrator/evidence/2026-11-16-qa309-closure/REPORT.md) - [Build309 LIVE](orchestrator/evidence/2026-11-16-track-center-309/REPORT.md) - [Build308 storico](orchestrator/evidence/2026-11-16-track-single-panel-308/RELEASE.md). |
 
-## Build309 Centra LIVE - QA operatore PENDING
+## Build309 Centra LIVE - QA operatore PASS, CLOSED (16 novembre 2026)
 
-FIX2 del finding operatore: Centra nella zona corrente, anche prima del salvataggio. Candidato e HTTPS nativo 17/17 PASS. [Rapporto e prove](orchestrator/evidence/2026-11-16-track-center-309/REPORT.md). Nessun PASS umano dedotto.
+FIX2 del finding operatore: Centra nella zona corrente, anche prima del salvataggio. Candidato e HTTPS nativo 17/17 PASS. [Rapporto e prove](orchestrator/evidence/2026-11-16-track-center-309/REPORT.md). PASS operatore registrato sul FIX2, senza attribuire PASS alla Build308. [Ricevuta](orchestrator/evidence/2026-11-16-qa309-closure/REPORT.md).
 
 ## Build308 single-panel - storico, superseded da Build309
 

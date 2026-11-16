@@ -1,3 +1,11 @@
+# Chiusura Build309 — QA operatore PASS / CLOSED
+BLOCK: GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2
+PASS operatore ricevuto 16/11/2026. Regola H applicata tramite documentazione. Nessun deploy per la sola chiusura.
+NEXT: GIS-SAVED-TRACK-PROFILE-XY-A (nuovo incarico profilo altimetrico, non ancora rilasciato).
+Vivo Build309 source 8ddb70f1e02f24207c50baa3622b344023e5155c, SHA256 ad07d54d3a9e0242dfc482468feba32f0b3527e2b4101536daae0bc4b842c683.
+
+## Evidenza tecnica del pass precedente (storica, non nuovo LIVE STATE)
+
 # Build309 — Centra corrente
 BLOCK: GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2
 GATE: QA FINALE CHATGPT PENDING / QA operatore PENDING.
