@@ -1,6 +1,8 @@
-# Build309 — QA operatore PASS / CLOSED
-BLOCK CHIUSO: GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2
-GATE: QA GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2 PASS operatore (16/11/2026); chiusura Regola H docs-only.
-NEXT: GIS-SAVED-TRACK-PROFILE-XY-A — profilo altimetrico tracce prive di quote, autorizzato dall'operatore.
-RUNTIME LIVE INVARIATO: Build309, source 8ddb70f1e02f24207c50baa3622b344023e5155c, SHA256 ad07d54d3a9e0242dfc482468feba32f0b3527e2b4101536daae0bc4b842c683.
-[Chiusura documentata](evidence/2026-11-16-qa309-closure/REPORT.md).
+# Build310 LIVE — profilo altimetrico XY salvato
+
+BLOCCO: GIS-SAVED-TRACK-PROFILE-XY-A.
+GATE: REVIEW GPT-SOSTITUTIVA PASS; JavaScript inline 2/2; candidato 30/30, HTTPS 30/30 PASS. QA operatore PENDING. Reviewer AI esterno NOT_PERFORMED.
+RUNTIME LIVE: Build310 source e0b7e133dea16e38d083a53a50276a232609e8fd; SHA256 ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea.
+NEXT: QA operatore su traccia pennello salvata senza quote, Calcola quote, consenso opt-in/DTM locale, riapertura grafico.
+EVIDENCE: [Build310](evidence/2026-11-16-track-profile-xy-310/RELEASE.md); [Review](evidence/2026-11-16-track-profile-xy-310/REVIEW.md).
+STORICO: Build309 FIX2 CLOSED, ricevuta [QA operatore](evidence/2026-11-16-qa309-closure/REPORT.md).

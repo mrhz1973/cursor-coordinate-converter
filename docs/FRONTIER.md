@@ -4,22 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Profilo altimetrico di tracce XY desktop - analisi/implementazione dopo chiusura Build309. |
+| **WORKSTREAM ATTIVO** | Profilo altimetrico tracce XY salvate desktop — Build310 LIVE, QA operatore PENDING. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
 | **BLOCCO ATTIVO** | GIS-SAVED-TRACK-PROFILE-XY-A |
-| **STATO BLOCCO** | Build309 FIX2 CLOSED con QA PASS operatore 16/11/2026. Profilo XY senza quote ora in sviluppo; nessun nuovo candidato o deploy attestato. |
-| **GATE CORRENTE** | Build309 ROUTINE review PASS, JS 2/2, candidato 17/17, HTTPS 17/17, QA operatore FIX2 PASS. Regola H chiusura docs-only. Nuovo blocco profilo XY DELICATO: review, QA e deploy PENDING. |
-| **RUNTIME LIVE** | Build309 source `8ddb70f1e02f24207c50baa3622b344023e5155c`, blob `263e377652a9445634da253a3074e2175c419d49`, SHA256 `ad07d54d3a9e0242dfc482468feba32f0b3527e2b4101536daae0bc4b842c683`, 11.201.572 byte, CR192/CRLF0. VPS/HTTP/HTTPS concordi. |
-| **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build309 verificato. |
+| **STATO BLOCCO** | Build310 LIVE: Profilo salvato anche per tracce pennello/XY senza quote, calcolo esplicito DTM locale o Open-Meteo opt-in. Gate tecnico PASS; chiusura umana non ancora acquisita. |
+| **GATE CORRENTE** | DELICATO: Review GPT-SOSTITUTIVA PASS (reviewer esterno NOT_PERFORMED); JS 2/2, candidato Edge 30/30, HTTPS LIVE 30/30 PASS. QA operatore PENDING. Cleanup origine test PASS; profili Edge temporanei non tutti rimossi su Windows. |
+| **RUNTIME LIVE** | Build310 source e0b7e133dea16e38d083a53a50276a232609e8fd, blob c26828b64ffd100829f031db53027615483065ed, SHA256 ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea, 11.213.149 byte, CR192/CRLF0. VPS/HTTP/HTTPS identici. |
+| **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build310 verificato. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2 - Build309, QA PASS operatore 16/11/2026; [ricevuta](orchestrator/evidence/2026-11-16-qa309-closure/REPORT.md). |
-| **NEXT** | GIS-SAVED-TRACK-PROFILE-XY-A: Profilo di una traccia creata con pennello o importata XY; calcolo quote solo con DTM offline disponibile o Open-Meteo previa azione e consenso, preservando geometria/quote originali. Review/ABQA prima della QA operatore. Batch/tabelle non cancellati dal backlog. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | Interfaccia Traccia Build309 accettata; profilo XY ora in lavorazione. Accuratezza DTM 5/10m separata/HOLD. |
-| **BACKLOG OPERATORE 16/11** | [Menu Nuova traccia FUTURO, tabelle in tutte le tab, batch archivio, profilo XY con provider, unico HTTPS e cleanup sicuro](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md). Prossimo blocco dopo QA operatore Build309; backlog invariato. |
+| **NEXT** | QA operatore Build310: Traccia > Tracce salvate > Profilo su traccia pennello senza quote > Calcola quote. Verificare DTM locale o consenso esplicito Open-Meteo, sorgente dichiarata e profilo dopo riapertura. Riga prevista: QA GIS-SAVED-TRACK-PROFILE-XY-A PASS operatore. Non chiudere senza attestazione. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | Profilo XY ora in Build310 LIVE con QA operatore PENDING. Precisione altimetrica terreno DTM 5/10m HOLD; batch import/tracce e tabelle separati/backlog. |
+| **BACKLOG OPERATORE 16/11** | [Menu Nuova traccia FUTURO, tabelle in tutte le tab, batch archivio, profilo XY con provider, unico HTTPS e cleanup sicuro](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md). Profilo XY disponibile in Build310 in attesa QA umana; altri elementi aperti, non sovrapporre. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
-| **LIMITI QUOTE** | GPX conserva quote valide e mancanti; KML3D solo con geometria interamente elevata, altrimenti 2D. Una sola quota si conserva ma non genera profilo/pendenza. Un punto importato spostato perde la propria quota originaria; assegnazioni equivalenti la conservano. |
+| **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
-| **ACCESSO / DEPLOY** | 16/11/2026: GIS-only Build309 LIVE, backup308 `/var/backups/goi-gis-runtime/20261116T202949Z-prebuild309`, restart solo GIS. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ad07d54d). |
-| **EVIDENCE** | [QA operatore FIX2](orchestrator/evidence/2026-11-16-qa309-closure/REPORT.md) - [Build309 LIVE](orchestrator/evidence/2026-11-16-track-center-309/REPORT.md) - [Build308 storico](orchestrator/evidence/2026-11-16-track-single-panel-308/RELEASE.md). |
+| **ACCESSO / DEPLOY** | 16/11/2026: GIS-only Build310 LIVE, backup309 /var/backups/goi-gis-runtime/20261116T225212Z-prebuild310, un restart solo GIS, VPS/HTTP/HTTPS SHA concorde. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ff0c618e). |
+| **EVIDENCE** | [Build310 LIVE](orchestrator/evidence/2026-11-16-track-profile-xy-310/RELEASE.md) - [Review](orchestrator/evidence/2026-11-16-track-profile-xy-310/REVIEW.md) - [QA op. Build309](orchestrator/evidence/2026-11-16-qa309-closure/REPORT.md). |
+
+## Build310 — profili altimetrici XY salvati LIVE, QA operatore PENDING
+
+Review GPT-SOSTITUTIVA PASS, JS 2/2, 30/30 Edge candidato e 30/30 HTTPS LIVE; grafico e persistenza per tracce pennello/XY senza quote. Nessun PASS umano Build310 dedotto. Open-Meteo solo opt-in, DTM locale preferito, pendenze terreno 5–10m non certificate. [Rapporto](orchestrator/evidence/2026-11-16-track-profile-xy-310/RELEASE.md).
 
 ## Build309 Centra LIVE - QA operatore PASS, CLOSED (16 novembre 2026)
 

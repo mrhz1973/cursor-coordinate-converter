@@ -1,3 +1,12 @@
+# Build310 GIS — profilo XY LIVE, QA operatore PENDING
+BLOCK: GIS-SAVED-TRACK-PROFILE-XY-A
+GATE: Review GPT-SOSTITUTIVA PASS; JS2/2, candidato30/30, HTTPS30/30. Reviewer AI esterno NOT_PERFORMED; QA operatore PENDING.
+RUNTIME LIVE: source e0b7e133dea16e38d083a53a50276a232609e8fd; SHA256 ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea.
+NEXT: far provare Profilo > Calcola quote sulla traccia pennello salvata; conferma opt-in Open-Meteo solo quando consentita. DTM5/10m accuracy HOLD.
+EVIDENCE: [RELEASE](../orchestrator/evidence/2026-11-16-track-profile-xy-310/RELEASE.md).
+
+## Pass precedenti (storico; non LIVE STATE)
+
 # Chiusura Build309 — QA operatore PASS / CLOSED
 BLOCK: GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2
 PASS operatore ricevuto 16/11/2026. Regola H applicata tramite documentazione. Nessun deploy per la sola chiusura.
