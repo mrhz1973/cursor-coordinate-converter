@@ -1,4 +1,4 @@
-# LAST_CURSOR_REPORT — handoff chat49 e Build305 LIVE
+# LAST_CURSOR_REPORT - Build308 single-panel LIVE
 
 Il nome file è storico: questo pass è stato eseguito da ChatGPT con subagenti, GitHub e TMAR Desktop Commander Win, non da Cursor. [FRONTIER](../FRONTIER.md) resta la sola LIVE STATE.
 
@@ -6,23 +6,23 @@ Il nome file è storico: questo pass è stato eseguito da ChatGPT con subagenti,
 
 | Campo | Valore |
 | --- | --- |
-| BLOCK | GIS-TRACK-IO-CURRENT-ARCHIVE-A |
-| GATE | Build307 LIVE ma QA operatore NON ACCETTATA / FAIL UX (16/11/2026). PASS tecnici27/27 storici scoped; serve FIX, no finito. |
-| NEXT | FIX UX single-panel Traccia: corrente/archivio separati, import archivio diretto senza Oggetti GIS, salvataggio nel contesto corrente. Nessuna nuova QA prima del FIX verificato. |
-| Runtime LIVE | Build307 source `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e`, blob `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`. |
-| Candidate FULL SHA | Review candidata `1aaa72ec6c3db7bb944c1b58108e456fb4eee611`; nessun candidato successivo a Build307 verificato. |
-| Deployed state | GIS-only PASS (backup306, PID 7891 -> 124169); HTTPS SHA e browser 27/27 PASS. |
-| Result | Feedback utente negativo acquisito con screenshot; usabilita non accettata. Runtime307 invariato; solo registrazione documentale e delta del FIX. |
-| Working tree | Release source e VPS puliti; document sync successivo ancora in corso. |
+| BLOCK | GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX1 |
+| GATE | Build308 LIVE; GPT-SOSTITUTIVA, deploy e 27/27 HTTPS PASS. QA operatore PENDING. Reviewer esterno NOT_PERFORMED. |
+| NEXT | QA umana della nuova interfaccia single-panel, poi Regola H. |
+| Runtime LIVE | Build308 source d347ec792d515c1ffaa1f8ddd5f8bf3d51d4d0c8, blob 6182162db2e39360cd42d33153769c0412df6902, SHA256 50dcedce9e51549f36136742bfd0dab4816ce7019710c969f06007ddaed95882. |
+| Candidate FULL SHA | Nessun candidato successivo a Build308 verificato. |
+| Deployed state | GIS-only PASS, backup307 e HTTP/HTTPS identici, browser HTTPS 27/27. |
+| Result | FIX della UI respinta: importazione archivio resta in Traccia; Save sopra, dettagli chiusi. Nessuna accettazione umana inventata. |
+| Working tree | Sorgente e VPS puliti al deploy; post-autosync verificato esternamente. |
 
 ### Identità SHA, non autoreferenziali
 
 | Nome | Valore |
 | --- | --- |
-| RUNTIME_SOURCE_SHA | `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` |
-| RUNTIME_CANDIDATE_SHA | `1aaa72ec6c3db7bb944c1b58108e456fb4eee611` (stesso HTML blob, reviewed) |
-| REMOTE_HEAD_AT_EVIDENCE_TIME | `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` (pre-doc-autosync) |
-| real_task_commit | `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` - runtime release Build307; post-report HEAD esterna |
+| RUNTIME_SOURCE_SHA | d347ec792d515c1ffaa1f8ddd5f8bf3d51d4d0c8 |
+| RUNTIME_CANDIDATE_SHA | N/A successivo; source LIVE verificato. |
+| REMOTE_HEAD_AT_EVIDENCE_TIME | 93e6ba47b362c069eebfb2c29c64c5998641f3f6 |
+| real_task_commit | d347ec792d515c1ffaa1f8ddd5f8bf3d51d4d0c8 |
 | docs/report HEAD | `PENDING_SELF_REFERENCE` |
 | current_report_container | `PENDING_SELF_REFERENCE` |
 | final_remote_head_after_report_push | `EXTERNAL_ONLY` |
@@ -116,3 +116,34 @@ QA operatore Build307 PENDING; dopo PASS Regola H docs-only, nessun PASS umano d
 ## I. Feedback operatore Build307 - usabilita non accettata
 
 Il 16/11/2026 l'operatore ha contestato la confusione dell'interfaccia con screenshot dei pannelli Traccia/Oggetti GIS affiancati. Nessuna attestazione QA PASS307 ricevuta. Il gate passa a NON ACCETTATA / FAIL UX, distinto dai PASS tecnici storici scoped. Registrati problema e TASK DELTA per un unico pannello Traccia con due zone, import diretto nell'archivio e dettaglio progressivo. [Ricevuta](../orchestrator/evidence/2026-11-16-track-io-current-archive-307/OPERATOR-UX-NOT-ACCEPTED.md). Nessun cambio HTML, dato utente, servizio, deploy o build in questo pass.
+
+## Build308 - 16 novembre 2026
+
+# Build308 LIVE - Tracce in una sola finestra
+
+Verifica: 16 novembre 2026. Registrazione UTC 2026-11-16T12:24:14.247269+00:00.
+Blocco `GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX1`. FIX della Build307 non accettata per usabilita; nessun PASS umano storico modificato.
+
+## Stato verificato
+
+Runtime source `d347ec792d515c1ffaa1f8ddd5f8bf3d51d4d0c8`, blob `6182162db2e39360cd42d33153769c0412df6902`, SHA256 `50dcedce9e51549f36136742bfd0dab4816ce7019710c969f06007ddaed95882`, 11.200.744 byte, CR192/CRLF0.
+Deploy GIS-only completato il 2026-11-16T12:21:57.922665+00:00: backup307 `/var/backups/goi-gis-runtime/20261116T122156Z-prebuild308`, un solo restart del servizio GIS, PID 124169 -> 1332131. File VPS, HTTP interno e HTTPS nativa restituiscono lo stesso hash e Build308.
+URL: https://ionos-n8n-new.tailc01234.ts.net/gis?v=50dcedce
+
+## Interfaccia distribuita
+
+Traccia in modifica sopra: creazione, importazione, Salva/Aggiorna ed Esporta. Punti e distanza in una riga; Dettagli e punti richiudibili. Tracce salvate sotto: Importa file apre direttamente il selettore e la conferma nella stessa finestra Traccia. Nessuna apertura automatica di Oggetti GIS, nessuna categoria generale. Annulla non salva; nome e quote conservati. Azioni batch solo con selezione, Mostra/Nascondi tutte conservate in Altre azioni.
+
+## Evidence
+
+REVIEW GPT-SOSTITUTIVA PASS su sorgente immutabile; reviewer AI esterno NOT_PERFORMED, backstop post-hoc aperto. [Review](REVIEW.md).
+JavaScript inline 2/2 PASS, 12 funzioni canoniche di storage/import/export byte-identiche alla base. [Statici](static-checks.json).
+Edge candidato 27/27 PASS e Edge HTTPS LIVE 27/27 PASS. In ciascun run finale: 26 clic nativi, 5 aperture del selettore, zero POST, eccezioni JavaScript e errori console. [Candidata](candidate-qa.json), [HTTPS](live-qa.json), [Identita e deploy](runtime-identity.json).
+Screenshot reali ispezionati: flusso di conferma nella stessa finestra e viewport 1440x900/1280x600; manifest di hash incluso. Immagini fuori runtime. Dati sintetici, profili isolati; nessun accesso ai dati operativi dell'utente.
+
+## Limiti dichiarati e gate
+
+La pulizia dei dati applicativi dell'origine di prova e verificata. Windows impedisce la rimozione di alcune directory temporanee isolate: il relativo campo cleanup=false rimane nei rapporti e non e dichiarato PASS di eliminazione. Non sono stati alterati i permessi globali o il profilo personale.
+QA OPERATORE PENDING: i test non attestano l'usabilita percepita. Valutare la nuova finestra e un'importazione file senza passare a Oggetti GIS. Solo dopo attestazione esatta `QA GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX1 PASS operatore` applicare Regola H. DTM terreno HOLD, profilo XY senza quote separato, mobile PAUSA.
+
+Il contenitore report non certifica il proprio commit: HEAD finale EXTERNAL_ONLY dopo push.

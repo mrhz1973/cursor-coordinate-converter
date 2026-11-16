@@ -4,21 +4,25 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Tracce desktop - FIX usabilita dopo feedback negativo Build307; semplificare in una sola finestra Traccia, senza passaggio obbligato a Oggetti GIS. |
+| **WORKSTREAM ATTIVO** | Tracce desktop - FIX1 single-panel Build308 LIVE; valutazione operatore ancora PENDING. |
 | **WU ATTIVA** | — (bundle runtime a livello blocco) |
 | **BLOCCO ATTIVO** | GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX1 |
-| **STATO BLOCCO** | Build308 candidata single-panel pronta; Build307 ancora LIVE e non accettata. Nessun PASS umano del FIX. |
-| **GATE CORRENTE** | Review GPT-SOSTITUTIVA PASS su candidato remoto immutabile; browser candidato 27/27 PASS con clic nativi e screenshot ispezionati. Cleanup dati applicativi test PASS, rimozione directory temporanee parziale (limite Windows documentato). Reviewer AI esterno NOT_PERFORMED. |
-| **RUNTIME LIVE** | Build307 source `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e` (review candidate `1aaa72ec6c3db7bb944c1b58108e456fb4eee611`), blob `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA-256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`, 11.180.622 byte, CR192/CRLF0; VPS, HTTP interno, HTTPS concordi. |
-| **RUNTIME CANDIDATE** | Build308 source d347ec792d515c1ffaa1f8ddd5f8bf3d51d4d0c8, blob 6182162db2e39360cd42d33153769c0412df6902, SHA256 50dcedce9e51549f36136742bfd0dab4816ce7019710c969f06007ddaed95882. |
+| **STATO BLOCCO** | Build308 LIVE: interfaccia a due zone e importazione archivio nella sola finestra Traccia. Build307 resta storicamente non accettata. FIX non ancora chiuso umanamente. |
+| **GATE CORRENTE** | Review GPT-SOSTITUTIVA PASS; JS 2/2, candidato 27/27 e HTTPS LIVE 27/27 PASS con clic nativi e screenshot reali. QA FINALE CHATGPT PENDING. Reviewer esterno NOT_PERFORMED. Cleanup dati test PASS; rimozione directory temporanee parziale (Windows, documentata). |
+| **RUNTIME LIVE** | Build308 source `d347ec792d515c1ffaa1f8ddd5f8bf3d51d4d0c8`, blob `6182162db2e39360cd42d33153769c0412df6902`, SHA256 `50dcedce9e51549f36136742bfd0dab4816ce7019710c969f06007ddaed95882`, 11.200.744 byte, CR192/CRLF0. VPS/HTTP/HTTPS concordi. |
+| **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build308 verificato. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-SAVE-CTA-DESKTOP-A - Build306, QA PASS operatore 16/11/2026; [ricevuta](orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). |
-| **NEXT** | Backup307, deploy GIS-only del FIX single-panel e verifica HTTPS nativa; dopo PASS tecnico chiedere solo valutazione umana della nuova interfaccia. Nessun avanzamento backlog altimetrico. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | Separazione funzionale corrente/archivio presente nella307, ma percorso respinto per usabilita. Da semplificare in una sola finestra. Profilo XY senza quote non implementato; DTM terreno HOLD. |
+| **NEXT** | QA operatore mirata FIX1: leggibilita delle due zone; Salva nella traccia corrente; Importa file sotto Tracce salvate con conferma nella stessa finestra, senza Oggetti GIS. Riga prevista: QA GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX1 PASS operatore. Nessun avanzamento XY/DTM prima di questo gate. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | FIX usabilita distribuito Build308, accettazione umana PENDING. Profilo XY senza quote e accuratezza DTM terreno restano separati/HOLD. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX conserva quote valide e mancanti; KML3D solo con geometria interamente elevata, altrimenti 2D. Una sola quota si conserva ma non genera profilo/pendenza. Un punto importato spostato perde la propria quota originaria; assegnazioni equivalenti la conservano. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
-| **ACCESSO / DEPLOY** | 16/11/2026: GIS-only Build307 LIVE, backup306 /var/backups/goi-gis-runtime/20261116T000729Z-prebuild307, un solo restart GIS. [HTTPS Build307](https://ionos-n8n-new.tailc01234.ts.net/gis?v=d5274ebd). |
-| **EVIDENCE** | [Review e test FIX1 Build308](orchestrator/evidence/2026-11-16-track-single-panel-308/REVIEW.md) - [Feedback307](orchestrator/evidence/2026-11-16-track-io-current-archive-307/OPERATOR-UX-NOT-ACCEPTED.md). |
+| **ACCESSO / DEPLOY** | 16/11/2026: GIS-only Build308 LIVE, backup307 `/var/backups/goi-gis-runtime/20261116T122156Z-prebuild308`, restart solo GIS. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=50dcedce). |
+| **EVIDENCE** | [Build308 LIVE](orchestrator/evidence/2026-11-16-track-single-panel-308/RELEASE.md) - [Review](orchestrator/evidence/2026-11-16-track-single-panel-308/REVIEW.md) - [Feedback307](orchestrator/evidence/2026-11-16-track-io-current-archive-307/OPERATOR-UX-NOT-ACCEPTED.md). |
+
+## Build308 single-panel LIVE - QA operatore PENDING
+
+27/27 controlli nativi HTTPS PASS, ispezione screenshot della nuova interfaccia completata. Nessuna approvazione operatore dedotta. [Release](orchestrator/evidence/2026-11-16-track-single-panel-308/RELEASE.md).
 
 ## Build307 - QA operatore NON ACCETTATA (16 novembre 2026)
 
