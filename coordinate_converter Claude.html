@@ -18334,6 +18334,8 @@ const I18N = {
     "track.saveLibrary":"💾 Salva traccia in archivio…",
     "track.currentName":"Traccia corrente",
     "track.simple.current":"Traccia in modifica",
+    "track.simple.center":"Centra",
+    "track.simple.centerTip":"Inquadra tutta la traccia corrente sulla mappa.",
     "track.simple.details":"Dettagli e punti",
     "track.simple.summary":"{0} punti \u00b7 {1}",
     "track.simple.emptyCurrent":"Nessuna traccia in modifica. Crea o importa una traccia.",
@@ -26357,10 +26359,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX1";
-const APP_BUILD_DETAIL = "Tracce desktop: modifica e archivio nella stessa finestra, importazione diretta con conferma e dettagli richiudibili.";
+const APP_BUILD_ID = "GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2";
+const APP_BUILD_DETAIL = "Tracce desktop: pulsante Centra per inquadrare la traccia corrente sulla mappa anche prima del salvataggio.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 308;
+const APP_BUILD_NUM = 309;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -102921,7 +102923,7 @@ function trackSinglePanelCreate(){
     <div class="track-zone-head"><h3 id="trackCurrentTitle" data-i18n="track.simple.current">Traccia in modifica</h3></div>
     <p id="trackCurrentCompact" class="track-compact" aria-live="polite"></p>
     <div id="trackCurrentTools" class="track-current-tools"></div>
-    <div id="trackCurrentActions" class="track-current-actions"></div>
+    <div id="trackCurrentActions" class="track-current-actions"><button id="btnTrackCenterCurrent" class="btn btn-sm" type="button" data-i18n="track.simple.center" disabled>Centra</button></div>
     <div id="trackCurrentFeedback"></div>
     <details id="trackCurrentDetails" class="track-details"><summary data-i18n="track.simple.details">Dettagli e punti</summary>
       <div id="trackCurrentDetailsTools" class="track-details-tools"></div>
@@ -102949,6 +102951,11 @@ function trackSinglePanelCreate(){
   </section>`;
   host.prepend(ui);
   const obj = { host, ui, slots: [], active: false, lastEditing: false };
+  document.getElementById("btnTrackCenterCurrent").addEventListener("click", () => {
+    const track = state.track;
+    if (!track || !Array.isArray(track.points) || !track.points.length) return;
+    flyMapToTrackPoints(track.points, !!track.closed);
+  });
   const file = document.getElementById("trackArchiveFileInput");
   file.addEventListener("change", () => {
     const chosen = file.files && file.files[0];
@@ -102998,6 +103005,7 @@ function trackSinglePanelSync(){
     const toolbar = o.host.querySelector(":scope > .track-toolbar:not(.track-saved-toolbar)");
     trackSinglePanelMove(o, toolbar, "trackCurrentTools");
     for (const id of ["btnTrackImport", "btnTrackSaveLibrary", "btnTrackExportOpenBtn", "trackSaveNeedPoints"]) byId(id,"trackCurrentActions");
+    document.getElementById("btnTrackExportOpenBtn").before(document.getElementById("btnTrackCenterCurrent"));
     for (const id of ["btnTrackUndo", "btnTrackClear"]) byId(id,"trackCurrentDetailsTools");
     for (const id of ["trackSaveGuardMsg","trackBrushBar","trackPromptsSticky"]) byId(id,"trackCurrentFeedback");
     trackSinglePanelMove(o, document.querySelector("#sec-track .track-closed-row"),"trackCurrentDetailsBody");
@@ -103013,6 +103021,10 @@ function trackSinglePanelSync(){
   let distance = 0;
   if (pts.length >= 2){ try { distance = routeDistance(pts, !!state.track.closed); } catch(_){} }
   const compact = document.getElementById("trackCurrentCompact");
+  const center = document.getElementById("btnTrackCenterCurrent");
+  center.disabled = !pts.length;
+  center.setAttribute("data-tip", t("track.simple.centerTip"));
+  center.setAttribute("aria-label", t("track.simple.centerTip"));
   compact.textContent = pts.length ? String(t("track.simple.summary")).replace("{0}",String(pts.length)).replace("{1}",formatTrackDistance(distance,normalizeTrackDisplayUnit(state.trackDisplayUnit))) : t("track.simple.emptyCurrent");
   const total = Array.isArray(state.savedTracks) ? state.savedTracks.length : 0;
   const selected = getSelectedSavedTrackIdsForExport().length;
