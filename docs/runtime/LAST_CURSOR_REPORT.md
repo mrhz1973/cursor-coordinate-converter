@@ -7,12 +7,12 @@ Il nome file è storico: questo pass è stato eseguito da ChatGPT con subagenti,
 | Campo | Valore |
 | --- | --- |
 | BLOCK | GIS-TRACK-IO-CURRENT-ARCHIVE-A |
-| GATE | Build307 LIVE; REVIEW GPT-SOSTITUTIVA, deploy GIS-only e ABQA HTTPS 27/27 PASS; QA operatore PENDING; reviewer AI esterno NOT_PERFORMED, DTM terreno HOLD. |
-| NEXT | QA operatore Build307, poi Regola H; successivo backlog profilo da soli XY senza quote. DTM 5-10m terreno HOLD. |
+| GATE | Build307 LIVE ma QA operatore NON ACCETTATA / FAIL UX (16/11/2026). PASS tecnici27/27 storici scoped; serve FIX, no finito. |
+| NEXT | FIX UX single-panel Traccia: corrente/archivio separati, import archivio diretto senza Oggetti GIS, salvataggio nel contesto corrente. Nessuna nuova QA prima del FIX verificato. |
 | Runtime LIVE | Build307 source `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e`, blob `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`. |
 | Candidate FULL SHA | Review candidata `1aaa72ec6c3db7bb944c1b58108e456fb4eee611`; nessun candidato successivo a Build307 verificato. |
 | Deployed state | GIS-only PASS (backup306, PID 7891 -> 124169); HTTPS SHA e browser 27/27 PASS. |
-| Result | Importa/Esporta corrente vs archivio separati; quote 3D preservate; QA operatore307 non attestata. |
+| Result | Feedback utente negativo acquisito con screenshot; usabilita non accettata. Runtime307 invariato; solo registrazione documentale e delta del FIX. |
 | Working tree | Release source e VPS puliti; document sync successivo ancora in corso. |
 
 ### Identità SHA, non autoreferenziali
@@ -112,3 +112,7 @@ Riga ricevuta esattamente: `QA GIS-TRACK-SAVE-CTA-DESKTOP-A PASS operatore`. Il 
 Fonte origin/main release `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e`, review raw@FULL_SHA `1aaa72ec6c3db7bb944c1b58108e456fb4eee611`, blob comune `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`, 11.180.622 byte. Bundle DELICATO: import/export Traccia corrente vs archivio, preservazione delle quote importate con addon hash-bound, Workbench prevalidate/rollback. JS 2/2 PASS; Edge candidato 27/27 e HTTPS LIVE 27/27, zero POST/eccezioni/errori. Reviewer AI esterno NOT_PERFORMED, GPT-SOSTITUTIVA review PASS checklist in dossier. Backup306 e un solo restart GIS, hash HTTP e HTTPS coincidenti. [Report](../orchestrator/evidence/2026-11-16-track-io-current-archive-307/RELEASE.md).
 
 QA operatore Build307 PENDING; dopo PASS Regola H docs-only, nessun PASS umano dedotto dalle prove tecniche. Profilo XY senza quote non implementato, DTM terreno HOLD, mobile PAUSA. Questo report non predice il proprio commit SHA; final HEAD EXTERNAL_ONLY.
+
+## I. Feedback operatore Build307 - usabilita non accettata
+
+Il 16/11/2026 l'operatore ha contestato la confusione dell'interfaccia con screenshot dei pannelli Traccia/Oggetti GIS affiancati. Nessuna attestazione QA PASS307 ricevuta. Il gate passa a NON ACCETTATA / FAIL UX, distinto dai PASS tecnici storici scoped. Registrati problema e TASK DELTA per un unico pannello Traccia con due zone, import diretto nell'archivio e dettaglio progressivo. [Ricevuta](../orchestrator/evidence/2026-11-16-track-io-current-archive-307/OPERATOR-UX-NOT-ACCEPTED.md). Nessun cambio HTML, dato utente, servizio, deploy o build in questo pass.

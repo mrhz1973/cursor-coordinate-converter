@@ -1,9 +1,11 @@
 # Ultimo checkpoint orchestratore
 
-LIVE STATE [FRONTIER](../FRONTIER.md). **Build307 LIVE**, block `GIS-TRACK-IO-CURRENT-ARCHIVE-A`, review GPT-SOSTITUTIVA PASS (esterna NOT_PERFORMED), deploy GIS-only PASS, ABQA HTTPS nativa **27/27 PASS**, **QA operatore PENDING**.
+Fonte LIVE: [FRONTIER](../FRONTIER.md).
 
-Runtime source `3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e`, blob `b59bbd89b45ef3c31e8a28395f8d2070ee6c5dfb`, SHA-256 `d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22`. Sopra Traccia: Importa/Esporta corrente. Sotto Tracce salvate: Importa in archivio ed Esporta selezionate. Quote GPX/KML/GeoJSON associate al geometry hash, salvate con sanitizer canonico; Workbench con prevalidate/snapshot/verify/rollback. Mobile invariato.
+**Build307 LIVE, QA operatore NON ACCETTATA / FAIL UX** per feedback del 16/11/2026: importazione archivio confusa, passaggio a Oggetti GIS, categorie e waypoint fuori contesto. Nessun PASS umano307, nessuna chiusura Regola H. Il PASS tecnico27/27 storico non misura usabilita.
 
-NEXT: QA operatore con attestazione esatta `QA GIS-TRACK-IO-CURRENT-ARCHIVE-A PASS operatore`; poi Regola H. DTM terrain HOLD, profilo XY-only backlog, telefono PAUSA. [Release](evidence/2026-11-16-track-io-current-archive-307/RELEASE.md) - [Inbox](inbox/2026-11-16_build307-track-io.md).
+NEXT: FIX UX desktop single-panel Traccia, due zone corrente/archivio, salvataggio nel contesto corrente e import file archivio diretto con conferma breve. Ridurre dettagli e azioni disabilitate superflue. Nessuna eliminazione di dati, mobile PAUSA; DTM terreno HOLD e XY senza quote separati.
 
-Source=3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e; report container=PENDING_SELF_REFERENCE; final remote HEAD=EXTERNAL_ONLY.
+Runtime invariato: source 3ebd1ba5cb4c2584e0a19f7b4fc859b2684a4e9e; SHA256 d5274ebdb9358a1fd3675c7688af4a562997f3580f7146ca7c3c4b8b70c16e22. Nessun nuovo candidato/build/deploy/test runtime in questa registrazione.
+
+[Feedback e TASK DELTA](evidence/2026-11-16-track-io-current-archive-307/OPERATOR-UX-NOT-ACCEPTED.md) - [Inbox](inbox/2026-11-16_build307-ux-not-accepted.md).
