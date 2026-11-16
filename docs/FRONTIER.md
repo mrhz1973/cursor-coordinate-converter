@@ -14,6 +14,7 @@
 | **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-SAVE-CTA-DESKTOP-A - Build306, QA PASS operatore 16/11/2026; [ricevuta](orchestrator/evidence/2026-11-16-qa306-closure/REPORT.md). |
 | **NEXT** | QA operatore mirata FIX1: leggibilita delle due zone; Salva nella traccia corrente; Importa file sotto Tracce salvate con conferma nella stessa finestra, senza Oggetti GIS. Riga prevista: QA GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX1 PASS operatore. Nessun avanzamento XY/DTM prima di questo gate. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | FIX usabilita distribuito Build308, accettazione umana PENDING. Profilo XY senza quote e accuratezza DTM terreno restano separati/HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Menu Nuova traccia FUTURO, tabelle in tutte le tab, batch archivio, profilo XY con provider, unico HTTPS e cleanup sicuro](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md). Nessuna nuova build: QA operatore Build308 resta PENDING. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX conserva quote valide e mancanti; KML3D solo con geometria interamente elevata, altrimenti 2D. Una sola quota si conserva ma non genera profilo/pendenza. Un punto importato spostato perde la propria quota originaria; assegnazioni equivalenti la conservano. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |

@@ -161,12 +161,14 @@ Stop the server with:
 
 Ctrl + C
 
+**Accesso operativo canonico (16/11/2026):** [TMAR GIS Tool HTTPS](https://ionos-n8n-new.tailc01234.ts.net/gis?v=50dcedce). L'indirizzo HTTP diretto su 100.99.54.93:8000 e un endpoint tecnico dello stesso runtime, non una seconda applicazione GitHub. Usare soltanto il preferito HTTPS. Le origini browser HTTP/HTTPS conservano storage separati; niente cancellazione senza backup e verifica.
+
 Option 3 — Navionics nautical charts (tailnet proxy on VPS)
 
 The **Navionics** basemap does not load tiles directly from the browser. Navionics/Garmin require authentication and block cross-origin requests (CORS). The app reads tiles from a small **Python proxy** ([**Planet-Clone**](https://github.com/mrhz1973/Planet-Clone)), hosted on the VPS and reachable only over the **Tailscale tailnet**.
 
 ```
-Browser (tailnet client)  →  http://100.99.54.93:8000/coordinate_converter%20Claude.html
+Browser (tailnet client)  ->  https://ionos-n8n-new.tailc01234.ts.net/gis
          ↓
     Navionics layer nav  →  http://100.99.54.93:5000/tiles/{z}/{x}/{y}.png
                               ↓
@@ -179,7 +181,7 @@ Browser (tailnet client)  →  http://100.99.54.93:8000/coordinate_converter%20C
 
 | Service | URL |
 |---------|-----|
-| GIS app | `http://100.99.54.93:8000/coordinate_converter%20Claude.html` |
+| GIS app (HTTPS canonico operatore) | `https://ionos-n8n-new.tailc01234.ts.net/gis?v=50dcedce` |
 | Navionics proxy | `http://100.99.54.93:5000` |
 | Health check | `http://100.99.54.93:5000/status` |
 
@@ -233,7 +235,7 @@ The app currently has two distinct hosted copies. Firebase is the public copy; t
 | Environment | URL |
 |-------------|-----|
 | Public Firebase Hosting (separate deployment) | https://gistoolmarty-33cf8.web.app |
-| VPS GIS runtime (Tailscale-only; Build 268 verified 2026-11-03) | http://100.99.54.93:8000/coordinate_converter%20Claude.html |
+| VPS GIS runtime operativo (Build308 verificata 16/11/2026) | https://ionos-n8n-new.tailc01234.ts.net/gis?v=50dcedce |
 
 For every complete GIS release, push the verified runtime and release notes to GitHub `main`, then deploy the GIS app to the VPS after all applicable gates pass. Firebase Hosting is a separate public deployment and is updated only when separately requested.
 
