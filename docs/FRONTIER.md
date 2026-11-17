@@ -4,26 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Profilo altimetrico tracce XY salvate desktop — Build310 LIVE, QA operatore PENDING. |
+| **WORKSTREAM ATTIVO** | Tracce desktop — Build310 profilo XY accettata e CLOSED; prossimo P1 importazione batch archivio. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-SAVED-TRACK-PROFILE-XY-A |
-| **STATO BLOCCO** | Build310 LIVE: Profilo salvato anche per tracce pennello/XY senza quote, calcolo esplicito DTM locale o Open-Meteo opt-in. Gate tecnico PASS; chiusura umana non ancora acquisita. |
-| **GATE CORRENTE** | DELICATO: Review GPT-SOSTITUTIVA PASS (reviewer esterno NOT_PERFORMED); JS 2/2, candidato Edge 30/30, HTTPS LIVE 30/30 PASS. QA operatore PENDING. Cleanup origine test PASS; profili Edge temporanei non tutti rimossi su Windows. |
+| **BLOCCO ATTIVO** | — (nessun nuovo runtime bundle aperto; ultimo GIS-SAVED-TRACK-PROFILE-XY-A CLOSED). |
+| **STATO BLOCCO** | Build310 LIVE e CLOSED con QA operatore PASS del 17/11/2026; prossimo P1 da aprire con gate proprio. Nessuna Build311 attestata. |
+| **GATE CORRENTE** | Build310 DELICATO: review GPT-SOSTITUTIVA PASS, JS 2/2, Edge candidato 30/30, HTTPS LIVE 30/30, QA operatore PASS. Chiusura Regola H docs-only. Reviewer esterno NOT_PERFORMED/backstop; prossimo P1 non ancora qualificato. |
 | **RUNTIME LIVE** | Build310 source e0b7e133dea16e38d083a53a50276a232609e8fd, blob c26828b64ffd100829f031db53027615483065ed, SHA256 ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea, 11.213.149 byte, CR192/CRLF0. VPS/HTTP/HTTPS identici. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build310 verificato. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2 - Build309, QA PASS operatore 16/11/2026; [ricevuta](orchestrator/evidence/2026-11-16-qa309-closure/REPORT.md). |
-| **NEXT** | QA operatore Build310: Traccia > Tracce salvate > Profilo su traccia pennello senza quote > Calcola quote. Verificare DTM locale o consenso esplicito Open-Meteo, sorgente dichiarata e profilo dopo riapertura. Riga prevista: QA GIS-SAVED-TRACK-PROFILE-XY-A PASS operatore. Non chiudere senza attestazione. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | Profilo XY ora in Build310 LIVE con QA operatore PENDING. Precisione altimetrica terreno DTM 5/10m HOLD; batch import/tracce e tabelle separati/backlog. |
-| **BACKLOG OPERATORE 16/11** | [Menu Nuova traccia FUTURO, tabelle in tutte le tab, batch archivio, profilo XY con provider, unico HTTPS e cleanup sicuro](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md). Profilo XY disponibile in Build310 in attesa QA umana; altri elementi aperti, non sovrapporre. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACK-PROFILE-XY-A — Build310, QA PASS operatore 17/11/2026; [ricevuta](orchestrator/evidence/2026-11-17-qa310-closure/REPORT.md). |
+| **NEXT** | Da backlog P1: importazione batch fino a 10 tracce in Tracce salvate (archivio) con anteprima, nomi/quote distinti, nessuna visibilità automatica, all-or-none, rollback, persistenza verificata; importazione superiore singola invariata. Aprire come bundle DELICATO con review/ABQA/QA operatore. DTM5/10m HOLD, mobile PAUSA. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | Profilo XY da pennello e importati senza quote completato e accettato Build310. Restano batch archivio, uniformità tabelle, accuratezza DTM terreno separata/HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Menu Nuova traccia FUTURO, tabelle tutte le tab, batch archivio, profilo XY, unico HTTPS e cleanup sicuro](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md). Profilo XY CLOSED; NEXT P1 importazione batch fino a 10. Menu futuro/mobile non anticipati. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 16/11/2026: GIS-only Build310 LIVE, backup309 /var/backups/goi-gis-runtime/20261116T225212Z-prebuild310, un restart solo GIS, VPS/HTTP/HTTPS SHA concorde. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ff0c618e). |
-| **EVIDENCE** | [Build310 LIVE](orchestrator/evidence/2026-11-16-track-profile-xy-310/RELEASE.md) - [Review](orchestrator/evidence/2026-11-16-track-profile-xy-310/REVIEW.md) - [QA op. Build309](orchestrator/evidence/2026-11-16-qa309-closure/REPORT.md). |
+| **EVIDENCE** | [QA operatore Build310](orchestrator/evidence/2026-11-17-qa310-closure/REPORT.md) - [Build310 LIVE](orchestrator/evidence/2026-11-16-track-profile-xy-310/RELEASE.md) - [Review](orchestrator/evidence/2026-11-16-track-profile-xy-310/REVIEW.md). |
 
-## Build310 — profili altimetrici XY salvati LIVE, QA operatore PENDING
+## Build310 — profili altimetrici XY LIVE, QA operatore PASS / CLOSED (17 novembre 2026)
 
-Review GPT-SOSTITUTIVA PASS, JS 2/2, 30/30 Edge candidato e 30/30 HTTPS LIVE; grafico e persistenza per tracce pennello/XY senza quote. Nessun PASS umano Build310 dedotto. Open-Meteo solo opt-in, DTM locale preferito, pendenze terreno 5–10m non certificate. [Rapporto](orchestrator/evidence/2026-11-16-track-profile-xy-310/RELEASE.md).
+Review GPT-SOSTITUTIVA PASS, JS 2/2, 30/30 Edge candidato e 30/30 HTTPS LIVE; grafico e persistenza per tracce pennello/XY senza quote. PASS operatore acquisito il 17/11/2026; [ricevuta](orchestrator/evidence/2026-11-17-qa310-closure/REPORT.md). Open-Meteo solo opt-in, DTM locale preferito, pendenze terreno 5–10m non certificate. [Rapporto](orchestrator/evidence/2026-11-16-track-profile-xy-310/RELEASE.md).
 
 ## Build309 Centra LIVE - QA operatore PASS, CLOSED (16 novembre 2026)
 

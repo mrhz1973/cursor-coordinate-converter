@@ -1,3 +1,13 @@
+# Build310 QA operatore PASS — CLOSED
+
+BLOCK: GIS-SAVED-TRACK-PROFILE-XY-A
+GATE: QA GIS-SAVED-TRACK-PROFILE-XY-A PASS operatore del 17/11/2026; Regola H docs-only.
+RUNTIME LIVE invariato: Build310 source e0b7e133dea16e38d083a53a50276a232609e8fd, SHA256 ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea.
+NEXT: P1 importazione batch archivio fino a 10 (non implementato). Reviewer esterno NOT_PERFORMED/backstop.
+EVIDENCE: [QA ricevuta](../orchestrator/evidence/2026-11-17-qa310-closure/REPORT.md).
+
+## Pass runtime precedente (storico, non LIVE STATE)
+
 # Build310 GIS — profilo XY LIVE, QA operatore PENDING
 BLOCK: GIS-SAVED-TRACK-PROFILE-XY-A
 GATE: Review GPT-SOSTITUTIVA PASS; JS2/2, candidato30/30, HTTPS30/30. Reviewer AI esterno NOT_PERFORMED; QA operatore PENDING.
