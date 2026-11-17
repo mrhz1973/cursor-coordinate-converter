@@ -1,3 +1,14 @@
+# Build311 candidate — deploy BLOCCATO dallo strumento
+
+BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A.
+CANDIDATO: 4ddcb641b756ac987f619c2cd7fa09e236734147 / 4381c1930a358fc8ad5842507a40a5d44caaa8466708e66c050991e5b2c0fc4d.
+GATE: REVIEW GPT-SOSTITUTIVA PASS, JavaScript 2/2, Edge candidato 30/30 PASS. Nessuna HTTPS QA Build311, nessun deploy, nessun PASS operatore.
+LIVE: Build310, VPS active, SHA ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea.
+NEXT: attendere disponibilità percorso autorizzato per deploy GIS-only; non aggirare tool safety.
+EVIDENCE: [Rapporto blocker](../orchestrator/evidence/2026-11-17-track-archive-batch-311/DEPLOY-BLOCKED.md).
+
+## Pass storico (non LIVE STATE)
+
 # Build310 QA operatore PASS — CLOSED
 
 BLOCK: GIS-SAVED-TRACK-PROFILE-XY-A
