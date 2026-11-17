@@ -12008,6 +12008,11 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   #trackSimpleUi .track-archive-import p{margin:5px 0;font-size:.82rem;line-height:1.4;}
   #trackSimpleUi .track-archive-import label{display:block;font-size:.82rem;margin:8px 0 4px;}
   #trackSimpleUi .track-archive-import input[type=text]{box-sizing:border-box;width:100%;min-width:0;}
+  #trackSimpleUi .track-batch-preview-list{display:grid;gap:9px;max-height:min(39vh,340px);overflow:auto;scrollbar-gutter:stable;margin:10px 0;}
+  #trackSimpleUi .track-batch-preview-item{min-width:0;border:1px solid var(--border);border-radius:8px;padding:8px;}
+  #trackSimpleUi .track-batch-preview-item label{font-size:.79rem;margin:0 0 5px;font-weight:600;}
+  #trackSimpleUi .track-batch-preview-item input{min-height:32px;}
+  #trackSimpleUi .track-batch-preview-item p{margin:5px 0 0;word-break:break-word;}
   #trackSimpleUi .track-import-actions{display:flex;gap:8px;margin-top:10px;}
   #trackSimpleUi #trackArchiveImportStatus:empty{display:none;}
   #trackSimpleUi #trackArchiveImportStatus{font-size:.82rem;line-height:1.4;margin:8px 0;}
@@ -18344,6 +18349,20 @@ const I18N = {
     "track.simple.emptyCurrent":"Nessuna traccia in modifica. Crea o importa una traccia.",
     "track.simple.more":"Altre azioni",
     "track.simple.confirm":"Importa questa traccia?",
+    "track.batch.confirm":"Importazione multipla nell'archivio",
+    "track.batch.fileCount":"{0} file selezionati · {1} tracce",
+    "track.batch.visibilityNotice":"Le nuove tracce saranno nascoste. Utilizzare Mostra o Centra per visualizzarle.",
+    "track.batch.nameLabel":"Nome traccia",
+    "track.batch.pointsAndHeights":"{0} punti · {1} quote presenti",
+    "track.batch.importAll":"Importa tutte",
+    "track.batch.tooMany":"Massimo 10 file e 10 tracce per operazione. Nessuna traccia importata.",
+    "track.batch.invalidGeometry":"Geometria o coordinate non valide; importazione annullata.",
+    "track.batch.archiveFull":"Archivio pieno: spazio insufficiente per tutte le tracce.",
+    "track.batch.prevalidateFail":"Importazione bloccata:",
+    "track.batch.rollbackOk":"Importazione annullata: tutti i dati precedenti sono stati ripristinati.",
+    "track.batch.rollbackFail":"ERRORE: ripristino non verificato; non proseguire con altre importazioni.",
+    "track.batch.imported":"Importate {0} tracce nell'archivio (inizialmente nascoste).",
+    "track.batch.namesExhausted":"Impossibile assegnare nomi univoci.",
     "track.simple.onlyTrack":"Verr\u00e0 importata solo la traccia, non gli altri oggetti del file.",
     "track.simple.reading":"Lettura del file\u2026",
     "track.simple.noTrack":"Il file non contiene una traccia importabile.",
@@ -20889,6 +20908,20 @@ const I18N = {
     "track.simple.emptyCurrent":"No current track. Create or import a track.",
     "track.simple.more":"More actions",
     "track.simple.confirm":"Import this track?",
+    "track.batch.confirm":"Import multiple tracks into archive",
+    "track.batch.fileCount":"{0} files selected · {1} tracks",
+    "track.batch.visibilityNotice":"New tracks will start hidden. Use Show or Center to display them.",
+    "track.batch.nameLabel":"Track name",
+    "track.batch.pointsAndHeights":"{0} points · {1} elevations",
+    "track.batch.importAll":"Import all",
+    "track.batch.tooMany":"Maximum 10 files and 10 tracks per operation. Nothing imported.",
+    "track.batch.invalidGeometry":"Invalid geometry or coordinates; import cancelled.",
+    "track.batch.archiveFull":"Archive does not have space for all tracks.",
+    "track.batch.prevalidateFail":"Import blocked:",
+    "track.batch.rollbackOk":"Import cancelled; all previous data restored.",
+    "track.batch.rollbackFail":"ERROR: rollback could not be verified; do not continue importing.",
+    "track.batch.imported":"Imported {0} tracks into the archive (initially hidden).",
+    "track.batch.namesExhausted":"Cannot assign distinct track names.",
     "track.simple.onlyTrack":"Only the track will be imported, not other objects in the file.",
     "track.simple.reading":"Reading file\u2026",
     "track.simple.noTrack":"This file contains no importable track.",
@@ -23156,6 +23189,20 @@ const I18N = {
     "track.simple.emptyCurrent":"Aucune trace en cours. Cr\u00e9ez ou importez une trace.",
     "track.simple.more":"Autres actions",
     "track.simple.confirm":"Importer cette trace ?",
+    "track.batch.confirm":"Importation multiple dans l'archive",
+    "track.batch.fileCount":"{0} fichiers sélectionnés · {1} traces",
+    "track.batch.visibilityNotice":"Les nouvelles traces seront masquées. Utiliser Afficher ou Centrer.",
+    "track.batch.nameLabel":"Nom de la trace",
+    "track.batch.pointsAndHeights":"{0} points · {1} altitudes",
+    "track.batch.importAll":"Tout importer",
+    "track.batch.tooMany":"Maximum 10 fichiers et 10 traces par opération. Rien importé.",
+    "track.batch.invalidGeometry":"Géométrie ou coordonnées invalides; import annulé.",
+    "track.batch.archiveFull":"Archive saturée : espace insuffisant pour les traces.",
+    "track.batch.prevalidateFail":"Importation bloquée :",
+    "track.batch.rollbackOk":"Importation annulée : données précédentes restaurées.",
+    "track.batch.rollbackFail":"ERREUR : restauration non vérifiée; ne pas poursuivre.",
+    "track.batch.imported":"{0} traces importées dans l'archive (initialement masquées).",
+    "track.batch.namesExhausted":"Impossible de créer des noms distincts.",
     "track.simple.onlyTrack":"Seule la trace sera import\u00e9e, sans les autres objets du fichier.",
     "track.simple.reading":"Lecture du fichier\u2026",
     "track.simple.noTrack":"Ce fichier ne contient aucune trace importable.",
@@ -26377,10 +26424,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SAVED-TRACK-PROFILE-XY-A";
-const APP_BUILD_DETAIL = "Profilo altimetrico su tracce XY archiviate: calcolo quote esplicito da DTM locale o Open-Meteo opt-in.";
+const APP_BUILD_ID = "GIS-TRACK-ARCHIVE-BATCH-10-A";
+const APP_BUILD_DETAIL = "Tracce salvate: importazione batch di 1–10 tracce separate con anteprima, quote originali e rollback.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 310;
+const APP_BUILD_NUM = 311;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36055,7 +36102,7 @@ function gisImportHubClassifyFeatureCollection(fc){
     polygons: 0,
     discarded: 0,
     warnings: [],
-    payload: { waypoints: [], lineParts: [], polygons: [], trackName: "" }
+    payload: { waypoints: [], lineParts: [], lineNames: [], polygons: [], trackName: "" }
   };
   const feats = (fc && Array.isArray(fc.features)) ? fc.features : [];
   let invCoords = 0;
@@ -36095,8 +36142,11 @@ function gisImportHubClassifyFeatureCollection(fc){
       }
       if (!ok){ out.discarded++; invCoords++; continue; }
       const cloned = gisImportHubCloneCoords(coords);
-      if (cloned) out.payload.lineParts.push(cloned);
-      else { out.discarded++; unsupported++; }
+      if (cloned){
+        out.payload.lineParts.push(cloned);
+        const pr=(f.properties && typeof f.properties==="object") ? f.properties : {};
+        out.payload.lineNames.push(spatialSanitizeImportedTrackLabel(pr.name || pr.Name || "",80));
+      } else { out.discarded++; unsupported++; }
     } else if (g.type === "MultiLineString"){
       const lines = g.coordinates;
       if (!Array.isArray(lines) || !lines.length){
@@ -36116,6 +36166,8 @@ function gisImportHubClassifyFeatureCollection(fc){
         const cloned = gisImportHubCloneCoords(line);
         if (!cloned) continue;
         out.payload.lineParts.push(cloned);
+        const pr=(f.properties && typeof f.properties==="object") ? f.properties : {};
+        out.payload.lineNames.push(spatialSanitizeImportedTrackLabel(pr.name || pr.Name || "",80));
         any = true;
       }
       if (!any){ out.discarded++; unsupported++; }
@@ -103165,15 +103217,14 @@ function trackSinglePanelCreate(){
   <section id="trackArchiveZone" class="track-zone" aria-labelledby="trackArchiveTitle">
     <div class="track-zone-head"><h3 id="trackArchiveTitle" data-i18n="track.savedTitle">Tracce salvate</h3><span id="trackArchiveCount" class="hint"></span></div>
     <div id="trackArchiveTools" class="track-archive-tools"></div>
-    <input id="trackArchiveFileInput" class="file-input-hidden" type="file" accept=".gpx,.kml,.kmz,.geojson,.json,application/gpx+xml,application/vnd.google-earth.kml+xml,application/geo+json,application/json">
+    <input id="trackArchiveFileInput" class="file-input-hidden" type="file" multiple accept=".gpx,.kml,.kmz,.geojson,.json,application/gpx+xml,application/vnd.google-earth.kml+xml,application/geo+json,application/json">
     <div id="trackArchiveImportStatus" role="status" aria-live="polite"></div>
     <section id="trackArchiveImportPreview" class="track-archive-import" aria-labelledby="trackArchiveImportTitle" hidden>
-      <h4 id="trackArchiveImportTitle" data-i18n="track.simple.confirm">Importa questa traccia?</h4>
+      <h4 id="trackArchiveImportTitle" data-i18n="track.batch.confirm">Importazione multipla in archivio</h4>
       <p id="trackArchiveImportFile"></p><p id="trackArchiveImportInfo"></p>
-      <label for="trackArchiveImportName" data-i18n="track.saveNameLabel">Nome traccia</label>
-      <input id="trackArchiveImportName" type="text" maxlength="80" autocomplete="off">
-      <p id="trackArchiveImportIgnored" class="hint" hidden data-i18n="track.simple.onlyTrack">Verrà importata solo la traccia, non gli altri oggetti del file.</p>
-      <div class="track-import-actions"><button id="trackArchiveImportApply" class="btn btn-sm btn-primary" type="button" data-i18n="track.import">Importa</button>
+      <div id="trackArchiveImportItems" class="track-batch-preview-list"></div>
+      <p id="trackArchiveImportIgnored" class="hint" hidden data-i18n="track.simple.onlyTrack">Verranno importate solo le tracce, non gli altri oggetti dei file.</p>
+      <div class="track-import-actions"><button id="trackArchiveImportApply" class="btn btn-sm btn-primary" type="button" data-i18n="track.batch.importAll">Importa tutte</button>
       <button id="trackArchiveImportCancel" class="btn btn-sm" type="button" data-i18n="track.newPromptCancel">Annulla</button></div>
     </section>
     <div id="trackArchiveBatchMount"></div>
@@ -103190,10 +103241,10 @@ function trackSinglePanelCreate(){
   });
   const file = document.getElementById("trackArchiveFileInput");
   file.addEventListener("change", () => {
-    const chosen = file.files && file.files[0];
+    const chosen = Array.from(file.files || []);
     file.value = "";
     state._trackFilePickerGuardUntil = 0;
-    if (chosen) trackArchivePreparePreview(chosen);
+    if (chosen.length) trackArchivePreparePreview(chosen);
   });
   file.addEventListener("cancel", () => { state._trackFilePickerGuardUntil = 0; });
   document.getElementById("trackArchiveImportApply").addEventListener("click", trackArchiveApplyPreview);
@@ -103275,7 +103326,7 @@ function trackSinglePanelSync(){
   o.lastEditing = editing;
   for (const el of o.ui.querySelectorAll("[data-i18n]")){
     const key = el.getAttribute("data-i18n");
-    if (key && key.startsWith("track.simple.")) el.textContent = t(key);
+    if (key && (key.startsWith("track.simple.") || key.startsWith("track.batch."))) el.textContent = t(key);
   }
 }
 function trackArchiveStatus(message, error){
@@ -103309,88 +103360,290 @@ function openTrackArchiveImportHub(){
   input.click();
   return true;
 }
-async function trackArchivePreparePreview(file){
-  if (!file || !trackSinglePanelDesktop()) return false;
-  if (gisSpatialImportIsBusy() || (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation())){
+/* GIS-TRACK-ARCHIVE-BATCH-311 — desktop-only transactional batch import. */
+const TRACK_ARCHIVE_BATCH_MAX = 10;
+function trackArchiveBatchFiles(fileList){
+  if (!fileList) return [];
+  if (Array.isArray(fileList)) return fileList.slice();
+  if (typeof fileList.length === "number") return Array.from(fileList);
+  return [fileList];
+}
+function trackArchiveBatchAutoName(suggested, used){
+  const base = spatialSanitizeImportedTrackLabel(suggested,80) ||
+    spatialSanitizeImportedTrackLabel(t("track.saveDefaultName") || "Traccia",80);
+  let candidate = base, suffix=2;
+  while (used.has(candidate.toLocaleLowerCase()) && suffix <= 10000){
+    const tail = " (" + suffix++ + ")";
+    candidate = base.slice(0,80-tail.length) + tail;
+  }
+  if (used.has(candidate.toLocaleLowerCase())) throw Error(t("track.batch.namesExhausted"));
+  used.add(candidate.toLocaleLowerCase());
+  return candidate;
+}
+function trackArchiveBatchRenderPreview(h){
+  const pane = document.getElementById("trackArchiveImportPreview");
+  const mount = document.getElementById("trackArchiveImportItems");
+  if (!pane || !mount) return;
+  mount.replaceChildren();
+  if (!h || h.phase !== "preview"){ pane.hidden = true; return; }
+  const rows = h.items;
+  const title = document.getElementById("trackArchiveImportTitle");
+  if (title) title.textContent = t("track.batch.confirm");
+  const desc = document.getElementById("trackArchiveImportFile");
+  if (desc) desc.textContent = String(t("track.batch.fileCount"))
+    .replace("{0}",String(h.files.length)).replace("{1}",String(rows.length));
+  const info = document.getElementById("trackArchiveImportInfo");
+  if (info) info.textContent = t("track.batch.visibilityNotice");
+  for (let i = 0; i < rows.length; i++){
+    const item = rows[i];
+    const card = document.createElement("div");
+    card.className = "track-batch-preview-item";
+    const label = document.createElement("label");
+    const id = "trackArchiveBatchName" + i;
+    label.htmlFor = id;
+    label.textContent = String(i+1) + ". " + t("track.batch.nameLabel");
+    const input = document.createElement("input");
+    input.id = id; input.type = "text"; input.maxLength = 80; input.autocomplete = "off";
+    input.setAttribute("data-track-batch-name",String(i));
+    input.value = item.suggestedName;
+    const meta = document.createElement("p");
+    meta.className = "hint";
+    meta.textContent = String(item.filename) + " · " +
+      String(t("track.batch.pointsAndHeights"))
+      .replace("{0}",String(item.points.length))
+      .replace("{1}",String(item.heights));
+    card.append(label,input,meta);
+    mount.append(card);
+  }
+  const ignored = document.getElementById("trackArchiveImportIgnored");
+  if (ignored) ignored.hidden = !(h.ignoredCount > 0);
+  const apply = document.getElementById("trackArchiveImportApply");
+  const cancel = document.getElementById("trackArchiveImportCancel");
+  if (apply){ apply.disabled = false; apply.textContent = t("track.batch.importAll"); }
+  if (cancel) cancel.disabled = false;
+  pane.hidden = false;
+}
+async function trackArchivePreparePreview(fileList){
+  if (!trackSinglePanelDesktop()) return false;
+  if (gisSpatialImportIsBusy() ||
+      (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation())){
     trackArchiveStatus(t("importHub.busy"),true); return false;
   }
   trackArchiveCancelPreview(true);
-  const token = gisSpatialImportAcquire("track-archive-preview");
+  const files = trackArchiveBatchFiles(fileList);
+  if (!files.length) return false;
+  if (files.length > TRACK_ARCHIVE_BATCH_MAX){
+    trackArchiveStatus(t("track.batch.tooMany"),true); return false;
+  }
+  const token = gisSpatialImportAcquire("track-archive-batch-preview");
   if (!token){ trackArchiveStatus(t("importHub.busy"),true); return false; }
-  const h = { phase:"parsing", token, gen:_trackArchiveGeneration,
-    files:[], selection:{waypoints:false,savedTracks:true,polygons:false} };
+  const h = {phase:"parsing",token,gen:_trackArchiveGeneration,files:[],items:[],ignoredCount:0};
   _trackArchivePreview = h;
   trackArchiveStatus(t("track.simple.reading"),false);
   try {
-    const row = await gisImportHubParseOneFile(file);
-    if (_trackArchivePreview !== h || h.gen !== _trackArchiveGeneration) return false;
-    if (!row || row.error) throw new Error(row && row.error || t("err.importFailed"));
-    if (!row.payload || !Array.isArray(row.payload.lineParts) || !row.payload.lineParts.length) throw new Error(t("track.simple.noTrack"));
-    h.files = [row]; h.phase = "preview";
-    const coords = row.payload.lineParts.flat();
-    const heights = coords.filter(c=>spatialImportedElevationNumber(c && c[2])).length;
-    const pane = document.getElementById("trackArchiveImportPreview");
-    document.getElementById("trackArchiveImportFile").textContent = row.name;
-    document.getElementById("trackArchiveImportInfo").textContent = String(t("track.simple.importSummary")).replace("{0}",String(coords.length)).replace("{1}",String(heights));
-    document.getElementById("trackArchiveImportName").value = row.payload.trackName || spatialBaseNameNoExt(row.name);
-    document.getElementById("trackArchiveImportIgnored").hidden = !((row.waypoints||0)+(row.polygons||0));
-    document.getElementById("trackArchiveImportApply").disabled = false;
-    document.getElementById("trackArchiveImportCancel").disabled = false;
-    pane.hidden = false;
+    const usedNames = new Set();
+    ensureSavedTracksState();
+    for (const existing of state.savedTracks){
+      if (existing && existing.name) usedNames.add(String(existing.name).toLocaleLowerCase());
+    }
+    for (const file of files){
+      const row = await gisImportHubParseOneFile(file);
+      if (_trackArchivePreview !== h || h.gen !== _trackArchiveGeneration) return false;
+      if (!row || row.error) throw Error(row && row.error || t("err.importFailed"));
+      if (!row.payload || !Array.isArray(row.payload.lineParts) || !row.payload.lineParts.length)
+        throw Error(t("track.simple.noTrack"));
+      if (Array.isArray(row.warnings) && row.warnings.length){
+        throw Error(t("track.batch.invalidGeometry") + " " + String(row.name));
+      }
+      h.files.push(row);
+      h.ignoredCount += (row.waypoints || 0) + (row.polygons || 0);
+      for (let i=0; i<row.payload.lineParts.length; i++){
+        if (h.items.length >= TRACK_ARCHIVE_BATCH_MAX) throw Error(t("track.batch.tooMany"));
+        const coords = row.payload.lineParts[i];
+        if (!Array.isArray(coords) || coords.length < 2 || coords.length > TRACK_POINTS_CAP)
+          throw Error(t("track.batch.invalidGeometry"));
+        const filename = String(row.name || "file");
+        const pts = spatialLineToTrackPoints(coords,{from:"import",filename});
+        if (pts.length !== coords.length) throw Error(t("track.batch.invalidGeometry"));
+        const nameParts = Array.isArray(row.payload.lineNames) ? row.payload.lineNames : [];
+        const label = spatialSanitizeImportedTrackLabel(nameParts[i],80);
+        const generic = new Set(["","track","route","untitled","unnamed","traccia","percorso","line"]);
+        const base = spatialSanitizeImportedTrackLabel(spatialBaseNameNoExt(filename),80) || "Traccia";
+        const suggested = label && !generic.has(label.toLocaleLowerCase()) ?
+          label : (row.payload.lineParts.length>1 ? base + " " + String(i+1) : base);
+        const name = trackArchiveBatchAutoName(suggested,usedNames);
+        h.items.push({filename,coords,points:pts,heights:pts.filter(p=>spatialImportedElevationNumber(p._importEle)).length,
+          suggestedName:name});
+      }
+    }
+    if (!h.items.length) throw Error(t("track.simple.noTrack"));
+    if (state.savedTracks.length+h.items.length>SAVED_TRACKS_CAP)
+      throw Error(t("track.batch.archiveFull"));
+    h.phase="preview";
+    trackArchiveBatchRenderPreview(h);
     trackArchiveStatus("",false);
-    try { pane.scrollIntoView({block:"nearest"}); document.getElementById("trackArchiveImportName").focus({preventScroll:true}); } catch(_){}
+    try {
+      const pane=document.getElementById("trackArchiveImportPreview");
+      pane.scrollIntoView({block:"nearest"});
+      const first=document.querySelector("#trackArchiveImportItems input");
+      if (first) first.focus({preventScroll:true});
+    } catch(_){}
     return true;
   } catch(error){
-    if (_trackArchivePreview === h){ _trackArchivePreview = null; trackArchiveStatus(String(error.message||error),true); }
+    if (_trackArchivePreview === h){
+      _trackArchivePreview=null;
+      trackArchiveBatchRenderPreview(null);
+      trackArchiveStatus(String(error && error.message || error),true);
+    }
     return false;
-  } finally { gisSpatialImportRelease(token); if (h.token===token) h.token=null; }
+  } finally {
+    gisSpatialImportRelease(token);
+    if (h.token===token) h.token=null;
+  }
+}
+function trackArchiveBatchPrevalidate(h){
+  if (!h || h.phase!=="preview" || !trackSinglePanelDesktop()) return {ok:false,reason:"phase"};
+  if (gisSpatialImportIsBusy()) return {ok:false,reason:"busy"};
+  if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation())
+    return {ok:false,reason:"brush"};
+  const items = Array.isArray(h.items) ? h.items : [];
+  if (!items.length || items.length > TRACK_ARCHIVE_BATCH_MAX)
+    return {ok:false,reason:"count"};
+  ensureSavedTracksState();
+  if (state.savedTracks.length + items.length > SAVED_TRACKS_CAP)
+    return {ok:false,reason:"archive_full"};
+  const inputList = document.querySelectorAll("#trackArchiveImportItems input[data-track-batch-name]");
+  if (inputList.length !== items.length) return {ok:false,reason:"inputs"};
+  const prepared = [];
+  for (let i=0; i<items.length; i++){
+    const item = items[i], input = inputList[i];
+    if (!input || input.getAttribute("data-track-batch-name") !== String(i))
+      return {ok:false,reason:"inputs"};
+    const name = spatialSanitizeImportedTrackLabel(input.value,80);
+    if (!name) return {ok:false,reason:"name",index:i};
+    const coords = item.coords;
+    if (!Array.isArray(coords) || coords.length < 2 || coords.length > TRACK_POINTS_CAP)
+      return {ok:false,reason:"points",index:i};
+    for (const c of coords){
+      if (!Array.isArray(c) || !gisImportHubIsValidCoord(c[0],c[1]) ||
+          (c.length>=3 && c[2]!=null && !spatialImportedElevationNumber(c[2])))
+        return {ok:false,reason:"coordinates_or_elevation",index:i};
+    }
+    const pts = spatialLineToTrackPoints(coords,{from:"import",filename:item.filename});
+    if (pts.length !== coords.length)
+      return {ok:false,reason:"points",index:i};
+    prepared.push({name,points:pts,filename:item.filename});
+  }
+  return {ok:true,prepared};
+}
+function trackArchiveBatchRestore(snap){
+  if (!snap) return false;
+  try {
+    state.savedTracks=gisImportHubCloneJson(snap.savedTracks);
+    state.mapWaypoints=gisImportHubCloneJson(snap.mapWaypoints);
+    state.gisPolygons=gisImportHubCloneJson(snap.gisPolygons);
+    state.gisLayers=gisImportHubCloneJson(snap.gisLayers);
+    state.track=gisImportHubCloneJson(snap.draft);
+    state.gisTracks=gisImportHubCloneJson(snap.gisTracks);
+    state._savedTracksSelectedIds=gisImportHubCloneJson(snap.selectedIds);
+    if (!Array.isArray(state.savedTracks) || !Array.isArray(state.mapWaypoints) ||
+        !Array.isArray(state.gisPolygons) || !Array.isArray(state.gisLayers) ||
+        !Array.isArray(state.gisTracks) || !Array.isArray(state._savedTracksSelectedIds) || !state.track)
+      return false;
+    const current=localStorage.getItem(STORAGE_KEY);
+    if (current !== snap.storageRaw){
+      if (snap.storageRaw===null) localStorage.removeItem(STORAGE_KEY);
+      else localStorage.setItem(STORAGE_KEY,snap.storageRaw);
+    }
+    return gisImportHubVerifySnapshotMatch(snap) &&
+      gisImportHubStoresEqual(state.track,snap.draft) &&
+      gisImportHubStoresEqual(state.gisTracks,snap.gisTracks) &&
+      gisImportHubStoresEqual(state._savedTracksSelectedIds,snap.selectedIds);
+  } catch(_){ return false; }
 }
 function trackArchiveApplyPreview(){
-  const h = _trackArchivePreview;
-  if (!h || h.phase!=="preview" || !trackSinglePanelDesktop()) return {ok:false,reason:"phase"};
-  if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
-    trackArchiveStatus(t("importHub.busy"),true); return {ok:false,reason:"busy"};
+  const h=_trackArchivePreview;
+  const pre=trackArchiveBatchPrevalidate(h);
+  if (!pre.ok){
+    trackArchiveStatus(t("track.batch.prevalidateFail")+" "+(pre.reason||"")+
+      (Number.isInteger(pre.index) ? " #"+String(pre.index+1) : ""),true);
+    return pre;
   }
-  const input = document.getElementById("trackArchiveImportName");
-  const name = spatialSanitizeImportedTrackLabel(input && input.value,80);
-  if (!name){ trackArchiveStatus(t("track.saveNameRequired"),true); if(input) input.focus(); return {ok:false,reason:"name"}; }
-  h.files[0].payload.trackName = name;
-  const pre = gisImportHubPrevalidate(h,h.selection);
-  if (!pre.ok){ trackArchiveStatus(pre.message||t("importHub.applyFail"),true); return pre; }
-  const snap = gisImportHubTakeSnapshot();
-  if (!snap.ok){ trackArchiveStatus(t("importHub.applyFail"),true); return {ok:false,reason:"snapshot"}; }
-  const token = gisSpatialImportAcquire("track-archive-apply");
-  if (!token){ trackArchiveStatus(t("importHub.busy"),true); return {ok:false,reason:"lock"}; }
+  const snap=gisImportHubTakeSnapshot();
+  if (!snap.ok) {
+    trackArchiveStatus(t("importHub.applyFail"),true);
+    return {ok:false,reason:"snapshot"};
+  }
+  snap.draft=gisImportHubCloneJson(state.track);
+  snap.gisTracks=gisImportHubCloneJson(state.gisTracks);
+  snap.selectedIds=gisImportHubCloneJson(state._savedTracksSelectedIds);
+  if (!snap.draft || !Array.isArray(snap.gisTracks) || !Array.isArray(snap.selectedIds)){
+    trackArchiveStatus(t("importHub.applyFail"),true);
+    return {ok:false,reason:"snapshot_extra"};
+  }
+  const token=gisSpatialImportAcquire("track-archive-batch-apply");
+  if (!token){trackArchiveStatus(t("importHub.busy"),true);return {ok:false,reason:"lock"};}
   h.phase="applying"; h.token=token;
   document.getElementById("trackArchiveImportApply").disabled=true;
   document.getElementById("trackArchiveImportCancel").disabled=true;
   let result;
   try {
-    const added = gisImportHubMutateApply(h,h.selection);
-    if (added.tracks!==pre.totals.tracks || added.waypoints!==0 || added.polygons!==0) throw new Error("count mismatch");
-    const persisted = saveStoreReported();
-    if (!persisted || !persisted.ok) throw new Error("persist failed");
-    const verified = gisImportHubVerifyPersistedAddedRefs(added.refs);
-    if (!verified || !verified.ok) throw new Error("persist verify failed");
-    if (!gisImportHubStoresEqual(state.mapWaypoints,snap.mapWaypoints) || !gisImportHubStoresEqual(state.gisPolygons,snap.gisPolygons)) throw new Error("unrelated store mutation");
+    const created=[];
+    for (const item of pre.prepared){
+      const res=savedTrackAddFromPoints({name:item.name,points:item.points,closed:false,visible:false});
+      if (!res || !res.ok || !res.track || !res.track.id)
+        throw Error("savedTrackAddFromPoints:"+(res&&res.reason||"failed"));
+      const imported=savedTrackBuildImportedElevations(res.track,item.points);
+      if (imported) res.track.importedElevations=imported;
+      if (res.track.visible!==false || res.track.points.length!==item.points.length)
+        throw Error("import integrity failure");
+      created.push(res.track);
+    }
+    if (created.length!==pre.prepared.length ||
+        state.savedTracks.length!==snap.savedTracks.length+created.length ||
+        !gisImportHubStoresEqual(state.savedTracks.slice(0,snap.savedTracks.length),snap.savedTracks) ||
+        !gisImportHubStoresEqual(state.mapWaypoints,snap.mapWaypoints) ||
+        !gisImportHubStoresEqual(state.gisPolygons,snap.gisPolygons) ||
+        !gisImportHubStoresEqual(state.gisLayers,snap.gisLayers) ||
+        !gisImportHubStoresEqual(state.gisTracks,snap.gisTracks) ||
+        !gisImportHubStoresEqual(state.track,snap.draft) ||
+        !gisImportHubStoresEqual(state._savedTracksSelectedIds,snap.selectedIds))
+      throw Error("unrelated state mutation");
+    const persisted=saveStoreReported();
+    if (!persisted || persisted.ok!==true) throw Error("persist failed");
+    for (const st of created){
+      if (!trackVerifyPersistedSavedTrack(st)) throw Error("persist verify failed");
+      const stored=savedTrackReadPersistedById(st.id);
+      if (!stored || stored.visible!==false ||
+          !savedTrackPersistedEqualCanonical(st,stored)) throw Error("stored row mismatch");
+    }
+    const refs={waypoints:[],tracks:created.map(st=>({id:String(st.id),pointCount:st.points.length})),polygons:[]};
+    const verify=gisImportHubVerifyPersistedAddedRefs(refs);
+    if (!verify || !verify.ok || verify.found.tracks!==created.length) throw Error("verify refs failed");
     _trackArchivePreview=null;
-    document.getElementById("trackArchiveImportPreview").hidden=true;
-    trackArchiveStatus(String(t("track.simple.imported")).replace("{0}",name),false);
-    gisImportHubRefreshAfterMutation();
-    result={ok:true,added};
+    const pane=document.getElementById("trackArchiveImportPreview");
+    if (pane) pane.hidden=true;
+    trackArchiveStatus(String(t("track.batch.imported"))
+      .replace("{0}",String(created.length)),false);
+    renderSavedTracksList();
+    result={ok:true,added:{tracks:created.length,waypoints:0,polygons:0},refs};
   } catch(error){
-    const rollback = gisImportHubRestoreSnapshot(snap);
-    h.phase=rollback?"preview":"failed";
-    trackArchiveStatus(t(rollback?"importHub.rollbackOk":"importHub.rollbackFail"),true);
-    gisImportHubRefreshAfterMutation();
-    result={ok:false,reason:String(error.message||error),rollback:rollback?"pass":"fail"};
+    const restored=trackArchiveBatchRestore(snap);
+    h.phase=restored?"preview":"failed";
+    trackArchiveStatus(String(restored?t("track.batch.rollbackOk"):t("track.batch.rollbackFail"))+
+      " "+String(error && error.message || error),true);
+    try {renderSavedTracksList();} catch(_){}
+    result={ok:false,reason:String(error && error.message || error),rollback:restored?"pass":"fail"};
   } finally {
     gisSpatialImportRelease(token); h.token=null;
-    document.getElementById("trackArchiveImportApply").disabled=h.phase==="failed";
-    document.getElementById("trackArchiveImportCancel").disabled=false;
+    const apply=document.getElementById("trackArchiveImportApply");
+    const cancel=document.getElementById("trackArchiveImportCancel");
+    if (apply) apply.disabled=h.phase==="failed";
+    if (cancel) cancel.disabled=false;
   }
   return result;
 }
+
 
 function syncSavedTracksSelectAllState(mount){
   if (!mount) return;
