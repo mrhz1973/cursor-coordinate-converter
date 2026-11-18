@@ -4,22 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | P2 uniformità tabelle desktop: Build315 Aree offline QA operatore PASS/CLOSED; mandato operatore completare P2-B4 e P2-C su tutti i tab con una sola QA umana finale. |
+| **WORKSTREAM ATTIVO** | P2 uniformità tabelle desktop — Build316 bundle finale Range rings + Preferiti + Astro picker + Batch LIVE; QA operatore unica FINALE PENDING. Build315 e precedenti CLOSED. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | — (Build315 P2-B3 CLOSED; P2 finale multi-tab da aprire con gate dedicato). |
-| **STATO BLOCCO** | Build315 LIVE/CLOSED con QA GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 PASS operatore 18/11/2026. Chiusura Regola H docs-only. Nessuna Build316 ancora attestata. |
-| **GATE CORRENTE** | P2-B3 DELICATO: review GPT-SOSTITUTIVA PASS, JS2/2, candidato98/98, HTTPS LIVE98/98 e QA operatore PASS. Prossimi bundle P2-B4/P2-C: review+ABQA per tranche, QA umana unica finale autorizzata dal proprietario; blocco non ancora qualificato. |
-| **RUNTIME LIVE** | Build315 source 92c45c22797979b1f374d1c66b974ce204e54151, blob 07c55db6986e6be2886582d8446e4c5482b4f7d2, SHA256 ee2941001ca693d769df093d1e041e6cf5b33f94280bea7ac3383b6fe0aaccef, 11.241.529 byte CR192/CRLF0; VPS/HTTP/HTTPS concordi. |
-| **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build315 verificato. |
+| **BLOCCO ATTIVO** | GIS-TABLES-ALL-REMAINING-P2 |
+| **STATO BLOCCO** | Build316 LIVE, tabelle desktop rimanenti completate e QA tecnica superata; ancora NON CLOSED perché QA umana unica finale PENDING su tutti i tab. |
+| **GATE CORRENTE** | DELICATO: review GPT-SOSTITUTIVA 27/27 PASS (reviewer esterno NOT_PERFORMED/backstop post-hoc), JS inline 2/2, Edge candidato 134/134 e HTTPS LIVE 134/134 PASS. QA FINALE CHATGPT / QA operatore UNICA PENDING come richiesto. |
+| **RUNTIME LIVE** | Build316 source de583b4a1d774544b53b3277c334680f2a973652, blob 025f3ffa9818586c05b602eff29c989974659074, SHA256 edf2042254b53852ee7402655b139c698cc09d958be555b397fdc13162525917, 11.277.535 byte CR192/CRLF0; VPS/file/HTTP/HTTPS concordi. |
+| **RUNTIME CANDIDATE** | Nessun candidato successivo a Build316 verificato. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 — Build315, QA PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa315-p2b3-closure/REPORT.md). |
-| **NEXT** | Completare tutti i tab desktop operativi P2 ancora aperti: P2-B4 Range rings, P2-C Preferiti, picker Astro (selezione singola preservata), Batch, liste dinamiche verificate. Intermedi: review e browser QA, niente QA umana. QA operatore una volta sola al completamento complessivo. Mobile PAUSA, DTM5/10m HOLD. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 CLOSED Build311; P2-A CLOSED Build312; P2-B1 CLOSED Build313; P2-B2 CLOSED Build314; P2-B3 CLOSED Build315; P2-B4/P2-C ancora APERTI. DTM terreno HOLD. |
-| **BACKLOG OPERATORE 16/11** | [Backlog](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-B3 CLOSED; P2-B4/P2-C NEXT con richiesta QA unica finale; menu Nuova traccia FUTURO, mobile PAUSA. |
+| **NEXT** | QA operatore UNICA FINALE per l’intero P2: Range rings, Preferiti (selezione/esportazione), i due picker Astro (single target), Strumenti > Batch; spot-check delle tabelle già accettate Tracce salvate/Waypoint/Poligoni/Aree offline. Riga QA GIS-TABLES-ALL-REMAINING-P2 PASS operatore, poi Regola H docs-only. Mobile PAUSA, DTM terreno 5–10m HOLD. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch CLOSED Build311; P2-A CLOSED Build312, P2-B1 CLOSED Build313, P2-B2 CLOSED Build314, P2-B3 CLOSED Build315; P2-B4/P2-C implementati LIVE Build316 ma QA umana FINALE PENDING. DTM terreno HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Backlog](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). Tutte le tabelle operative P2 implementate, QA operatore unica finale PENDING; menu Nuova traccia FUTURO, mobile PAUSA. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
-| **ACCESSO / DEPLOY** | 18/11/2026: Build315 GIS-only LIVE, backup Build314 /var/backups/goi-gis-runtime/prebuild315-7FdQ5EdT, un restart GIS PID1450249→1609084; hash VPS/HTTP/HTTPS concordi. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ee294100). |
-| **EVIDENCE** | [QA operatore P2-B3](orchestrator/evidence/2026-11-18-qa315-p2b3-closure/REPORT.md) - [Build315 LIVE](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/REVIEW.md). |
+| **ACCESSO / DEPLOY** | 18/11/2026: Build316 GIS-only LIVE, backup315 /var/backups/goi-gis-runtime/prebuild316-B1DgSrs6, un restart GIS PID1609084→2150284, hash VPS/HTTP/HTTPS concordi. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=edf20422). |
+| **EVIDENCE** | [Build316 LIVE](orchestrator/evidence/2026-11-18-all-remaining-p2-316/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-all-remaining-p2-316/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-18-all-remaining-p2-316/live-qa.json) - [Matrice P2](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). |
+
+## Build316 — P2 multi-tab finale LIVE, QA operatore UNICA PENDING (18 novembre 2026)
+
+Range rings, Preferiti, due picker Astro e Batch ora LIVE; precedenti tabelle P2 già accettate. Review DELICATO GPT-SOSTITUTIVA PASS (esterno NOT_PERFORMED), candidato e HTTPS LIVE 134/134 PASS. Non dichiarare P2 CLOSED prima del PASS umano complessivo. [Release](orchestrator/evidence/2026-11-18-all-remaining-p2-316/RELEASE.md) e [matrice](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md).
 
 ## Build315 — P2-B3 Aree offline LIVE / QA operatore PASS / CLOSED (18 novembre 2026)
 

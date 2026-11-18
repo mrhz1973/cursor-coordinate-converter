@@ -1,3 +1,14 @@
+# Build316 P2 finale multi-tab LIVE — QA operatore UNICA PENDING
+
+BLOCK: GIS-TABLES-ALL-REMAINING-P2.
+GATE: REVIEW GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato134/134, HTTPS LIVE134/134 PASS. Reviewer esterno NOT_PERFORMED/post-hoc. QA FINALE CHATGPT PENDING.
+RUNTIME LIVE: source de583b4a1d774544b53b3277c334680f2a973652, SHA256 edf2042254b53852ee7402655b139c698cc09d958be555b397fdc13162525917.
+DEPLOY: 18/11/2026 14:59:17 UTC, backup Build315 prebuild316-B1DgSrs6, un restart GIS PID2150284.
+NEXT: un solo PASS operatore finale su tutte le viste P2, nessuna QA intermedia; mobile PAUSA e DTM accuracy HOLD.
+EVIDENCE: [Release](../orchestrator/evidence/2026-11-18-all-remaining-p2-316/RELEASE.md).
+
+## Pass runtime precedenti (storico, non LIVE STATE)
+
 # Build315 P2-B3 CLOSED — QA PASS operatore
 
 BLOCK GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3; QA letterale ricevuta 18/11/2026.

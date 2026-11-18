@@ -1,7 +1,8 @@
-# Build315 P2-B3 CLOSED — prossimo programma P2 multi-tab
+# Build316 P2 finale multi-tab LIVE — QA unica operatore PENDING
 
-PASS operatore esatto: QA GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 PASS operatore, 18/11/2026. Regola H docs-only.
-Gate tecnico già consumato: review GPT-SOSTITUTIVA DELICATO, JS2/2, Edge candidato/live98/98 PASS; reviewer esterno NOT_PERFORMED/backstop.
-Runtime LIVE invariato: Build315 SHA256 ee2941001ca693d769df093d1e041e6cf5b33f94280bea7ac3383b6fe0aaccef.
-NEXT operatore: completare tutti i tab P2 aperti (Range rings, Preferiti, Astro/Batch e liste dinamiche applicabili), gate tecnico per tranche, **un'unica QA operatore al termine**; non creare scelte multiple artificiose in picker a destinazione singola, tabelle informative senza checkbox.
-Evidence: [ricevuta](evidence/2026-11-18-qa315-p2b3-closure/REPORT.md).
+BLOCK: GIS-TABLES-ALL-REMAINING-P2.
+GATE: review GPT-SOSTITUTIVA DELICATO PASS, reviewer esterno NOT_PERFORMED/backstop; JS inline2/2, Edge candidato134/134, HTTPS LIVE134/134 PASS. QA FINALE CHATGPT e QA operatore UNICA PENDING.
+RUNTIME LIVE: Build316 source de583b4a1d774544b53b3277c334680f2a973652, SHA256 edf2042254b53852ee7402655b139c698cc09d958be555b397fdc13162525917.
+DEPLOY: 18/11/2026 14:59:17 UTC, backup Build315 prebuild316-B1DgSrs6, un restart GIS PID2150284; hash file/HTTP/HTTPS concordi.
+NEXT: QA operatore UNICA: Range rings, Preferiti, Astro WP/Favorites picker, Strumenti -> Batch, spot-check Tracce salvate/Waypoint/Poligoni/Aree offline. Dopo PASS e Regola H docs-only, chiudere P2; fino a quel momento P2 NON CLOSED.
+EVIDENCE: [Release](evidence/2026-11-18-all-remaining-p2-316/RELEASE.md) - [Review](evidence/2026-11-18-all-remaining-p2-316/REVIEW.md) - [QA LIVE](evidence/2026-11-18-all-remaining-p2-316/live-qa.json) - [Matrice](evidence/2026-11-18-all-remaining-p2-316/MATRIX.md).
