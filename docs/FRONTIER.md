@@ -4,22 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | P2 tabelle desktop — Build314 Poligoni P2-B2 approvata e CLOSED; NEXT P2-B3 Aree offline. P2-B4/P2-C ancora APERTI. |
+| **WORKSTREAM ATTIVO** | P2 uniformità tabelle desktop — P2-B3 Aree offline Build315 LIVE, QA operatore PENDING; P2-B4 e P2-C ancora APERTI. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | — (P2-B2 CLOSED, P2-B3 nuovo blocco da aprire). |
-| **STATO BLOCCO** | Build314 LIVE, P2-B2 CLOSED su approvazione esplicita «Pass vai avanti» del 18/11/2026. Testo non corrispondente alla formula canonica di auto-trigger, chiusura su ordine esplicito. Nessuna Build315. |
-| **GATE CORRENTE** | Build314 DELICATO: review GPT-SOSTITUTIVA PASS, reviewer esterno NOT_PERFORMED/backstop, JS2/2, Edge candidato82/82, HTTPS LIVE82/82 PASS. Approvazione operatore positiva «Pass vai avanti», chiusura documentale. NEXT P2-B3 non qualificato. |
-| **RUNTIME LIVE** | Build314 source ff1db25a4242b8258c4de7c9a705af0197f26d32, blob 1523fe5b32b7293f407ee3bf3083f8d39fbfe39e, SHA256 9fba532f5dec9e8aee2833da78997055819326d44b7d356bbbb12ba545c39e37, 11.239.262 byte CR192/CRLF0; VPS/file/HTTP/HTTPS concordi. |
-| **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build314 verificato. |
+| **BLOCCO ATTIVO** | GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 |
+| **STATO BLOCCO** | Build315 LIVE: Aree offline 10 colonne ridimensionabili, otto sort persistiti, checkbox per ID invariata, preferenze sane/rollback; nessun download o cache tile modificati. QA operatore PENDING. |
+| **GATE CORRENTE** | DELICATO: review GPT-SOSTITUTIVA PASS, reviewer esterno NOT_PERFORMED/backstop, JS2/2, Edge candidato 98/98 e HTTPS LIVE 98/98 PASS; QA FINALE CHATGPT / QA operatore PENDING. Cleanup dati test PASS, alcune directory temporanee Edge non rimosse. |
+| **RUNTIME LIVE** | Build315 source 92c45c22797979b1f374d1c66b974ce204e54151, blob 07c55db6986e6be2886582d8446e4c5482b4f7d2, SHA256 ee2941001ca693d769df093d1e041e6cf5b33f94280bea7ac3383b6fe0aaccef, 11.241.529 byte CR192/CRLF0; VPS/HTTP/HTTPS concordi. |
+| **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build315 verificato. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-POLYGON-TABLE-COLUMNS-P2B2 — Build314, approvazione operatore 18/11/2026 «Pass vai avanti»; [ricevuta](orchestrator/evidence/2026-11-18-qa314-p2b2-closure/REPORT.md). |
-| **NEXT** | P2-B3 Aree offline: audit dinamico sorting/resize/selezione e implementazione di sole lacune confermate, review/QA/deploy a gate propri. P2-B4 Range rings e P2-C dopo; mobile PAUSA, accuratezza DTM5/10m HOLD. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 CLOSED Build311, P2-A CLOSED Build312, P2-B1 CLOSED Build313, P2-B2 CLOSED Build314. P2-B3/B4 e P2-C ancora APERTI, DTM terreno HOLD. |
-| **BACKLOG OPERATORE 16/11** | [Backlog](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-B2 CLOSED, P2-B3 NEXT, P2-B4/P2-C APERTI. |
+| **NEXT** | QA operatore mirata Build315: Mappe Offline > Aree offline salvate, resize 10 colonne, 8 sort asc/desc, selezione riga/tutte, reload preferenze, senza azioni Scarica/Verifica/Svuota cache. Riga canonica QA GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 PASS operatore. Solo dopo QA/Regola H procedere P2-B4 Range rings e P2-C. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 CLOSED Build311; P2-A CLOSED Build312; P2-B1 Waypoint CLOSED Build313; P2-B2 Poligoni CLOSED Build314. P2-B3 Aree offline LIVE Build315 in QA; P2-B4 e P2-C ancora aperti. DTM HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Backlog](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-B3 LIVE in QA; P2-B4 Range rings e P2-C APERTI; menu unico Nuova traccia FUTURO, mobile PAUSA. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
-| **ACCESSO / DEPLOY** | 18/11/2026: Build314 GIS-only LIVE, backup313 /var/backups/goi-gis-runtime/prebuild314-ggBzLtoP, un restart GIS PID961813→1450249, hash VPS/HTTP/HTTPS concordi. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=9fba532f). |
-| **EVIDENCE** | [QA P2-B2](orchestrator/evidence/2026-11-18-qa314-p2b2-closure/REPORT.md) - [Release Build314](orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/REVIEW.md). |
+| **ACCESSO / DEPLOY** | 18/11/2026: Build315 GIS-only LIVE, backup Build314 /var/backups/goi-gis-runtime/prebuild315-7FdQ5EdT, un restart GIS PID1450249→1609084; hash VPS/HTTP/HTTPS concordi. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ee294100). |
+| **EVIDENCE** | [Build315 LIVE](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/live-qa.json) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). |
+
+## Build315 — P2-B3 Aree offline LIVE, QA operatore PENDING (18 novembre 2026)
+
+Dieci colonne Aree offline ridimensionabili, otto sort persistiti, storage whitelist senza modifiche tile/OPSEC. REVIEW GPT-SOSTITUTIVA PASS, Edge candidato e HTTPS LIVE 98/98 PASS. P2-B4 e P2-C ancora aperti. [Release](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/RELEASE.md).
 
 ## Build314 — P2-B2 Poligoni LIVE, approvazione operatore / CLOSED (18 novembre 2026)
 

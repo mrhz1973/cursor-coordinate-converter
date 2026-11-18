@@ -1,7 +1,8 @@
-# Build314 P2-B2 CLOSED
+# Build315 / P2-B3 Aree offline LIVE — QA operatore PENDING
 
-APPROVAZIONE OPERATORE: «Pass vai avanti», 18/11/2026 (non riga canonica auto-trigger Regola H; chiusura eseguita su istruzione esplicita).
-GATE: review GPT-SOSTITUTIVA DELICATO PASS; JS2/2, Edge candidato82/82, HTTPS82/82; reviewer esterno NOT_PERFORMED/backstop.
-RUNTIME LIVE invariato: Build314 source ff1db25a4242b8258c4de7c9a705af0197f26d32 SHA256 9fba532f5dec9e8aee2833da78997055819326d44b7d356bbbb12ba545c39e37. Docs-only.
-NEXT: P2-B3 Aree offline; P2-B4 Range rings e P2-C aperti; mobile PAUSA, accuratezza DTM HOLD.
-RICEVUTA: [QA](evidence/2026-11-18-qa314-p2b2-closure/REPORT.md).
+BLOCK: GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3.
+GATE: review GPT-SOSTITUTIVA DELICATO PASS, reviewer esterno NOT_PERFORMED/backstop, JS2/2, Edge candidato98/98 e LIVE HTTPS98/98 PASS. QA FINALE CHATGPT e operatore PENDING.
+RUNTIME LIVE: Build315 source 92c45c22797979b1f374d1c66b974ce204e54151; SHA256 ee2941001ca693d769df093d1e041e6cf5b33f94280bea7ac3383b6fe0aaccef.
+DEPLOY: 18/11/2026 09:35:08 UTC, backup314 prebuild315-7FdQ5EdT, un solo restart GIS PID1609084, hash VPS/HTTP/HTTPS concordi.
+NEXT: QA operatore 10 colonne, 8 sort, selezione/ricarica, senza premere download o pulizia cache; dopo PASS e chiusura, P2-B4 Range rings, poi P2-C. Mobile PAUSA, DTM terreno accuracy HOLD.
+EVIDENCE: [Release](evidence/2026-11-18-offline-areas-table-p2b3-315/RELEASE.md) - [Review](evidence/2026-11-18-offline-areas-table-p2b3-315/REVIEW.md) - [QA HTTPS](evidence/2026-11-18-offline-areas-table-p2b3-315/live-qa.json).
