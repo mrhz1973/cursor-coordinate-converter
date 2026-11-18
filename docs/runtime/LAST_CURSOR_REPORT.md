@@ -1,3 +1,14 @@
+# Build312 P2-A — LIVE, QA operatore PENDING
+
+BLOCK: GIS-SAVED-TRACKS-COLUMNS-P2A
+GATE: REVIEW GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato46/46, HTTPS46/46. Reviewer AI esterno NOT_PERFORMED/post-hoc. QA FINALE CHATGPT PENDING.
+RUNTIME LIVE: source 433795275d3b17cc06a738d918eef7c0f48e51bd, SHA256 66a7b6a94271bc107e67c0a8028a2b41be0d194a0233ba7008c7c1f60999d2e1.
+DEPLOY: 18/11/2026 01:41:11 UTC, backup Build311 prebuild312-gKYpleKY, un restart GIS PID821723.
+NEXT: QA umana mirata; P2-B/C ancora aperti ma non iniziare nuovi runtime prima di PASS P2-A.
+EVIDENCE: [Release](../orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/RELEASE.md).
+
+## Pass precedenti (storico, non LIVE STATE)
+
 # Build311 QA operatore PASS — CLOSED
 
 BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A

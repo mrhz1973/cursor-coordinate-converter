@@ -1,9 +1,8 @@
-# Build311 importazione batch archivio — CLOSED
+# Build312 P2-A Tracce salvate LIVE — QA operatore PENDING
 
-BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A.
-GATE: QA GIS-TRACK-ARCHIVE-BATCH-10-A PASS operatore (18/11/2026), dopo review GPT-SOSTITUTIVA DELICATO PASS, JS 2/2, Edge candidato 30/30 e HTTPS LIVE 30/30 PASS.
-CHIUSURA: OM §4 Regola H, docs-only; nessun nuovo deploy, nessuna Build312. Reviewer AI esterno NOT_PERFORMED / backstop post-hoc.
-RUNTIME LIVE: Build311 source 4ddcb641b756ac987f619c2cd7fa09e236734147; SHA256 4381c1930a358fc8ad5842507a40a5d44caaa8466708e66c050991e5b2c0fc4d.
-NEXT: backlog P2 tabelle desktop; definire e aprire gate dedicato. DTM accuratezza 5/10m HOLD, sviluppo mobile PAUSA, menu Nuova traccia FUTURO.
-EVIDENCE: [QA operatore Build311](evidence/2026-11-18-qa311-closure/REPORT.md) - [Build311 LIVE](evidence/2026-11-17-track-archive-batch-311/RELEASE.md) - [Review](evidence/2026-11-17-track-archive-batch-311/REVIEW.md).
-STORICO: Build310 CLOSED con [QA operatore](evidence/2026-11-17-qa310-closure/REPORT.md).
+BLOCK: GIS-SAVED-TRACKS-COLUMNS-P2A.
+GATE: DELICATO review GPT-SOSTITUTIVA PASS, JS inline 2/2, Edge candidato 46/46 PASS, HTTPS LIVE 46/46 PASS; reviewer AI esterno NOT_PERFORMED/backstop. QA FINALE CHATGPT / operatore PENDING.
+RUNTIME LIVE: Build312 source 433795275d3b17cc06a738d918eef7c0f48e51bd, SHA256 66a7b6a94271bc107e67c0a8028a2b41be0d194a0233ba7008c7c1f60999d2e1.
+DEPLOY: 18/11/2026 01:41:11 UTC; backup311 prebuild312-gKYpleKY, servizio PID821723, hash VPS/HTTP/HTTPS coerenti; solo GIS.
+NEXT: QA operatore su 7 resize, sort, select all, reload preferenze. Dopo PASS/Regola H, bundle separato P2-B altre tabelle desktop; non dichiarare P2 tutto completo.
+EVIDENCE: [Release](evidence/2026-11-18-saved-tracks-columns-p2a-312/RELEASE.md) - [Review](evidence/2026-11-18-saved-tracks-columns-p2a-312/REVIEW.md) - [QA HTTPS](evidence/2026-11-18-saved-tracks-columns-p2a-312/live-qa.json) - [Audit](evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md).
