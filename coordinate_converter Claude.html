@@ -11820,20 +11820,33 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
 }
 .saved-tracks-table{
   width:100%; border-collapse:collapse; font-size:.82rem;
-  --saved-name-col:140px;
-  --saved-when-col:100px;
-  --saved-dist-col:84px;
+  --saved-sel-col:36px; --saved-vis-col:44px;
+  --saved-name-col:140px; --saved-pts-col:52px;
+  --saved-when-col:100px; --saved-dist-col:84px; --saved-actions-col:250px;
+  min-width:calc(var(--saved-sel-col) + var(--saved-vis-col) + var(--saved-name-col) + var(--saved-pts-col) + var(--saved-when-col) + var(--saved-dist-col) + var(--saved-actions-col));
 }
-.saved-tracks-table col.saved-col-name{ width:var(--saved-name-col); min-width:72px; }
-.saved-tracks-table col.saved-col-when{ width:var(--saved-when-col); min-width:60px; }
-.saved-tracks-table col.saved-col-dist{ width:var(--saved-dist-col); min-width:56px; }
-.saved-tracks-table col.saved-col-actions{ min-width:120px; width:auto; }
-.saved-tracks-table .saved-th-name,
-.saved-tracks-table .saved-th-when,
-.saved-tracks-table .saved-th-dist{
-  position:relative;
-  padding-right:12px;
-  vertical-align:bottom;
+.saved-tracks-table col.saved-col-sel{width:var(--saved-sel-col);min-width:36px;}
+.saved-tracks-table col.saved-col-vis{width:var(--saved-vis-col);min-width:44px;}
+.saved-tracks-table col.saved-col-name{width:var(--saved-name-col);min-width:72px;}
+.saved-tracks-table col.saved-col-pts{width:var(--saved-pts-col);min-width:52px;}
+.saved-tracks-table col.saved-col-when{width:var(--saved-when-col);min-width:60px;}
+.saved-tracks-table col.saved-col-dist{width:var(--saved-dist-col);min-width:56px;}
+.saved-tracks-table col.saved-col-actions{width:var(--saved-actions-col);min-width:148px;}
+.saved-tracks-table .saved-th-sel,.saved-tracks-table .saved-th-vis,
+.saved-tracks-table .saved-th-name,.saved-tracks-table .saved-th-pts,
+.saved-tracks-table .saved-th-when,.saved-tracks-table .saved-th-dist,
+.saved-tracks-table .saved-th-actions{position:relative;padding-right:12px;vertical-align:bottom;}
+.saved-tracks-table .saved-col-resize{
+ position:absolute;top:0;right:0;width:10px;height:100%;min-height:28px;
+ cursor:col-resize;user-select:none;touch-action:none;border-radius:4px;
+}
+.saved-tracks-table .saved-col-resize:hover{background:color-mix(in srgb,var(--accent) 22%,transparent);}
+@media(max-width:768px),(hover:none) and (pointer:coarse){
+ .saved-tracks-table .saved-col-resize{display:none!important;}
+}
+@media(max-width:768px){
+ .saved-tracks-table{min-width:0}
+ .saved-tracks-table col.saved-col-actions{width:auto;min-width:120px}
 }
 .saved-tracks-table .saved-th-actions{
   white-space:nowrap;
@@ -12288,9 +12301,9 @@ button.btn.btn-sm.btn-danger[data-fav-del]:focus-visible{
   display:none !important;
 }
 .saved-tracks-table th:nth-child(1),
-.saved-tracks-table td:nth-child(1){ width:36px; min-width:36px; box-sizing:border-box; }
+.saved-tracks-table td:nth-child(1){ width:var(--saved-sel-col); min-width:36px; box-sizing:border-box; }
 .saved-tracks-table th:nth-child(2),
-.saved-tracks-table td:nth-child(2){ width:44px; min-width:44px; box-sizing:border-box; }
+.saved-tracks-table td:nth-child(2){ width:var(--saved-vis-col); min-width:44px; box-sizing:border-box; }
 .saved-tracks-empty{ padding:12px; color:var(--muted); font-size:.86rem; }
 .saved-tracks-overlay .track-line{
   fill:none;
@@ -18349,6 +18362,7 @@ const I18N = {
     "track.simple.emptyCurrent":"Nessuna traccia in modifica. Crea o importa una traccia.",
     "track.simple.more":"Altre azioni",
     "track.simple.confirm":"Importa questa traccia?",
+    "track.tablePrefSaveFail":"Preferenze larghezza/ordinamento non salvate: i dati originali sono conservati.",
     "track.batch.confirm":"Importazione multipla nell'archivio",
     "track.batch.fileCount":"{0} file selezionati · {1} tracce",
     "track.batch.visibilityNotice":"Le nuove tracce saranno nascoste. Utilizzare Mostra o Centra per visualizzarle.",
@@ -20908,6 +20922,7 @@ const I18N = {
     "track.simple.emptyCurrent":"No current track. Create or import a track.",
     "track.simple.more":"More actions",
     "track.simple.confirm":"Import this track?",
+    "track.tablePrefSaveFail":"Column widths/sort were not saved. Existing data is preserved.",
     "track.batch.confirm":"Import multiple tracks into archive",
     "track.batch.fileCount":"{0} files selected · {1} tracks",
     "track.batch.visibilityNotice":"New tracks will start hidden. Use Show or Center to display them.",
@@ -23189,6 +23204,7 @@ const I18N = {
     "track.simple.emptyCurrent":"Aucune trace en cours. Cr\u00e9ez ou importez une trace.",
     "track.simple.more":"Autres actions",
     "track.simple.confirm":"Importer cette trace ?",
+    "track.tablePrefSaveFail":"Largeur/tri non enregistrés : données précédentes conservées.",
     "track.batch.confirm":"Importation multiple dans l'archive",
     "track.batch.fileCount":"{0} fichiers sélectionnés · {1} traces",
     "track.batch.visibilityNotice":"Les nouvelles traces seront masquées. Utiliser Afficher ou Centrer.",
@@ -26424,10 +26440,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-TRACK-ARCHIVE-BATCH-10-A";
-const APP_BUILD_DETAIL = "Tracce salvate: importazione batch di 1–10 tracce separate con anteprima, quote originali e rollback.";
+const APP_BUILD_ID = "GIS-SAVED-TRACKS-COLUMNS-P2A";
+const APP_BUILD_DETAIL = "Tracce salvate desktop: 7 colonne ridimensionabili e preferenze salvate.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 311;
+const APP_BUILD_NUM = 312;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28876,6 +28892,8 @@ function saveStore(){
         showCoverage: state.showCoverage !== false,
         mapMeasureUnit: String(state.mapMeasureUnit || "m"),
         trackDisplayUnit: normalizeTrackDisplayUnit(state.trackDisplayUnit),
+        savedTracksColumnWidths: savedTracksSanitizeColumnWidths(state._savedTracksColumnWidths),
+        savedTracksSort: savedTracksSanitizeSortPreference(state._savedTracksSort),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
         mapPolyClosed: state.mapPolyClosed !== false,
         gisMeasureFlow: sanitizeGisMeasureFlow(state.gisMeasureFlow),
@@ -66530,6 +66548,31 @@ function formatSavedTrackWhen(ts){
 }
 
 const SAVED_TRACKS_SORT_KEYS = new Set(["vis", "name", "pts", "when", "dist"]);
+/* P2-A: preferenze colonne nell'unico storage canonico, con numeri in whitelist. */
+const SAVED_TRACKS_COLUMN_SPECS=Object.freeze({
+ sel:{min:36,max:88,def:36},
+ vis:{min:44,max:112,def:44},
+ name:{min:72,max:560,def:140},
+ pts:{min:52,max:180,def:52},
+ when:{min:60,max:400,def:100},
+ dist:{min:56,max:360,def:84},
+ actions:{min:148,max:640,def:250}
+});
+function savedTracksSanitizeColumnWidths(raw){
+ const out={};
+ if(!raw || typeof raw!=="object" || Array.isArray(raw))return out;
+ for(const key of Object.keys(SAVED_TRACKS_COLUMN_SPECS)){
+  const v=raw[key],spec=SAVED_TRACKS_COLUMN_SPECS[key];
+  if(typeof v==="number" && Number.isFinite(v))out[key]=Math.max(spec.min,Math.min(spec.max,Math.round(v)));
+ }
+ return out;
+}
+function savedTracksSanitizeSortPreference(raw){
+ if(!raw || typeof raw!=="object" || Array.isArray(raw))return {key:"when",dir:"desc"};
+ const key=SAVED_TRACKS_SORT_KEYS.has(raw.key)?raw.key:"when";
+ return {key,dir:(raw.dir==="asc"||raw.dir==="desc")?raw.dir:savedTracksSortDefaultDir(key)};
+}
+
 function savedTrackSortTs(st){
   if (!st) return 0;
   const u = st.updatedAt;
@@ -66598,6 +66641,9 @@ function applySavedTracksSortHeaderClick(key){
   const cur = state._savedTracksSort;
   if (cur.key === k) state._savedTracksSort = { key: k, dir: cur.dir === "asc" ? "desc" : "asc" };
   else state._savedTracksSort = { key: k, dir: savedTracksSortDefaultDir(k) };
+  if(typeof saveStoreReported==="function" && !saveStoreReported().ok){
+    try{ trackArchiveStatus(t("track.tablePrefSaveFail"),true); }catch(_){}
+  }
   renderSavedTracksList();
 }
 function savedTracksSortHeaderHtml(colKey, i18nKey, opts){
@@ -66621,10 +66667,8 @@ function savedTracksSortHeaderHtml(colKey, i18nKey, opts){
     const ra = (typeof t === "function") ? (t("track.colResizeAria") || "") : "";
     const raEsc = esc(ra || "");
     const rk = opts.resizeHandle === true ? "name" : String(opts.resizeHandle);
-    const resizeClass = rk === "when" ? "saved-when-col-resize"
-      : rk === "dist" ? "saved-dist-col-resize"
-      : "saved-name-col-resize";
-    resizeTail = `<span class="${resizeClass}" role="separator" aria-orientation="vertical" aria-label="${raEsc}" title="${raEsc}"></span>`;
+    const resizeClass = "saved-col-resize saved-"+rk+"-col-resize";
+    resizeTail = `<span class="${resizeClass}" data-saved-resize="${rk}" role="separator" aria-orientation="vertical" aria-label="${raEsc}" title="${raEsc}"></span>`;
   }
   return `<th${cls}${st}><button type="button" class="saved-tracks-sort-btn" data-saved-sort="${esc(colKey)}" aria-label="${tipEsc}" title="${tipEsc}">${label}<span class="saved-tracks-sort-mark" aria-hidden="true">${mark}</span></button>${resizeTail}</th>`;
 }
@@ -67112,74 +67156,73 @@ function ensureRangeRingsTableColResizeWired(){
 
 /** Desktop: colonne Nome / Distanza in Tracce salvate (sessione su #savedTracksMount, no localStorage). */
 function ensureSavedTracksNameColResizeWired(){
-  if (window._savedTracksNameColResizeWired) return;
-  window._savedTracksNameColResizeWired = true;
-  let drag = null;
-  function endDrag(){
-    drag = null;
-    try {
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", endDrag);
-      document.removeEventListener("pointercancel", endDrag);
-    } catch(_){}
+ if(window._savedTracksNameColResizeWired)return;
+ window._savedTracksNameColResizeWired=true;
+ let drag=null;
+ function detach(){
+  document.removeEventListener("pointermove",onMove);
+  document.removeEventListener("pointerup",onEnd);
+  document.removeEventListener("pointercancel",onEnd);
+ }
+ function onMove(ev){
+  if(!drag || ev.pointerId!==drag.pointerId)return;
+  const nw=Math.max(drag.spec.min,Math.min(drag.spec.max,Math.round(drag.startW+ev.clientX-drag.startX)));
+  if(nw===drag.current)return;
+  drag.current=nw;
+  drag.table.style.setProperty("--saved-"+drag.key+"-col",nw+"px");
+  state._savedTracksColumnWidths=savedTracksSanitizeColumnWidths({
+   ...state._savedTracksColumnWidths,[drag.key]:nw
+  });
+ }
+ function onEnd(ev){
+  if(!drag || ev.pointerId!==drag.pointerId)return;
+  const d=drag;drag=null;detach();
+  if(ev.type==="pointercancel" || d.current===d.startW){
+   if(ev.type==="pointercancel"){
+    state._savedTracksColumnWidths=d.previous;
+    d.table.style.setProperty("--saved-"+d.key+"-col",d.startW+"px");
+   }
+   return;
   }
-  function onMove(ev){
-    if (!drag) return;
-    const dx = ev.clientX - drag.startX;
-    const maxW = drag.maxW;
-    const nw = Math.max(drag.minW, Math.min(maxW, Math.round(drag.startW + dx)));
-    drag.table.style.setProperty(drag.varName, nw + "px");
-    const mount = document.getElementById("savedTracksMount");
-    if (!mount) return;
-    if (drag.kind === "name") mount._savedTracksNameColPx = nw;
-    else if (drag.kind === "when") mount._savedTracksWhenColPx = nw;
-    else if (drag.kind === "dist") mount._savedTracksDistColPx = nw;
+  let ok=false;
+  try{
+   const rep=saveStoreReported();
+   const raw=localStorage.getItem(STORAGE_KEY);
+   const value=raw?JSON.parse(raw).settings.savedTracksColumnWidths[d.key]:null;
+   ok=!!rep && rep.ok===true && value===d.current;
+  }catch(_){}
+  if(!ok){
+   state._savedTracksColumnWidths=d.previous;
+   d.table.style.setProperty("--saved-"+d.key+"-col",d.startW+"px");
+   try{
+    if(d.raw===null)localStorage.removeItem(STORAGE_KEY);
+    else if(typeof d.raw==="string")localStorage.setItem(STORAGE_KEY,d.raw);
+   }catch(_){}
+   try{trackArchiveStatus(t("track.tablePrefSaveFail"),true);}catch(_){}
   }
-  document.addEventListener("pointerdown", (ev) => {
-    const h = ev.target.closest && ev.target.closest(".saved-name-col-resize, .saved-when-col-resize, .saved-dist-col-resize");
-    if (!h) return;
-    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
-    const table = h.closest(".saved-tracks-table");
-    if (!table) return;
-    const mount = document.getElementById("savedTracksMount");
-    if (!mount || !mount.contains(table)) return;
-    const rectT = table.getBoundingClientRect();
-    let kind = "name";
-    let varName = "--saved-name-col";
-    let tdIdx = 3;
-    let minW = 72;
-    let cap = Math.max(120, Math.floor(rectT.width * 0.55));
-    if (h.classList.contains("saved-when-col-resize")){
-      kind = "when";
-      varName = "--saved-when-col";
-      tdIdx = 5;
-      minW = 60;
-      cap = Math.min(400, Math.max(100, Math.floor(rectT.width * 0.38)));
-    } else if (h.classList.contains("saved-dist-col-resize")){
-      kind = "dist";
-      varName = "--saved-dist-col";
-      tdIdx = 6;
-      minW = 56;
-      cap = Math.min(360, Math.max(80, Math.floor(rectT.width * 0.28)));
-    }
-    const cell = table.querySelector("tbody tr td:nth-child(" + tdIdx + ")");
-    const startW = cell ? cell.getBoundingClientRect().width : (kind === "name" ? 140 : kind === "when" ? 100 : 84);
-    drag = {
-      table,
-      kind,
-      varName,
-      startX: ev.clientX,
-      startW,
-      minW,
-      maxW: cap
-    };
-    ev.preventDefault();
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", endDrag);
-    document.addEventListener("pointercancel", endDrag);
-  }, true);
+ }
+ document.addEventListener("pointerdown",(ev)=>{
+  const h=ev.target&&ev.target.closest&&ev.target.closest(".saved-tracks-table [data-saved-resize]");
+  if(!h || !trackSinglePanelDesktop() || (window.matchMedia&&window.matchMedia("(pointer:coarse)").matches))return;
+  const key=String(h.getAttribute("data-saved-resize")||"");
+  if(!Object.prototype.hasOwnProperty.call(SAVED_TRACKS_COLUMN_SPECS,key))return;
+  const table=h.closest(".saved-tracks-table"),mount=document.getElementById("savedTracksMount");
+  if(!table || !mount || !mount.contains(table) || drag)return;
+  const keys=Object.keys(SAVED_TRACKS_COLUMN_SPECS),tdIdx=keys.indexOf(key)+1;
+  const cell=table.querySelector("tbody tr td:nth-child("+tdIdx+")");
+  const spec=SAVED_TRACKS_COLUMN_SPECS[key];
+  const old=state._savedTracksColumnWidths||{};
+  const startW=typeof old[key]==="number"?old[key]:
+   Math.max(spec.min,Math.min(spec.max,Math.round(cell?cell.getBoundingClientRect().width:spec.def)));
+  let raw=null;try{raw=localStorage.getItem(STORAGE_KEY)}catch(_){}
+  drag={table,key,spec,startX:ev.clientX,startW,current:startW,
+   pointerId:ev.pointerId,previous:savedTracksSanitizeColumnWidths(old),raw};
+  ev.preventDefault();
+  document.addEventListener("pointermove",onMove);
+  document.addEventListener("pointerup",onEnd);
+  document.addEventListener("pointercancel",onEnd);
+ },true);
 }
-
 /** Desktop: colonne Nome e Dettagli nella lista waypoint modal (sessione su #wp-list). */
 function ensureWpModalNameColResizeWired(){
   if (window._wpModalNameColResizeWired) return;
@@ -67636,26 +67679,27 @@ function renderSavedTracksList(){
       }
     }
   } catch(_){}
+  const resizeAria=esc(t("track.colResizeAria") || "Resize");
   const tipFly = esc(t("tip.trackSavedFly") || "");
   const rowCtxHint = esc(t("track.savedRowCtxHint") || "");
   const editingId = state._trackEditingSavedId ? String(state._trackEditingSavedId) : "";
   const selSet = new Set((state._savedTracksSelectedIds || []).map(String));
   let html = `<table class="saved-tracks-table"><colgroup>
-    <col style="width:36px" />
-    <col style="width:44px" />
+    <col class="saved-col-sel" />
+    <col class="saved-col-vis" />
     <col class="saved-col-name" />
-    <col style="width:52px" />
+    <col class="saved-col-pts" />
     <col class="saved-col-when" />
     <col class="saved-col-dist" />
     <col class="saved-col-actions" />
   </colgroup><thead><tr>
-    <th style="width:36px"><input type="checkbox" id="savedTracksSelectAll" data-i18n-aria="tip.trackSelAllSaved"></th>
-    ${savedTracksSortHeaderHtml("vis", "track.colVis", { visHead: true, thStyle: "width:44px;text-align:center" })}
+    <th class="saved-th-sel"><input type="checkbox" id="savedTracksSelectAll" data-i18n-aria="tip.trackSelAllSaved"><span class="saved-col-resize saved-sel-col-resize" data-saved-resize="sel" role="separator" aria-orientation="vertical" aria-label="${resizeAria}" title="${resizeAria}"></span></th>
+    ${savedTracksSortHeaderHtml("vis", "track.colVis", { visHead: true, thClass: "saved-th-vis", resizeHandle: "vis" })}
     ${savedTracksSortHeaderHtml("name", "track.colName", { resizeHandle: true, thClass: "saved-th-name" })}
-    ${savedTracksSortHeaderHtml("pts", "track.colPts", { thStyle: "width:52px" })}
+    ${savedTracksSortHeaderHtml("pts", "track.colPts", { thClass:"saved-th-pts", resizeHandle:"pts" })}
     ${savedTracksSortHeaderHtml("when", "track.colWhen", { resizeHandle: "when", thClass: "saved-th-when" })}
     ${savedTracksSortHeaderHtml("dist", "track.colDist", { resizeHandle: "dist", thClass: "saved-th-dist" })}
-    <th class="saved-th-actions" style="min-width:148px;text-align:left">${esc(t("track.savedColActions") || "Azioni")}</th>
+    <th class="saved-th-actions">${esc(t("track.savedColActions") || "Azioni")}<span class="saved-col-resize saved-actions-col-resize" data-saved-resize="actions" role="separator" aria-orientation="vertical" aria-label="${resizeAria}" title="${resizeAria}"></span></th>
   </tr></thead><tbody>`;
   for (const st of rows){
     const d = savedTrackDistanceM(st);
@@ -67680,21 +67724,15 @@ function renderSavedTracksList(){
   }
   html += "</tbody></table>";
   mount.innerHTML = `<div class="saved-tracks-scroll-inner">${html}</div>`;
-  try {
-    const tbl = mount.querySelector(".saved-tracks-table");
-    if (tbl && Number.isFinite(mount._savedTracksNameColPx)){
-      const px = Math.max(72, Math.min(560, mount._savedTracksNameColPx));
-      tbl.style.setProperty("--saved-name-col", px + "px");
+  const tbl=mount.querySelector(".saved-tracks-table");
+  if(tbl && trackSinglePanelDesktop()){
+    const w=savedTracksSanitizeColumnWidths(state._savedTracksColumnWidths);
+    state._savedTracksColumnWidths=w;
+    for(const key of Object.keys(SAVED_TRACKS_COLUMN_SPECS)){
+      const spec=SAVED_TRACKS_COLUMN_SPECS[key];
+      tbl.style.setProperty("--saved-"+key+"-col",(w[key]||spec.def)+"px");
     }
-    if (tbl && Number.isFinite(mount._savedTracksWhenColPx)){
-      const px = Math.max(60, Math.min(400, mount._savedTracksWhenColPx));
-      tbl.style.setProperty("--saved-when-col", px + "px");
-    }
-    if (tbl && Number.isFinite(mount._savedTracksDistColPx)){
-      const px = Math.max(56, Math.min(360, mount._savedTracksDistColPx));
-      tbl.style.setProperty("--saved-dist-col", px + "px");
-    }
-  } catch(_){}
+  }
   ensureSavedTracksNameColResizeWired();
   try {
     const tipEdit = (typeof t === "function") ? (t("tip.trackEditSaved") || "") : "";
@@ -105604,6 +105642,8 @@ function init(){
       if (typeof stored.settings.showHillshadeOverlay === "boolean") state.showHillshadeOverlay = stored.settings.showHillshadeOverlay;
       if (typeof stored.settings.mapMeasureUnit === "string") state.mapMeasureUnit = stored.settings.mapMeasureUnit;
       if (typeof stored.settings.trackDisplayUnit === "string") state.trackDisplayUnit = normalizeTrackDisplayUnit(stored.settings.trackDisplayUnit);
+       state._savedTracksColumnWidths=savedTracksSanitizeColumnWidths(stored.settings.savedTracksColumnWidths);
+       state._savedTracksSort=savedTracksSanitizeSortPreference(stored.settings.savedTracksSort);
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
       if (stored.settings.gisMeasureFlow === "direct" || stored.settings.gisMeasureFlow === "inverse2"){
