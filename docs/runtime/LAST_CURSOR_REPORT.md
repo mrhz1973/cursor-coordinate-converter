@@ -1,3 +1,14 @@
+# Build311 QA operatore PASS — CLOSED
+
+BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A
+GATE: QA GIS-TRACK-ARCHIVE-BATCH-10-A PASS operatore del 18/11/2026. Review GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato30/30 e HTTPS30/30 PASS; review AI esterna NOT_PERFORMED/backstop.
+CLOSURE: Regola H, documentazione esclusiva; runtime LIVE non modificato e nessun nuovo riavvio.
+RUNTIME LIVE: Build311 source 4ddcb641b756ac987f619c2cd7fa09e236734147; SHA256 4381c1930a358fc8ad5842507a40a5d44caaa8466708e66c050991e5b2c0fc4d.
+NEXT: blocco distinto P2 uniformità tabelle desktop; mobile PAUSA, DTM 5/10m accuratezza HOLD.
+EVIDENCE: [Ricevuta QA](../orchestrator/evidence/2026-11-18-qa311-closure/REPORT.md).
+
+## Pass runtime precedenti (storico, non LIVE STATE)
+
 # Build311 LIVE — QA operatore PENDING
 BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A
 GATE: REVIEW GPT-SOSTITUTIVA PASS, JS2/2, candidato30/30 e HTTPS LIVE30/30 PASS, QA FINALE CHATGPT PENDING. Reviewer esterno NOT_PERFORMED.

@@ -4,26 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Tracce desktop — Build311 importazione batch archivio LIVE, QA operatore PENDING. |
+| **WORKSTREAM ATTIVO** | Tracce desktop — Build311 importazione batch archivio LIVE, QA operatore PASS / CLOSED; prossimo backlog P2 tabelle desktop. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-TRACK-ARCHIVE-BATCH-10-A |
-| **STATO BLOCCO** | Build311 LIVE: import fino a 10 tracce distinte nell’archivio da GPX/KML/KMZ/GeoJSON, preview nomi/quote, nuove tracce inizialmente nascoste, transazione con rollback. Chiusura umana non ancora acquisita. |
-| **GATE CORRENTE** | DELICATO: REVIEW GPT-SOSTITUTIVA PASS, reviewer esterno NOT_PERFORMED/backstop; JavaScript inline 2/2, candidato Edge 30/30, HTTPS LIVE Edge 30/30 PASS; QA FINALE CHATGPT PENDING / QA operatore PENDING. Cleanup dati browser PASS, alcune directory temp Edge non eliminate. |
+| **BLOCCO ATTIVO** | — (nessun nuovo bundle runtime aperto; ultimo GIS-TRACK-ARCHIVE-BATCH-10-A CLOSED). |
+| **STATO BLOCCO** | Build311 LIVE e CLOSED con attestazione operatore PASS del 18/11/2026; profilo STANDARD_RUNTIME_BUNDLE, Regola H chiusura docs-only. Nessuna Build312 creata. |
+| **GATE CORRENTE** | Build311 DELICATO: REVIEW GPT-SOSTITUTIVA PASS (reviewer esterno NOT_PERFORMED / backstop), JavaScript 2/2, Edge candidato 30/30, HTTPS LIVE 30/30, QA operatore PASS. Regola H completata docs-only; prossimo P2 non ancora aperto/qualificato. |
 | **RUNTIME LIVE** | Build311 source 4ddcb641b756ac987f619c2cd7fa09e236734147, blob da91f41a861b1390bb873d371b108b5539152a56, SHA256 4381c1930a358fc8ad5842507a40a5d44caaa8466708e66c050991e5b2c0fc4d, 11.226.592 byte CR192/CRLF0; VPS/file/HTTP/HTTPS concordi. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build311 verificato. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACK-PROFILE-XY-A — Build310, QA PASS operatore 17/11/2026; [ricevuta](orchestrator/evidence/2026-11-17-qa310-closure/REPORT.md). |
-| **NEXT** | QA operatore mirata Build311 sulla finestra Traccia: import inferiore fino a 10 percorsi distinti, anteprima/nome/quote, nuovi elementi nascosti, Mostra/Centra espliciti, import superiore singolo invariato. Riga prevista QA GIS-TRACK-ARCHIVE-BATCH-10-A PASS operatore. Nessun nuovo runtime oltre questo gate. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch archivio Build311 LIVE, QA operatore PENDING. P2 uniformità tabelle separata/backlog. Profilo XY Build310 CLOSED, precisione DTM terreno HOLD. |
-| **BACKLOG OPERATORE 16/11** | [Backlog originale batch/tabelle/quote/URL](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md). P1 batch LIVE Build311 in QA; P2 tabelle ancora aperte, P4 menu Nuova traccia FUTURO; mobile PAUSA. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-ARCHIVE-BATCH-10-A — Build311, QA PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa311-closure/REPORT.md). |
+| **NEXT** | Backlog P2: uniformità tabelle desktop (ridimensionamento/ordinamento/selezione nelle tabelle richieste), nuovo scope/gate dedicato; nessuna nuova modifica in questa chiusura. Menu Nuova traccia FUTURO, DTM terreno 5/10m HOLD, mobile PAUSA. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch archivio completato e accettato Build311; P2 uniformità tabelle separata ancora aperta. Profilo XY Build310 CLOSED; accuratezza DTM terreno HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Backlog originale batch/tabelle/quote/URL](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md). P1 batch archivio CLOSED Build311; P2 tabelle ancora aperto; P4 menu Nuova traccia FUTURO, mobile PAUSA. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 18/11/2026: GIS-only Build311 LIVE; backup310 /var/backups/goi-gis-runtime/prebuild311-MUfXTpAv, un restart solo GIS (PID 2370134→697099), hash VPS/HTTP/HTTPS concorde. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=4381c193). |
-| **EVIDENCE** | [Build311 LIVE](orchestrator/evidence/2026-11-17-track-archive-batch-311/RELEASE.md) - [Review](orchestrator/evidence/2026-11-17-track-archive-batch-311/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-17-track-archive-batch-311/live-qa.json) - [Blocker precedente storico](orchestrator/evidence/2026-11-17-track-archive-batch-311/DEPLOY-BLOCKED.md). |
+| **EVIDENCE** | [QA operatore Build311](orchestrator/evidence/2026-11-18-qa311-closure/REPORT.md) - [Build311 LIVE](orchestrator/evidence/2026-11-17-track-archive-batch-311/RELEASE.md) - [Review](orchestrator/evidence/2026-11-17-track-archive-batch-311/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-17-track-archive-batch-311/live-qa.json). |
 
-## Build311 batch archivio — LIVE, QA operatore PENDING (18 novembre 2026)
+## Build311 batch archivio — LIVE, QA operatore PASS / CLOSED (18 novembre 2026)
 
-Review GPT-SOSTITUTIVA DELICATO PASS; candidato Edge e HTTPS LIVE 30/30 PASS. La versione è distribuita sul VPS con backup310 e hash concordi. QA umana non ancora acquisita, reviewer esterno NOT_PERFORMED/backstop. [Release](orchestrator/evidence/2026-11-17-track-archive-batch-311/RELEASE.md). Il precedente [blocco dello script](orchestrator/evidence/2026-11-17-track-archive-batch-311/DEPLOY-BLOCKED.md) è storia superata dall'esito del rilascio.
+Review GPT-SOSTITUTIVA DELICATO PASS; candidato Edge e HTTPS LIVE 30/30 PASS. La versione è distribuita sul VPS con backup310 e hash concordi. QA operatore PASS ricevuta il 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa311-closure/REPORT.md). Reviewer esterno NOT_PERFORMED/backstop. [Release](orchestrator/evidence/2026-11-17-track-archive-batch-311/RELEASE.md). Il precedente [blocco dello script](orchestrator/evidence/2026-11-17-track-archive-batch-311/DEPLOY-BLOCKED.md) è storia superata dall'esito del rilascio.
 
 ## Build310 — profili altimetrici XY LIVE, QA operatore PASS / CLOSED (17 novembre 2026)
 
