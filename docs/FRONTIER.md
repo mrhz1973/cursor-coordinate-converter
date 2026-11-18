@@ -4,26 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | P2 tabelle desktop — primo bundle P2-A Tracce salvate Build312 LIVE, QA operatore PENDING; P2-B e P2-C ancora aperti. |
+| **WORKSTREAM ATTIVO** | P2 uniformità tabelle desktop — P2-A Tracce salvate Build312 LIVE, QA operatore PASS / CLOSED; P2-B/P2-C ancora APERTI. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-SAVED-TRACKS-COLUMNS-P2A |
-| **STATO BLOCCO** | Build312 LIVE: 7/7 colonne Tracce salvate ridimensionabili, larghezze/ultimo sort persistiti via settings STORAGE_KEY con whitelist; checkbox/azioni conservati. QA operatore non ancora acquisita. |
-| **GATE CORRENTE** | DELICATO: review GPT-SOSTITUTIVA PASS, reviewer esterno NOT_PERFORMED/backstop; JS inline 2/2, Edge candidato 46/46, HTTPS LIVE 46/46 PASS. QA FINALE CHATGPT PENDING / QA operatore PENDING. Dati test browser ripuliti, directory profilo Edge non tutte rimosse. |
+| **BLOCCO ATTIVO** | — (nessun nuovo bundle runtime aperto; ultimo GIS-SAVED-TRACKS-COLUMNS-P2A CLOSED). |
+| **STATO BLOCCO** | Build312 LIVE e CLOSED con QA operatore PASS del 18/11/2026. Regola H completata docs-only; nessuna Build313 creata. |
+| **GATE CORRENTE** | P2-A DELICATO: review GPT-SOSTITUTIVA PASS (reviewer esterno NOT_PERFORMED/backstop), JS 2/2, Edge candidato 46/46, HTTPS LIVE 46/46, QA operatore PASS. Regola H completata docs-only. Prossimo P2-B ancora da aprire/qualificare. |
 | **RUNTIME LIVE** | Build312 source 433795275d3b17cc06a738d918eef7c0f48e51bd, blob 013451187920c33bfe8c4a6adb6d1fad38d80f73, SHA256 66a7b6a94271bc107e67c0a8028a2b41be0d194a0233ba7008c7c1f60999d2e1, 11.230.224 byte CR192/CRLF0; VPS/file/HTTP/HTTPS identici. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build312 verificato. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-TRACK-ARCHIVE-BATCH-10-A — Build311, QA PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa311-closure/REPORT.md). |
-| **NEXT** | QA operatore mirata GIS-SAVED-TRACKS-COLUMNS-P2A: Traccia > Tracce salvate, drag delle 7 colonne, sort asc/desc, checkbox riga/tutte, reload preferenze; riga prevista QA GIS-SAVED-TRACKS-COLUMNS-P2A PASS operatore. Solo dopo PASS/Regola H avviare P2-B (Waypoint/Poligoni/Aree offline/Range rings). |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch archivio CLOSED Build311; P2-A Tracce salvate LIVE Build312 QA operatore PENDING; P2-B/P2-C altre tabelle ancora APERTE. DTM terreno accuracy HOLD. |
-| **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Matrice audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). Solo P2-A ora LIVE in QA; P2-B/C da lavorare separatamente. P4 menu Nuova traccia FUTURO, mobile PAUSA. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACKS-COLUMNS-P2A — Build312, QA PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa312-p2a-closure/REPORT.md). |
+| **NEXT** | Da audit P2: aprire P2-B tabelle Waypoint/Poligoni/Aree offline/Range rings con matrice dinamica e gate per categoria, senza estendere la sola P2-A a tutte le liste. P2-C Preferiti/Astro/Batch resta aperto. Mobile PAUSA, accuratezza DTM 5–10m HOLD; menu Nuova traccia FUTURO. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch archivio CLOSED Build311. P2-A Tracce salvate CLOSED Build312; P2-B e P2-C altre tabelle APERTE. DTM terreno accuratezza HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Matrice audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-A CLOSED; P2-B/P2-C APERTI; P4 menu Nuova traccia FUTURO, mobile PAUSA. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 18/11/2026: Build312 GIS-only LIVE, backup311 /var/backups/goi-gis-runtime/prebuild312-gKYpleKY, un restart GIS PID 697099→821723, hash VPS/HTTP/HTTPS concordi. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=66a7b6a9). |
-| **EVIDENCE** | [Build312 LIVE](orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/REVIEW.md) - [QA LIVE](orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/live-qa.json) - [Audit matrice P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). |
+| **EVIDENCE** | [QA operatore P2-A / Build312](orchestrator/evidence/2026-11-18-qa312-p2a-closure/REPORT.md) - [Build312 LIVE](orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/live-qa.json). |
 
-## Build312 — P2-A Tracce salvate LIVE, QA operatore PENDING
+## Build312 — P2-A Tracce salvate LIVE, QA operatore PASS / CLOSED (18 novembre 2026)
 
-Sette colonne ridimensionabili, preferenze persistite nella storage canonica; review GPT-SOSTITUTIVA PASS, candidato 46/46, HTTPS 46/46 PASS. Questo NON chiude P2 complessivo: P2-B/C rimangono aperti. [Evidenza](orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/RELEASE.md).
+Sette colonne ridimensionabili, preferenze persistite nella storage canonica; review GPT-SOSTITUTIVA PASS, candidato 46/46, HTTPS 46/46 PASS. QA operatore PASS 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa312-p2a-closure/REPORT.md). Questo NON chiude P2 complessivo: P2-B/C rimangono aperti. [Evidenza](orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/RELEASE.md).
 
 ## Build311 batch archivio — LIVE, QA operatore PASS / CLOSED (18 novembre 2026)
 

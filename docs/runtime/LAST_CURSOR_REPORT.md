@@ -1,3 +1,14 @@
+# Build312 / P2-A QA operatore PASS — CLOSED
+
+BLOCK: GIS-SAVED-TRACKS-COLUMNS-P2A
+GATE: QA GIS-SAVED-TRACKS-COLUMNS-P2A PASS operatore del 18/11/2026; review GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato46/46 e HTTPS LIVE46/46. Reviewer esterno NOT_PERFORMED/backstop.
+CLOSURE: OM §4 Regola H, docs-only; nessun deploy/nuova build/riavvio.
+RUNTIME LIVE: Build312 source 433795275d3b17cc06a738d918eef7c0f48e51bd; SHA256 66a7b6a94271bc107e67c0a8028a2b41be0d194a0233ba7008c7c1f60999d2e1.
+NEXT: distinto bundle P2-B Waypoint/Poligoni/Aree offline/Range rings. P2-C ancora APERTO. Mobile PAUSA, DTM 5–10m accuratezza HOLD.
+EVIDENCE: [Ricevuta](../orchestrator/evidence/2026-11-18-qa312-p2a-closure/REPORT.md).
+
+## Pass precedenti (storico, non LIVE STATE)
+
 # Build312 P2-A — LIVE, QA operatore PENDING
 
 BLOCK: GIS-SAVED-TRACKS-COLUMNS-P2A
