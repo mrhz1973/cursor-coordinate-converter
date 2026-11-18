@@ -1,3 +1,14 @@
+# Build313 / P2-B1 Waypoint LIVE — QA operatore PENDING
+
+BLOCK: GIS-WAYPOINT-TABLE-COLUMNS-P2B1.
+GATE: REVIEW GPT-SOSTITUTIVA DELICATO PASS, JS2/2, Edge candidato65/65, HTTPS LIVE65/65. Reviewer AI esterno NOT_PERFORMED/backstop, QA FINALE CHATGPT PENDING.
+RUNTIME LIVE: source 2d4518c297ea977caf79177075ba031053a568b5; SHA256 5cb7989947a2095f9f1499a87828b3929e25167c03d1836fe93de763d06ac242.
+DEPLOY: 18/11/2026 03:05:16 UTC, backup Build312 prebuild313-bwexT3hV, un restart GIS PID961813.
+NEXT: QA operatore solo Waypoint; poi P2-B2 Poligoni. P2-B3/B4 e P2-C aperti, mobile PAUSA, DTM accuracy HOLD.
+EVIDENCE: [Release](../orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/RELEASE.md).
+
+## Pass precedenti (storico, non LIVE STATE)
+
 # Build312 / P2-A QA operatore PASS — CLOSED
 
 BLOCK: GIS-SAVED-TRACKS-COLUMNS-P2A
