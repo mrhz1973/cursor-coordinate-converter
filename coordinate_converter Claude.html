@@ -8086,8 +8086,11 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   min-width: 72px;
 }
 #waypointModalPanel .wp-modal-table col.wp-col-actions{
-  min-width: 248px;
-  width: auto;
+  min-width:248px;
+  width:var(--wp-actions-col,280px);
+}
+@media(max-width:768px){
+ #waypointModalPanel .wp-modal-table col.wp-col-actions{width:auto;}
 }
 #waypointModalPanel .wp-modal-table .wp-th-actions,
 #waypointModalPanel .wp-modal-table .wp-actions-cell{
@@ -9403,24 +9406,37 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
 .wp-radio-inline input{ accent-color:var(--accent); }
 .wp-modal-table-wrap{ overflow:auto; max-height:min(36vh, 320px); margin-top:6px; border:1px solid var(--border); border-radius:10px; }
 .wp-modal-table{
-  width:100%; border-collapse:collapse; table-layout:fixed; font-size:.8rem;
-  --wp-name-col:112px;
-  --wp-details-col:180px;
+ width:100%;table-layout:fixed;border-collapse:collapse;font-size:.8rem;
+ --wp-sel-col:36px;--wp-vis-col:44px;--wp-name-col:112px;
+ --wp-when-col:118px;--wp-details-col:180px;--wp-actions-col:280px;
+ min-width:calc(var(--wp-sel-col) + var(--wp-vis-col) + var(--wp-name-col) + var(--wp-when-col) + var(--wp-details-col) + var(--wp-actions-col));
 }
-.wp-modal-table col.wp-col-name{ width:var(--wp-name-col); min-width:0; }
-.wp-modal-table col.wp-col-details{ width:var(--wp-details-col); min-width:0; }
-.wp-modal-table .wp-th-name{
-  position:relative;
-  padding-right:12px;
-  min-width:0;
+.wp-modal-table col.wp-col-sel{width:var(--wp-sel-col);min-width:36px;}
+.wp-modal-table col.wp-col-vis{width:var(--wp-vis-col);min-width:44px;}
+.wp-modal-table col.wp-col-name{width:var(--wp-name-col);min-width:72px;}
+.wp-modal-table col.wp-col-when{width:var(--wp-when-col);min-width:72px;}
+.wp-modal-table col.wp-col-details{width:var(--wp-details-col);min-width:96px;}
+.wp-modal-table col.wp-col-actions{width:var(--wp-actions-col);min-width:248px;}
+.wp-modal-table .wp-th-sel,.wp-modal-table .wp-th-vis,.wp-modal-table .wp-th-name,
+.wp-modal-table .wp-th-when,.wp-modal-table .wp-th-details,.wp-modal-table .wp-th-actions{
+ position:relative;padding-right:12px;vertical-align:bottom;
 }
-.wp-modal-table .wp-th-details{
-  position:relative;
-  padding-right:12px;
-  min-width:0;
+.wp-modal-table [data-wp-col-resize]{
+ position:absolute;top:0;right:0;width:10px;height:100%;min-height:28px;
+ cursor:col-resize;user-select:none;touch-action:none;border-radius:4px;
 }
-.wp-modal-table .wp-th-name-lbl{ padding-right:2px; }
-.wp-modal-table .wp-th-details-lbl{ padding-right:2px; }
+.wp-modal-table [data-wp-col-resize]:hover{background:color-mix(in srgb,var(--accent) 22%,transparent);}
+.wp-modal-table .wp-table-sort-btn{
+ border:none;background:transparent;color:inherit;font:inherit;padding:0;cursor:pointer;text-align:inherit;
+}
+.wp-modal-table .wp-table-sort-btn:hover{text-decoration:underline;color:var(--text);}
+.wp-modal-table .wp-table-sort-mark{margin-left:4px;font-size:.72rem;}
+@media(max-width:768px),(hover:none) and (pointer:coarse){
+ .wp-modal-table [data-wp-col-resize]{display:none!important;}
+}
+@media(max-width:768px){
+ .wp-modal-table{min-width:0;}
+}
 .wp-modal-table th, .wp-modal-table td{ padding:6px 8px; border-bottom:1px solid var(--border); text-align:left; vertical-align:middle; }
 .wp-modal-table th{ position:sticky; top:0; background:var(--panel2); z-index:1; color:var(--muted); font-weight:600; }
 .wp-modal-table tr[data-wp-row]:hover{ background:color-mix(in srgb, var(--accent) 6%, var(--panel)); }
@@ -18256,6 +18272,7 @@ const I18N = {
     "waypointModal.bulkDeleteConfirm":"Eliminare {0} waypoint?",
     "waypointModal.bulkDeletedOk":"Eliminati {0} waypoint.",
     "waypointModal.listColName":"Nome",
+    "waypointModal.tablePrefSaveFail":"Impossibile salvare ordinamento o larghezza delle colonne. Preferenza precedente ripristinata.",
     "waypoint.renameConfirm":"Salvare il nuovo nome del waypoint?",
     "waypoint.colResizeAria":"Ridimensiona colonna Nome",
     "waypointModal.listColDetails":"Dettagli",
@@ -20821,6 +20838,7 @@ const I18N = {
     "waypointModal.bulkDeleteConfirm":"Delete {0} waypoints?",
     "waypointModal.bulkDeletedOk":"Deleted {0} waypoints.",
     "waypointModal.listColName":"Name",
+    "waypointModal.tablePrefSaveFail":"Cannot save column sort or widths. Previous preference restored.",
     "waypoint.renameConfirm":"Save the new waypoint name?",
     "waypoint.colResizeAria":"Resize Name column",
     "waypointModal.listColDetails":"Details",
@@ -23103,6 +23121,7 @@ const I18N = {
     "waypointModal.bulkDeleteConfirm":"Supprimer {0} waypoints ?",
     "waypointModal.bulkDeletedOk":"{0} waypoints supprimés.",
     "waypointModal.listColName":"Nom",
+    "waypointModal.tablePrefSaveFail":"Tri ou largeur des colonnes non enregistrés. Préférence précédente restaurée.",
     "waypoint.renameConfirm":"Enregistrer le nouveau nom du waypoint ?",
     "waypoint.colResizeAria":"Redimensionner la colonne Nom",
     "waypointModal.listColDetails":"Détails",
@@ -26440,10 +26459,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SAVED-TRACKS-COLUMNS-P2A";
-const APP_BUILD_DETAIL = "Tracce salvate desktop: 7 colonne ridimensionabili e preferenze salvate.";
+const APP_BUILD_ID = "GIS-WAYPOINT-TABLE-COLUMNS-P2B1";
+const APP_BUILD_DETAIL = "Waypoint desktop: 6 colonne ridimensionabili, ordinamento e preferenze persistite.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 312;
+const APP_BUILD_NUM = 313;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28894,6 +28913,8 @@ function saveStore(){
         trackDisplayUnit: normalizeTrackDisplayUnit(state.trackDisplayUnit),
         savedTracksColumnWidths: savedTracksSanitizeColumnWidths(state._savedTracksColumnWidths),
         savedTracksSort: savedTracksSanitizeSortPreference(state._savedTracksSort),
+        wpTableColumnWidths: wpTableSanitizeWidths(state._wpTableColumnWidths),
+        wpTableSort: wpTableSanitizeSort(state._wpTableSort),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
         mapPolyClosed: state.mapPolyClosed !== false,
         gisMeasureFlow: sanitizeGisMeasureFlow(state.gisMeasureFlow),
@@ -67225,57 +67246,68 @@ function ensureSavedTracksNameColResizeWired(){
 }
 /** Desktop: colonne Nome e Dettagli nella lista waypoint modal (sessione su #wp-list). */
 function ensureWpModalNameColResizeWired(){
-  if (window._wpModalNameColResizeWired) return;
-  window._wpModalNameColResizeWired = true;
-  let drag = null;
-  function endDrag(){
-    drag = null;
-    try {
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", endDrag);
-      document.removeEventListener("pointercancel", endDrag);
-    } catch(_){}
+ if(window._wpModalNameColResizeWired)return;
+ window._wpModalNameColResizeWired=true;
+ let drag=null;
+ function clear(){
+  document.removeEventListener("pointermove",onMove);
+  document.removeEventListener("pointerup",onEnd);
+  document.removeEventListener("pointercancel",onEnd);
+ }
+ function onMove(ev){
+  if(!drag||drag.pointerId!==ev.pointerId)return;
+  const n=Math.max(drag.spec.min,Math.min(drag.spec.max,
+   Math.round(drag.startW+ev.clientX-drag.startX)));
+  if(n===drag.current)return;
+  drag.current=n;
+  drag.table.style.setProperty("--wp-"+drag.key+"-col",n+"px");
+  state._wpTableColumnWidths=wpTableSanitizeWidths({...state._wpTableColumnWidths,[drag.key]:n});
+ }
+ function onEnd(ev){
+  if(!drag||drag.pointerId!==ev.pointerId)return;
+  const d=drag;drag=null;clear();
+  if(ev.type==="pointercancel"||d.current===d.startW){
+   if(ev.type==="pointercancel"){
+    state._wpTableColumnWidths=d.before;
+    d.table.style.setProperty("--wp-"+d.key+"-col",d.startW+"px");
+   }
+   return;
   }
-  function onMove(ev){
-    if (!drag) return;
-    const dx = ev.clientX - drag.startX;
-    const nw = Math.max(drag.minW, Math.min(drag.maxW, Math.round(drag.startW + dx)));
-    drag.table.style.setProperty(drag.varName, nw + "px");
-    const wl = document.getElementById("wp-list");
-    if (!wl) return;
-    if (drag.kind === "details") wl._wpDetailsColPx = nw;
-    else wl._wpNameColPx = nw;
+  let ok=false;
+  try{
+   const rep=saveStoreReported();
+   const obj=JSON.parse(localStorage.getItem(STORAGE_KEY));
+   ok=!!rep&&rep.ok&&obj.settings.wpTableColumnWidths[d.key]===d.current;
+  }catch(_){}
+  if(!ok){
+   state._wpTableColumnWidths=d.before;
+   d.table.style.setProperty("--wp-"+d.key+"-col",d.startW+"px");
+   try{if(d.raw==null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,d.raw);}catch(_){}
+   try{setBadge("error",t("waypointModal.tablePrefSaveFail"));}catch(_){}
   }
-  document.addEventListener("pointerdown", (ev) => {
-    const h = ev.target.closest && ev.target.closest(".wp-modal-table .wp-name-col-resize, .wp-modal-table .wp-details-col-resize");
-    if (!h) return;
-    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
-    const table = h.closest(".wp-modal-table");
-    if (!table) return;
-    const wl = document.getElementById("wp-list");
-    if (!wl || !wl.contains(table)) return;
-    const rectT = table.getBoundingClientRect();
-    const isDetails = h.classList.contains("wp-details-col-resize");
-    const cell = table.querySelector("tbody tr td:nth-child(" + (isDetails ? 5 : 3) + ")");
-    const startW = cell ? cell.getBoundingClientRect().width : (isDetails ? 180 : 112);
-    /* GIS-WAYPOINT-TABLE-COL-RESIZE-A: never clamp max below startW (was causing jumps / stuck shrink). */
-    const softMax = Math.max(120, Math.floor(rectT.width * 0.8));
-    drag = {
-      table,
-      kind: isDetails ? "details" : "name",
-      varName: isDetails ? "--wp-details-col" : "--wp-name-col",
-      startX: ev.clientX,
-      startW,
-      minW: isDetails ? 96 : 72,
-      maxW: Math.max(startW, Math.min(520, softMax))
-    };
-    ev.preventDefault();
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", endDrag);
-    document.addEventListener("pointercancel", endDrag);
-  }, true);
+ }
+ document.addEventListener("pointerdown",(ev)=>{
+  const h=ev.target&&ev.target.closest&&ev.target.closest(".wp-modal-table [data-wp-col-resize]");
+  if(!h||!trackSinglePanelDesktop()||(window.matchMedia&&window.matchMedia("(pointer:coarse)").matches))return;
+  const key=String(h.getAttribute("data-wp-col-resize")||"");
+  if(!Object.prototype.hasOwnProperty.call(WP_TABLE_COL_SPECS,key))return;
+  const table=h.closest(".wp-modal-table"),root=document.getElementById("wp-list");
+  if(!table||!root||!root.contains(table)||drag)return;
+  const spec=WP_TABLE_COL_SPECS[key];
+  const col=Object.keys(WP_TABLE_COL_SPECS).indexOf(key)+1;
+  const cell=table.querySelector("tbody tr td:nth-child("+col+")");
+  const v=state._wpTableColumnWidths||{};
+  const w=typeof v[key]==="number"?v[key]:
+   Math.max(spec.min,Math.min(spec.max,Math.round(cell?cell.getBoundingClientRect().width:spec.def)));
+  let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+  drag={table,key,spec,startX:ev.clientX,startW:w,current:w,pointerId:ev.pointerId,
+    before:wpTableSanitizeWidths(v),raw};
+  ev.preventDefault();
+  document.addEventListener("pointermove",onMove);
+  document.addEventListener("pointerup",onEnd);
+  document.addEventListener("pointercancel",onEnd);
+ },true);
 }
-
 /** Enter conferma rename inline; Esc ripristina senza propagare a chiusura pannelli. */
 function ensureGisInlineRenameKeyboardHooks(){
   if (window._gisInlineRenameKbWired) return;
@@ -103840,6 +103872,89 @@ function waypointIconHumanLabel(code){
 }
 
 /** Table column: last update time, else creation time, else localized em dash. */
+/* P2-B1 — Waypoint table: column/sort preferences only under canonical settings. */
+const WP_TABLE_COL_SPECS=Object.freeze({
+ sel:Object.freeze({min:36,max:88,def:36}),
+ vis:Object.freeze({min:44,max:112,def:44}),
+ name:Object.freeze({min:72,max:560,def:112}),
+ when:Object.freeze({min:72,max:420,def:118}),
+ details:Object.freeze({min:96,max:620,def:180}),
+ actions:Object.freeze({min:248,max:700,def:280})
+});
+const WP_TABLE_SORT_KEYS=new Set(["name","when","details"]);
+function wpTableSanitizeWidths(raw){
+ const out={};
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return out;
+ for(const k of Object.keys(WP_TABLE_COL_SPECS)){
+  const v=raw[k],spec=WP_TABLE_COL_SPECS[k];
+  if(typeof v==="number"&&Number.isFinite(v))
+   out[k]=Math.max(spec.min,Math.min(spec.max,Math.round(v)));
+ }
+ return out;
+}
+function wpTableSanitizeSort(raw){
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return {key:"when",dir:"desc"};
+ const key=WP_TABLE_SORT_KEYS.has(raw.key)?raw.key:"when";
+ const dir=(raw.dir==="asc"||raw.dir==="desc")?raw.dir:(key==="when"?"desc":"asc");
+ return {key,dir};
+}
+function wpTableSortedRows(points){
+ if(!trackSinglePanelDesktop())return points;
+ state._wpTableSort=wpTableSanitizeSort(state._wpTableSort);
+ const key=state._wpTableSort.key,dir=state._wpTableSort.dir,mul=dir==="asc"?1:-1;
+ const arr=points.slice();
+ arr.sort((a,b)=>{
+  let c=0;
+  if(key==="name"){
+   c=String(a.name||"").localeCompare(String(b.name||""),undefined,{sensitivity:"base",numeric:true});
+  }else if(key==="when"){
+   const ta=Number.isFinite(a.updatedAt)?a.updatedAt:(Number.isFinite(a.createdAt)?a.createdAt:0);
+   const tb=Number.isFinite(b.updatedAt)?b.updatedAt:(Number.isFinite(b.createdAt)?b.createdAt:0);
+   c=ta<tb?-1:ta>tb?1:0;
+  }else{
+   const al=Number.isFinite(a.lat)?a.lat:0,bl=Number.isFinite(b.lat)?b.lat:0;
+   c=al<bl?-1:al>bl?1:0;
+   if(!c){
+    const ao=Number.isFinite(a.lon)?a.lon:0,bo=Number.isFinite(b.lon)?b.lon:0;
+    c=ao<bo?-1:ao>bo?1:0;
+   }
+  }
+  return c?c*mul:String(a.id).localeCompare(String(b.id));
+ });
+ return arr;
+}
+function wpTableSortHeader(k,labelKey){
+ const label=esc(t(labelKey)||k);
+ if(!trackSinglePanelDesktop())return '<span>'+label+'</span>';
+ const sort=wpTableSanitizeSort(state._wpTableSort);
+ const mark=sort.key===k?(sort.dir==="asc"?"▲":"▼"):"";
+ return '<button type="button" class="wp-table-sort-btn" data-wp-table-sort="'+k+'" title="'+label+'" aria-label="'+label+'">'+label+'<span class="wp-table-sort-mark" aria-hidden="true">'+mark+'</span></button>';
+}
+function wpTableResizeMarkup(k,aria){
+ return '<span class="wp-col-resize" data-wp-col-resize="'+k+'" role="separator" aria-orientation="vertical" title="'+aria+'" aria-label="'+aria+'"></span>';
+}
+function wpTableApplySort(k){
+ if(!trackSinglePanelDesktop()||!WP_TABLE_SORT_KEYS.has(k))return false;
+ const old=wpTableSanitizeSort(state._wpTableSort),prior=JSON.stringify(old);
+ let raw=null;try{raw=localStorage.getItem(STORAGE_KEY)}catch(_){}
+ state._wpTableSort=old.key===k?{key:k,dir:old.dir==="asc"?"desc":"asc"}:
+  {key:k,dir:k==="when"?"desc":"asc"};
+ let ok=false;
+ try{
+  const rep=saveStoreReported();
+  const stored=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  const saved=stored&&stored.settings&&stored.settings.wpTableSort;
+  ok=!!rep&&rep.ok&&saved&&saved.key===state._wpTableSort.key&&saved.dir===state._wpTableSort.dir;
+ }catch(_){}
+ if(!ok){
+  state._wpTableSort=JSON.parse(prior);
+  try{if(raw==null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,raw);}catch(_){}
+  try{setBadge("error",t("waypointModal.tablePrefSaveFail"));}catch(_){}
+ }
+ renderWpModalList();
+ return !!ok;
+}
+
 function formatWaypointTableWhen(p){
   if (!p) return (typeof t === "function" ? (t("waypointModal.dateUnknown") || "—") : "—");
   const ts = Number.isFinite(p.updatedAt) ? p.updatedAt : (Number.isFinite(p.createdAt) ? p.createdAt : NaN);
@@ -103956,7 +104071,7 @@ function renderWpModalList(){
   if (!root) return;
   ensureMapWaypointsState();
   wpModalPruneWaypointSelection();
-  const pts = state.mapWaypoints;
+  const pts = wpTableSortedRows(state.mapWaypoints);
   root.setAttribute("data-empty", t("waypointModal.empty"));
   root.setAttribute("data-empty-hint", t("waypointModal.emptyHint"));
   const countEl = document.getElementById("wp-count");
@@ -103977,19 +104092,19 @@ function renderWpModalList(){
   const wpResizeAria = esc(t("waypoint.colResizeAria"));
   const ariaVisOn = esc((typeof t === "function") ? (t("track.savedVisOnMap") || "") : "");
   let html = `<table class="wp-modal-table"><colgroup>
-    <col style="width:36px" />
-    <col style="width:44px" />
+    <col class="wp-col-sel" />
+    <col class="wp-col-vis" />
     <col class="wp-col-name" />
     <col class="wp-col-when" />
     <col class="wp-col-details" />
     <col class="wp-col-actions" />
   </colgroup><thead><tr>
-    <th style="width:36px"><input type="checkbox" id="wpSelectAll" data-i18n-tip="track.selAll" data-tip="${selAllTitle}" data-i18n-aria="track.selAll"></th>
-    <th style="width:44px;text-align:center" class="wp-th-vis">${esc(t("track.colVis"))}</th>
-    <th class="wp-th-name"><span class="wp-th-name-lbl">${esc(t("waypointModal.listColName"))}</span><span class="wp-name-col-resize" role="separator" aria-orientation="vertical" aria-label="${wpResizeAria}" title="${wpResizeAria}"></span></th>
-    <th class="wp-th-when">${esc(t("waypointModal.listColWhen"))}</th>
-    <th class="wp-th-details"><span class="wp-th-details-lbl">${esc(t("waypointModal.listColDetails"))}</span><span class="wp-details-col-resize" role="separator" aria-orientation="vertical" aria-label="${wpResizeAria}" title="${wpResizeAria}"></span></th>
-    <th class="wp-th-actions">${esc(t("waypointModal.listColActions"))}</th>
+    <th class="wp-th-sel"><input type="checkbox" id="wpSelectAll" data-i18n-tip="track.selAll" data-tip="${selAllTitle}" data-i18n-aria="track.selAll">${wpTableResizeMarkup("sel",wpResizeAria)}</th>
+    <th class="wp-th-vis">${esc(t("track.colVis"))}${wpTableResizeMarkup("vis",wpResizeAria)}</th>
+    <th class="wp-th-name">${wpTableSortHeader("name","waypointModal.listColName")}${wpTableResizeMarkup("name",wpResizeAria)}</th>
+    <th class="wp-th-when">${wpTableSortHeader("when","waypointModal.listColWhen")}${wpTableResizeMarkup("when",wpResizeAria)}</th>
+    <th class="wp-th-details">${wpTableSortHeader("details","waypointModal.listColDetails")}${wpTableResizeMarkup("details",wpResizeAria)}</th>
+    <th class="wp-th-actions">${esc(t("waypointModal.listColActions"))}${wpTableResizeMarkup("actions",wpResizeAria)}</th>
   </tr></thead><tbody>`;
   html += pts.map(p => {
     const coordStr = formatWaypointListCoordinates(p.lat, p.lon);
@@ -104025,17 +104140,13 @@ function renderWpModalList(){
   root.innerHTML = html;
   try { syncWaypointListCoordFormatSelect(); } catch(_){}
   wpModalApplySelectionCheckboxes(root);
-  try {
-    const tbl = root.querySelector(".wp-modal-table");
-    if (tbl && Number.isFinite(root._wpNameColPx)){
-      const px = Math.max(72, Math.min(520, root._wpNameColPx));
-      tbl.style.setProperty("--wp-name-col", px + "px");
-    }
-    if (tbl && Number.isFinite(root._wpDetailsColPx)){
-      const px = Math.max(96, Math.min(520, root._wpDetailsColPx));
-      tbl.style.setProperty("--wp-details-col", px + "px");
-    }
-  } catch(_){}
+  const tbl=root.querySelector(".wp-modal-table");
+  if(tbl&&trackSinglePanelDesktop()){
+    const w=wpTableSanitizeWidths(state._wpTableColumnWidths);
+    state._wpTableColumnWidths=w;
+    for(const k of Object.keys(WP_TABLE_COL_SPECS))
+      tbl.style.setProperty("--wp-"+k+"-col",(w[k]||WP_TABLE_COL_SPECS[k].def)+"px");
+  }
   ensureWpModalNameColResizeWired();
   syncWpSelectAllState(root);
   try {
@@ -104120,6 +104231,8 @@ function renderWpModalList(){
       }
     });
     root.addEventListener("click", (ev) => {
+      const sort=ev.target&&ev.target.closest&&ev.target.closest("[data-wp-table-sort]");
+      if(sort&&root.contains(sort)){ev.preventDefault();wpTableApplySort(String(sort.getAttribute("data-wp-table-sort")||""));return;}
       const cpy = ev.target.closest && ev.target.closest(".copy-btn");
       if (cpy){
         // Body-level .copy-btn delegate handles clipboard; skip row actions.
@@ -105644,6 +105757,8 @@ function init(){
       if (typeof stored.settings.trackDisplayUnit === "string") state.trackDisplayUnit = normalizeTrackDisplayUnit(stored.settings.trackDisplayUnit);
        state._savedTracksColumnWidths=savedTracksSanitizeColumnWidths(stored.settings.savedTracksColumnWidths);
        state._savedTracksSort=savedTracksSanitizeSortPreference(stored.settings.savedTracksSort);
+       state._wpTableColumnWidths=wpTableSanitizeWidths(stored.settings.wpTableColumnWidths);
+       state._wpTableSort=wpTableSanitizeSort(stored.settings.wpTableSort);
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
       if (stored.settings.gisMeasureFlow === "direct" || stored.settings.gisMeasureFlow === "inverse2"){
