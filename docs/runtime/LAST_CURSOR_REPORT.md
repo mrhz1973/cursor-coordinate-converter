@@ -1,3 +1,12 @@
+# Build314 P2-B2 CLOSED — approvazione operatore
+
+Testo ricevuto: «Pass vai avanti»; approvazione contestuale positiva, non formula esatta Regola H. Chiusura documentale autorizzata esplicitamente.
+Review GPT-SOSTITUTIVA PASS, ABQA candidato/HTTPS 82/82, reviewer esterno NOT_PERFORMED/backstop.
+LIVE invariato Build314, SHA256 9fba532f5dec9e8aee2833da78997055819326d44b7d356bbbb12ba545c39e37.
+NEXT P2-B3 Aree offline. [Ricevuta](../orchestrator/evidence/2026-11-18-qa314-p2b2-closure/REPORT.md).
+
+## Storico precedente
+
 # Build314 / P2-B2 Poligoni LIVE — QA operatore PENDING
 
 BLOCK: GIS-POLYGON-TABLE-COLUMNS-P2B2.

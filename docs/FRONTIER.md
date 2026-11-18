@@ -4,24 +4,24 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | P2 uniformità tabelle desktop — P2-B2 Poligoni Build314 LIVE, QA operatore PENDING; P2-B3/B4 e P2-C ancora aperti. |
+| **WORKSTREAM ATTIVO** | P2 tabelle desktop — Build314 Poligoni P2-B2 approvata e CLOSED; NEXT P2-B3 Aree offline. P2-B4/P2-C ancora APERTI. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-POLYGON-TABLE-COLUMNS-P2B2 |
-| **STATO BLOCCO** | Build314 LIVE: 9/9 colonne Poligoni ridimensionabili, 6 ordinamenti conservati e preferenze persistite con whitelist; corretto conflitto Azioni/resize pannello. QA operatore PENDING. |
-| **GATE CORRENTE** | DELICATO: review GPT-SOSTITUTIVA PASS (reviewer esterno NOT_PERFORMED/backstop), JS inline 2/2, candidato Edge 82/82 e HTTPS LIVE Edge 82/82 PASS. QA FINALE CHATGPT / QA operatore PENDING; cleanup origine browser PASS, alcune directory Edge temporanee residue. |
+| **BLOCCO ATTIVO** | — (P2-B2 CLOSED, P2-B3 nuovo blocco da aprire). |
+| **STATO BLOCCO** | Build314 LIVE, P2-B2 CLOSED su approvazione esplicita «Pass vai avanti» del 18/11/2026. Testo non corrispondente alla formula canonica di auto-trigger, chiusura su ordine esplicito. Nessuna Build315. |
+| **GATE CORRENTE** | Build314 DELICATO: review GPT-SOSTITUTIVA PASS, reviewer esterno NOT_PERFORMED/backstop, JS2/2, Edge candidato82/82, HTTPS LIVE82/82 PASS. Approvazione operatore positiva «Pass vai avanti», chiusura documentale. NEXT P2-B3 non qualificato. |
 | **RUNTIME LIVE** | Build314 source ff1db25a4242b8258c4de7c9a705af0197f26d32, blob 1523fe5b32b7293f407ee3bf3083f8d39fbfe39e, SHA256 9fba532f5dec9e8aee2833da78997055819326d44b7d356bbbb12ba545c39e37, 11.239.262 byte CR192/CRLF0; VPS/file/HTTP/HTTPS concordi. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build314 verificato. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-WAYPOINT-TABLE-COLUMNS-P2B1 — Build313, QA PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa313-p2b1-closure/REPORT.md). |
-| **NEXT** | QA operatore mirata Build314: Poligoni, drag nove colonne (soprattutto Selezione e Azioni), sei sort, checkbox riga/tutte, reload preferenze; riga prevista QA GIS-POLYGON-TABLE-COLUMNS-P2B2 PASS operatore. Solo dopo PASS/Regola H proseguire P2-B3 Aree offline, poi P2-B4 Range rings e P2-C. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch CLOSED Build311; P2-A Tracce salvate CLOSED Build312; P2-B1 Waypoint CLOSED Build313; P2-B2 Poligoni LIVE Build314 in QA; P2-B3/B4 e P2-C aperti. DTM accuracy HOLD. |
-| **BACKLOG OPERATORE 16/11** | [Backlog](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-B2 Poligoni LIVE in QA; P2-B3/B4 e P2-C APERTI. Menu Nuova traccia FUTURO, mobile PAUSA. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-POLYGON-TABLE-COLUMNS-P2B2 — Build314, approvazione operatore 18/11/2026 «Pass vai avanti»; [ricevuta](orchestrator/evidence/2026-11-18-qa314-p2b2-closure/REPORT.md). |
+| **NEXT** | P2-B3 Aree offline: audit dinamico sorting/resize/selezione e implementazione di sole lacune confermate, review/QA/deploy a gate propri. P2-B4 Range rings e P2-C dopo; mobile PAUSA, accuratezza DTM5/10m HOLD. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 CLOSED Build311, P2-A CLOSED Build312, P2-B1 CLOSED Build313, P2-B2 CLOSED Build314. P2-B3/B4 e P2-C ancora APERTI, DTM terreno HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Backlog](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-B2 CLOSED, P2-B3 NEXT, P2-B4/P2-C APERTI. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 18/11/2026: Build314 GIS-only LIVE, backup313 /var/backups/goi-gis-runtime/prebuild314-ggBzLtoP, un restart GIS PID961813→1450249, hash VPS/HTTP/HTTPS concordi. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=9fba532f). |
-| **EVIDENCE** | [Build314 LIVE](orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/live-qa.json) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). |
+| **EVIDENCE** | [QA P2-B2](orchestrator/evidence/2026-11-18-qa314-p2b2-closure/REPORT.md) - [Release Build314](orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/REVIEW.md). |
 
-## Build314 — P2-B2 Poligoni LIVE, QA operatore PENDING (18 novembre 2026)
+## Build314 — P2-B2 Poligoni LIVE, approvazione operatore / CLOSED (18 novembre 2026)
 
 Nove colonne Poligoni ridimensionabili, ordinamento persistito, preferenze whitelisted. Interferenza del resizer Azioni col bordo esterno risolta. Review DELICATO GPT-SOSTITUTIVA PASS, candidato e HTTPS LIVE 82/82 PASS. P2-B3/B4 e P2-C APERTI. [Release](orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/RELEASE.md).
 
