@@ -4,26 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | P2 tabelle desktop — P2-B1 Waypoint Build313 LIVE, QA operatore PENDING; P2-B2/B3/B4 e P2-C ancora aperti. |
+| **WORKSTREAM ATTIVO** | P2 uniformità tabelle desktop — P2-B1 Waypoint Build313 LIVE, QA operatore PASS / CLOSED; P2-B2/B3/B4 e P2-C ancora APERTI. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-WAYPOINT-TABLE-COLUMNS-P2B1 |
-| **STATO BLOCCO** | Build313 LIVE: Waypoint desktop 6/6 colonne ridimensionabili, sort Nome/Data/Coordinate, selezione riga/tutte invariata, preferenze persistite/rollback. QA operatore PENDING. |
-| **GATE CORRENTE** | DELICATO: review GPT-SOSTITUTIVA PASS (reviewer esterno NOT_PERFORMED/backstop), JS inline 2/2, Edge candidato 65/65, HTTPS LIVE 65/65 PASS. QA FINALE CHATGPT / QA operatore PENDING. Cleanup dati test PASS, directory temporanee Edge non tutte rimosse. |
+| **BLOCCO ATTIVO** | — (nessun nuovo bundle runtime aperto; ultimo GIS-WAYPOINT-TABLE-COLUMNS-P2B1 CLOSED). |
+| **STATO BLOCCO** | Build313 LIVE e CLOSED con QA operatore PASS del 18/11/2026; Regola H completata docs-only. Nessuna Build314 creata. |
+| **GATE CORRENTE** | P2-B1 DELICATO: review GPT-SOSTITUTIVA PASS (reviewer esterno NOT_PERFORMED/backstop), JS 2/2, Edge candidato 65/65, HTTPS LIVE 65/65, QA operatore PASS; chiusura Regola H docs-only. Prossimo P2-B2 non ancora aperto/qualificato. |
 | **RUNTIME LIVE** | Build313 source 2d4518c297ea977caf79177075ba031053a568b5, blob d1027751adc4e095f70fd064f3c8e491aef1df9c, SHA256 5cb7989947a2095f9f1499a87828b3929e25167c03d1836fe93de763d06ac242, 11.236.623 byte CR192/CRLF0; VPS/file/HTTP/HTTPS identici. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build313 verificato. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACKS-COLUMNS-P2A — Build312, QA PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa312-p2a-closure/REPORT.md). |
-| **NEXT** | QA operatore Build313: tabella Waypoint, drag 6 colonne, sort Nome/Data/Dettagli asc/desc, checkbox riga/tutte, reload larghezze/sort, azioni originali presenti. Riga prevista QA GIS-WAYPOINT-TABLE-COLUMNS-P2B1 PASS operatore. Solo dopo PASS/Regola H proseguire P2-B2 Poligoni, poi Aree offline e Range rings. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch CLOSED Build311, P2-A Tracce salvate CLOSED Build312, P2-B1 Waypoint LIVE Build313 in QA; P2-B2/B3/B4 e P2-C APERTI. Accuratezza DTM terreno HOLD. |
-| **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-A CLOSED; P2-B1 Waypoint LIVE in QA; P2-B2/B3/B4 e P2-C APERTI. Menu Nuova traccia FUTURO, mobile PAUSA. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-WAYPOINT-TABLE-COLUMNS-P2B1 — Build313, QA PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa313-p2b1-closure/REPORT.md). |
+| **NEXT** | Da audit P2: P2-B2 Poligoni desktop (completare colonne, sort/selezioni e QA dedicata); poi P2-B3 Aree offline, P2-B4 Range rings e P2-C Preferiti/Astro/Batch. Nessuna Build314 in questa chiusura. Mobile PAUSA, accuratezza DTM terreno 5–10m HOLD. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch archivio CLOSED Build311; P2-A Tracce salvate CLOSED Build312; P2-B1 Waypoint CLOSED Build313; P2-B2/B3/B4 e P2-C ancora APERTI. DTM terreno HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-A e P2-B1 CLOSED; P2-B2/B3/B4 e P2-C APERTI. Menu Nuova traccia FUTURO, mobile PAUSA. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 18/11/2026: Build313 GIS-only LIVE, backup312 /var/backups/goi-gis-runtime/prebuild313-bwexT3hV, un restart GIS PID821723→961813, hash VPS/HTTP/HTTPS concorde. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=5cb79899). |
-| **EVIDENCE** | [Build313 LIVE](orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/live-qa.json) - [Matrice audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). |
+| **EVIDENCE** | [QA operatore Build313 P2-B1](orchestrator/evidence/2026-11-18-qa313-p2b1-closure/REPORT.md) - [Build313 LIVE](orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/live-qa.json). |
 
-## Build313 — P2-B1 Waypoint LIVE, QA operatore PENDING (18 novembre 2026)
+## Build313 — P2-B1 Waypoint LIVE, QA operatore PASS / CLOSED (18 novembre 2026)
 
-Sei colonne Waypoint ridimensionabili, ordinamento Nome/Data/Dettagli, preferenze persistite con whitelist; review GPT-SOSTITUTIVA PASS, Edge candidato 65/65 e HTTPS LIVE 65/65 PASS. P2-B2/B3/B4 e P2-C ancora aperti. [Release](orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/RELEASE.md).
+Sei colonne Waypoint ridimensionabili, ordinamento Nome/Data/Dettagli, preferenze persistite con whitelist; review GPT-SOSTITUTIVA PASS, Edge candidato 65/65 e HTTPS LIVE 65/65 PASS. QA operatore PASS ricevuta il 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa313-p2b1-closure/REPORT.md). P2-B2/B3/B4 e P2-C ancora aperti. [Release](orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/RELEASE.md).
 
 ## Build312 — P2-A Tracce salvate LIVE, QA operatore PASS / CLOSED (18 novembre 2026)
 

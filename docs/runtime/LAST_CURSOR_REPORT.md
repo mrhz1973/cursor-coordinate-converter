@@ -1,3 +1,14 @@
+# Build313 / P2-B1 QA operatore PASS — CLOSED
+
+BLOCK: GIS-WAYPOINT-TABLE-COLUMNS-P2B1
+GATE: QA GIS-WAYPOINT-TABLE-COLUMNS-P2B1 PASS operatore (18/11/2026); review GPT-SOSTITUTIVA DELICATO PASS, JS2/2, Edge candidato65/65, HTTPS LIVE65/65. Reviewer esterno NOT_PERFORMED/backstop.
+CLOSURE: Regola H docs-only, nessun runtime/deploy/riavvio.
+RUNTIME LIVE: Build313 source 2d4518c297ea977caf79177075ba031053a568b5; SHA256 5cb7989947a2095f9f1499a87828b3929e25167c03d1836fe93de763d06ac242.
+NEXT: distinto P2-B2 Poligoni; P2-B3 Aree offline, P2-B4 Range rings e P2-C ancora APERTI. Mobile PAUSA, accuratezza DTM terreno HOLD.
+EVIDENCE: [Ricevuta QA](../orchestrator/evidence/2026-11-18-qa313-p2b1-closure/REPORT.md).
+
+## Pass precedenti (storico, non LIVE STATE)
+
 # Build313 / P2-B1 Waypoint LIVE — QA operatore PENDING
 
 BLOCK: GIS-WAYPOINT-TABLE-COLUMNS-P2B1.
