@@ -1,3 +1,13 @@
+# Build311 LIVE — QA operatore PENDING
+BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A
+GATE: REVIEW GPT-SOSTITUTIVA PASS, JS2/2, candidato30/30 e HTTPS LIVE30/30 PASS, QA FINALE CHATGPT PENDING. Reviewer esterno NOT_PERFORMED.
+RUNTIME LIVE: source 4ddcb641b756ac987f619c2cd7fa09e236734147; SHA256 4381c1930a358fc8ad5842507a40a5d44caaa8466708e66c050991e5b2c0fc4d.
+DEPLOY: 18/11/2026 00:27:03 UTC; backup prebuild311-MUfXTpAv, GIS service active PID697099, HTTPS/file/HTTP concordi.
+NEXT: QA operatore mirata importazione batch fino a 10 percorsi. DTM accuracy HOLD, mobile PAUSA.
+EVIDENCE: [RELEASE](../orchestrator/evidence/2026-11-17-track-archive-batch-311/RELEASE.md).
+
+## Pass precedenti (storico; non LIVE STATE)
+
 # Build311 candidate — deploy BLOCCATO dallo strumento
 
 BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A.
