@@ -1353,6 +1353,8 @@ html[data-theme="dark"] .offcache-job-controls-bar{
   border-collapse:collapse;
   table-layout:auto;
   font-size:.78rem;
+  --offa-sel-col:36px;
+  --offa-vis-col:44px;
   --offa-name-col:168px;
   --offa-status-col:108px;
   --offa-when-col:118px;
@@ -1361,6 +1363,19 @@ html[data-theme="dark"] .offcache-job-controls-bar{
   --offa-tiles-col:88px;
   --offa-space-col:78px;
   --offa-actions-col:220px;
+}
+.offline-areas-table col.offa-col-sel{width:var(--offa-sel-col);min-width:36px;}
+.offline-areas-table col.offa-col-vis{width:var(--offa-vis-col);min-width:44px;}
+.offline-areas-table .offa-th-sel,.offline-areas-table .offa-th-vis{position:relative;padding-right:12px;}
+.offline-areas-table .offa-sel-col-resize,.offline-areas-table .offa-vis-col-resize{
+ position:absolute;top:0;right:0;width:10px;height:100%;min-height:28px;
+ cursor:col-resize;user-select:none;touch-action:none;border-radius:4px;
+}
+.offline-areas-table .offa-sel-col-resize:hover,.offline-areas-table .offa-vis-col-resize:hover{
+ background:color-mix(in srgb,var(--accent) 22%,transparent);
+}
+@media(max-width:768px),(hover:none) and (pointer:coarse){
+ .offline-areas-table .offa-sel-col-resize,.offline-areas-table .offa-vis-col-resize{display:none!important;}
 }
 .offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:140px; }
 .offline-areas-table col.offa-col-status{ width:var(--offa-status-col); min-width:96px; }
@@ -1726,8 +1741,8 @@ html[data-theme="light"] body.gis-mode dialog#favoritesPanel.favorites-panel{
   justify-content:center;
 }
 .offline-areas-table .offline-area-status{ display:inline-block; white-space:nowrap; }
-.offline-areas-table .offa-selcell{ width:34px; min-width:34px; }
-.offline-areas-table .offa-viscell{ width:44px; min-width:44px; text-align:center; vertical-align:middle; }
+.offline-areas-table .offa-selcell{width:var(--offa-sel-col);min-width:36px;}
+.offline-areas-table .offa-viscell{width:var(--offa-vis-col);min-width:44px;text-align:center;vertical-align:middle;}
 .offline-areas-table .offline-area-vis-indicator{
   display:inline-block;
   width:10px;
@@ -18860,6 +18875,7 @@ const I18N = {
     "offcache.area.visAriaOnNoOverlay":"Impostazione visibile; rettangolo copertura nascosto (disattiva “Mostra copertura offline”)",
     "offcache.area.visAriaOff":"Nascosta dalla mappa",
     "offcache.list.colName":"Nome",
+    "offcache.tablePrefSaveFail":"Impossibile salvare larghezze o ordinamento delle aree offline: preferenza precedente ripristinata.",
     "offcache.colResizeAria":"Ridimensiona colonna Nome",
     "offcache.list.colStatus":"Stato",
     "offcache.list.colWhen":"Data",
@@ -21415,6 +21431,7 @@ const I18N = {
     "offcache.area.visAriaOnNoOverlay":"Marked visible; coverage rectangle hidden (\"Show offline coverage\" is off)",
     "offcache.area.visAriaOff":"Hidden from the map",
     "offcache.list.colName":"Name",
+    "offcache.tablePrefSaveFail":"Cannot save offline area columns or sorting. Previous preference restored.",
     "offcache.colResizeAria":"Resize Name column",
     "offcache.list.colStatus":"Status",
     "offcache.list.colWhen":"Date",
@@ -23622,6 +23639,7 @@ const I18N = {
     "offcache.area.visAriaOnNoOverlay":"Marquée visible ; rectangle de couverture masqué (« Afficher la couverture hors ligne » désactivé)",
     "offcache.area.visAriaOff":"Masquée sur la carte",
     "offcache.list.colName":"Nom",
+    "offcache.tablePrefSaveFail":"Impossible d'enregistrer les colonnes ou le tri des zones hors ligne. Préférence précédente restaurée.",
     "offcache.colResizeAria":"Redimensionner la colonne Nom",
     "offcache.list.colStatus":"Statut",
     "offcache.list.colWhen":"Date",
@@ -26478,10 +26496,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-POLYGON-TABLE-COLUMNS-P2B2";
-const APP_BUILD_DETAIL = "Poligoni desktop: 9 colonne ridimensionabili e preferenze ordinamento persistite.";
+const APP_BUILD_ID = "GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3";
+const APP_BUILD_DETAIL = "Aree offline desktop: 10 colonne ridimensionabili e ordinamento persistito.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 314;
+const APP_BUILD_NUM = 315;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28936,6 +28954,8 @@ function saveStore(){
         wpTableSort: wpTableSanitizeSort(state._wpTableSort),
         polygonPanelColumnWidths: polygonPanelSanitizeColumnWidths(state._polygonPanelColumnWidths),
         polygonPanelSort: polygonPanelSanitizeSortPreference(state._polygonPanelListSort),
+        offlineAreaColumnWidths: offlineAreaTableSanitizeWidths(state._offlineAreaColumnWidths),
+        offlineAreaSort: offlineAreaTableSanitizeSort(state._offlineAreasSort),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
         mapPolyClosed: state.mapPolyClosed !== false,
         gisMeasureFlow: sanitizeGisMeasureFlow(state.gisMeasureFlow),
@@ -66842,6 +66862,50 @@ function loadNamedAreaIntoPrecacheFieldsById(id){
   try { renderOfflineAreasList(); } catch(_){}
 }
 
+/* P2-B3 — strict UI-only offline areas table preferences, no tile/cache mutation. */
+const OFFLINE_AREA_SORT_KEYS=new Set(["vis","name","status","when","zoom","layer","tiles","space"]);
+const OFFLINE_AREA_COL_SPECS=Object.freeze({
+ sel:Object.freeze({min:36,max:88,def:36}),
+ vis:Object.freeze({min:44,max:112,def:44}),
+ name:Object.freeze({min:140,max:560,def:168}),
+ status:Object.freeze({min:96,max:320,def:108}),
+ when:Object.freeze({min:100,max:420,def:118}),
+ zoom:Object.freeze({min:64,max:240,def:72}),
+ layer:Object.freeze({min:100,max:380,def:120}),
+ tiles:Object.freeze({min:72,max:380,def:88}),
+ space:Object.freeze({min:64,max:380,def:78}),
+ actions:Object.freeze({min:200,max:720,def:220})
+});
+function offlineAreaTableSanitizeWidths(raw){
+ const out={};
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return out;
+ for(const k of Object.keys(OFFLINE_AREA_COL_SPECS)){
+  const v=raw[k],spec=OFFLINE_AREA_COL_SPECS[k];
+  if(typeof v==="number"&&Number.isFinite(v))
+   out[k]=Math.max(spec.min,Math.min(spec.max,Math.round(v)));
+ }
+ return out;
+}
+function offlineAreaTableSanitizeSort(raw){
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return {key:"name",dir:"asc"};
+ const key=OFFLINE_AREA_SORT_KEYS.has(raw.key)?raw.key:"name";
+ const dir=raw.dir==="asc"||raw.dir==="desc"?raw.dir:"asc";
+ return {key,dir};
+}
+function offlineAreaTableWidthTotal(raw){
+ const w=offlineAreaTableSanitizeWidths(raw);
+ return Object.keys(OFFLINE_AREA_COL_SPECS).reduce((sum,k)=>
+  sum+(w[k]||OFFLINE_AREA_COL_SPECS[k].def),0);
+}
+function offlineAreaTableApplyWidths(table){
+ if(!table||!trackSinglePanelDesktop())return;
+ const w=offlineAreaTableSanitizeWidths(state._offlineAreaColumnWidths);
+ state._offlineAreaColumnWidths=w;
+ for(const k of Object.keys(OFFLINE_AREA_COL_SPECS))
+  table.style.setProperty("--offa-"+k+"-col",(w[k]||OFFLINE_AREA_COL_SPECS[k].def)+"px");
+ table.style.minWidth=Math.max(980,offlineAreaTableWidthTotal(w))+"px";
+}
+
 /** O2: render the saved offline areas list inside #offlineTilePanel. */
 function renderOfflineAreasList(){
   const list = document.getElementById("offlineAreasList");
@@ -66861,9 +66925,8 @@ function renderOfflineAreasList(){
     try { updateOfflineAreasToolbarUI(); } catch(_){}
     return;
   }
-  const sort = state._offlineAreasSort && typeof state._offlineAreasSort === "object"
-    ? state._offlineAreasSort
-    : (state._offlineAreasSort = { key: "name", dir: "asc" });
+  state._offlineAreasSort=offlineAreaTableSanitizeSort(state._offlineAreasSort);
+  const sort=state._offlineAreasSort;
   const key = String(sort.key || "name");
   const dir = (sort.dir === "desc") ? "desc" : "asc";
 
@@ -66917,7 +66980,7 @@ function renderOfflineAreasList(){
 
   const sortMark = (k) => (key === k ? (dir === "asc" ? " ▲" : " ▼") : "");
   const offaRA = esc((typeof t === "function") ? (t("offcache.colResizeAria") || "") : "");
-  const offaRH = (slug) => `<span class="offa-${slug}-col-resize" role="separator" aria-orientation="vertical" aria-label="${offaRA}" title="${offaRA}"></span>`;
+  const offaRH = (slug) => `<span class="offa-${slug}-col-resize" data-offa-resize="${slug}" role="separator" aria-orientation="vertical" aria-label="${offaRA}" title="${offaRA}"></span>`;
 
   const selectedSet = new Set(state._offlineAreasSelectedIds.map(String));
   const loadedId = String(state._offlineAreasLoadedId || "");
@@ -66925,8 +66988,8 @@ function renderOfflineAreasList(){
   list._offaRowOrder = rows.map(a => String(a.id));
 
   let html = `<table class="offline-areas-table"><colgroup>
-    <col style="width:34px" />
-    <col style="width:44px" />
+    <col class="offa-col-sel" />
+    <col class="offa-col-vis" />
     <col class="offa-col-name" />
     <col class="offa-col-status" />
     <col class="offa-col-when" />
@@ -66936,8 +66999,8 @@ function renderOfflineAreasList(){
     <col class="offa-col-space" />
     <col class="offa-col-actions" />
   </colgroup><thead><tr>
-    <th class="offa-selcell"><input type="checkbox" id="offaSelectAll" data-i18n-tip="offcache.sel.selectAll" data-tip="${esc(t("offcache.sel.selectAll"))}" data-i18n-aria="offcache.sel.selectAll"></th>
-    <th class="offa-viscell"><button type="button" class="offa-sort-btn" data-offa-sort="vis" data-i18n-tip="offcache.sort.vis" data-tip="${esc(t("offcache.sort.vis"))}">${esc(t("offcache.list.colVis"))}${sortMark("vis")}</button></th>
+    <th class="offa-selcell offa-th-sel"><input type="checkbox" id="offaSelectAll" data-i18n-tip="offcache.sel.selectAll" data-tip="${esc(t("offcache.sel.selectAll"))}" data-i18n-aria="offcache.sel.selectAll">${offaRH("sel")}</th>
+    <th class="offa-viscell offa-th-vis"><button type="button" class="offa-sort-btn" data-offa-sort="vis" data-i18n-tip="offcache.sort.vis" data-tip="${esc(t("offcache.sort.vis"))}">${esc(t("offcache.list.colVis"))}${sortMark("vis")}</button>${offaRH("vis")}</th>
     <th class="offa-th-name"><button type="button" class="offa-sort-btn" data-offa-sort="name" data-i18n-tip="offcache.sort.name" data-tip="${esc(t("offcache.sort.name"))}">${esc(t("offcache.list.colName"))}${sortMark("name")}</button>${offaRH("name")}</th>
     <th class="offa-th-status"><button type="button" class="offa-sort-btn" data-offa-sort="status" data-i18n-tip="offcache.sort.status" data-tip="${esc(t("offcache.sort.status"))}">${esc(t("offcache.list.colStatus"))}${sortMark("status")}</button>${offaRH("status")}</th>
     <th class="offa-th-when"><button type="button" class="offa-sort-btn" data-offa-sort="when" data-i18n-tip="offcache.sort.when" data-tip="${esc(t("offcache.sort.when"))}">${esc(t("offcache.list.colWhen"))}${sortMark("when")}</button>${offaRH("when")}</th>
@@ -67014,35 +67077,7 @@ function renderOfflineAreasList(){
   }
   html += "</tbody></table>";
   list.innerHTML = `<div class="offline-areas-list-scroll">${html}</div>`;
-  try {
-    const tbl = list.querySelector(".offline-areas-table");
-    if (tbl){
-      if (Number.isFinite(list._offaNameColPx)){
-        tbl.style.setProperty("--offa-name-col", Math.max(72, Math.min(560, list._offaNameColPx)) + "px");
-      }
-      if (Number.isFinite(list._offaStatusColPx)){
-        tbl.style.setProperty("--offa-status-col", Math.max(64, Math.min(320, list._offaStatusColPx)) + "px");
-      }
-      if (Number.isFinite(list._offaWhenColPx)){
-        tbl.style.setProperty("--offa-when-col", Math.max(72, Math.min(420, list._offaWhenColPx)) + "px");
-      }
-      if (Number.isFinite(list._offaZoomColPx)){
-        tbl.style.setProperty("--offa-zoom-col", Math.max(56, Math.min(240, list._offaZoomColPx)) + "px");
-      }
-      if (Number.isFinite(list._offaLayerColPx)){
-        tbl.style.setProperty("--offa-layer-col", Math.max(72, Math.min(380, list._offaLayerColPx)) + "px");
-      }
-      if (Number.isFinite(list._offaTilesColPx)){
-        tbl.style.setProperty("--offa-tiles-col", Math.max(72, Math.min(380, list._offaTilesColPx)) + "px");
-      }
-      if (Number.isFinite(list._offaSpaceColPx)){
-        tbl.style.setProperty("--offa-space-col", Math.max(72, Math.min(380, list._offaSpaceColPx)) + "px");
-      }
-      if (Number.isFinite(list._offaActionsColPx)){
-        tbl.style.setProperty("--offa-actions-col", Math.max(112, Math.min(520, list._offaActionsColPx)) + "px");
-      }
-    }
-  } catch(_){}
+  try { offlineAreaTableApplyWidths(list.querySelector(".offline-areas-table")); } catch(_){}
   // Update select-all checkbox state (checked/indeterminate) and toolbar.
   try {
     const selAll = document.getElementById("offaSelectAll");
@@ -67061,79 +67096,69 @@ function renderOfflineAreasList(){
 
 /** Desktop: ridimensiona colonne tabella Aree offline (sessione su #offlineAreasList, senza localStorage). */
 function ensureOfflineAreasNameColResizeWired(){
-  if (window._offaNameColResizeWired) return;
-  window._offaNameColResizeWired = true;
-  let drag = null;
-  function offaColMetaFromHandle(h, table){
-    const rectT = table.getBoundingClientRect();
-    const w = Math.max(200, rectT.width);
-    if (h.classList.contains("offa-name-col-resize")){
-      return { varName: "--offa-name-col", prop: "_offaNameColPx", td: 3, min: 72, max: Math.min(560, Math.max(120, Math.floor(w * 0.55))) };
-    }
-    if (h.classList.contains("offa-status-col-resize")){
-      return { varName: "--offa-status-col", prop: "_offaStatusColPx", td: 4, min: 64, max: Math.min(320, Math.max(100, Math.floor(w * 0.22))) };
-    }
-    if (h.classList.contains("offa-when-col-resize")){
-      return { varName: "--offa-when-col", prop: "_offaWhenColPx", td: 5, min: 72, max: Math.min(420, Math.max(120, Math.floor(w * 0.28))) };
-    }
-    if (h.classList.contains("offa-zoom-col-resize")){
-      return { varName: "--offa-zoom-col", prop: "_offaZoomColPx", td: 6, min: 56, max: Math.min(240, Math.max(80, Math.floor(w * 0.14))) };
-    }
-    if (h.classList.contains("offa-layer-col-resize")){
-      return { varName: "--offa-layer-col", prop: "_offaLayerColPx", td: 7, min: 72, max: Math.min(380, Math.max(100, Math.floor(w * 0.24))) };
-    }
-    if (h.classList.contains("offa-tiles-col-resize")){
-      return { varName: "--offa-tiles-col", prop: "_offaTilesColPx", td: 8, min: 72, max: Math.min(380, Math.max(100, Math.floor(w * 0.24))) };
-    }
-    if (h.classList.contains("offa-space-col-resize")){
-      return { varName: "--offa-space-col", prop: "_offaSpaceColPx", td: 9, min: 72, max: Math.min(380, Math.max(100, Math.floor(w * 0.24))) };
-    }
-    if (h.classList.contains("offa-actions-col-resize")){
-      return { varName: "--offa-actions-col", prop: "_offaActionsColPx", td: 10, min: 112, max: Math.min(520, Math.max(160, Math.floor(w * 0.36))) };
-    }
-    return null;
+ if(window._offaNameColResizeWired)return;
+ window._offaNameColResizeWired=true;
+ let drag=null;
+ function detach(){
+  document.removeEventListener("pointermove",onMove);
+  document.removeEventListener("pointerup",onEnd);
+  document.removeEventListener("pointercancel",onEnd);
+ }
+ function restore(d){
+  state._offlineAreaColumnWidths=d.before;
+  d.table.style.setProperty("--offa-"+d.key+"-col",d.startW+"px");
+  d.table.style.minWidth=Math.max(980,offlineAreaTableWidthTotal(d.before))+"px";
+ }
+ function onMove(ev){
+  if(!drag||ev.pointerId!==drag.pointerId)return;
+  const n=Math.max(drag.spec.min,Math.min(drag.spec.max,
+   Math.round(drag.startW+ev.clientX-drag.startX)));
+  if(n===drag.current)return;
+  drag.current=n;
+  const w=offlineAreaTableSanitizeWidths({...state._offlineAreaColumnWidths,[drag.key]:n});
+  state._offlineAreaColumnWidths=w;
+  drag.table.style.setProperty("--offa-"+drag.key+"-col",n+"px");
+  drag.table.style.minWidth=Math.max(980,offlineAreaTableWidthTotal(w))+"px";
+ }
+ function onEnd(ev){
+  if(!drag||ev.pointerId!==drag.pointerId)return;
+  const d=drag;drag=null;detach();
+  if(ev.type==="pointercancel"||d.current===d.startW){
+   if(ev.type==="pointercancel")restore(d);
+   return;
   }
-  function endDrag(){
-    drag = null;
-    try {
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", endDrag);
-      document.removeEventListener("pointercancel", endDrag);
-    } catch(_){}
+  let ok=false;
+  try{
+   const rep=saveStoreReported(),obj=JSON.parse(localStorage.getItem(STORAGE_KEY));
+   ok=!!rep&&rep.ok&&obj.settings.offlineAreaColumnWidths[d.key]===d.current;
+  }catch(_){}
+  if(!ok){
+   restore(d);
+   try{if(d.raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,d.raw);}catch(_){}
+   try{setBadge("error",t("offcache.tablePrefSaveFail"));}catch(_){}
   }
-  function onMove(ev){
-    if (!drag) return;
-    const dx = ev.clientX - drag.startX;
-    const nw = Math.max(drag.meta.min, Math.min(drag.meta.max, Math.round(drag.startW + dx)));
-    drag.table.style.setProperty(drag.meta.varName, nw + "px");
-    const list = document.getElementById("offlineAreasList");
-    if (list) list[drag.meta.prop] = nw;
-  }
-  document.addEventListener("pointerdown", (ev) => {
-    const h = ev.target.closest && ev.target.closest(".offa-name-col-resize, .offa-status-col-resize, .offa-when-col-resize, .offa-zoom-col-resize, .offa-layer-col-resize, .offa-tiles-col-resize, .offa-space-col-resize, .offa-actions-col-resize");
-    if (!h) return;
-    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
-    const table = h.closest(".offline-areas-table");
-    if (!table) return;
-    const list = document.getElementById("offlineAreasList");
-    if (!list || !list.contains(table)) return;
-    const meta = offaColMetaFromHandle(h, table);
-    if (!meta) return;
-    const cell = table.querySelector("tbody tr td:nth-child(" + meta.td + ")");
-    const startW = cell ? cell.getBoundingClientRect().width : 120;
-    drag = {
-      table,
-      meta,
-      startX: ev.clientX,
-      startW
-    };
-    ev.preventDefault();
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", endDrag);
-    document.addEventListener("pointercancel", endDrag);
-  }, true);
+ }
+ document.addEventListener("pointerdown",(ev)=>{
+  const h=ev.target&&ev.target.closest&&ev.target.closest(".offline-areas-table [data-offa-resize]");
+  if(!h||!trackSinglePanelDesktop()||(window.matchMedia&&window.matchMedia("(pointer:coarse)").matches))return;
+  const key=String(h.getAttribute("data-offa-resize")||"");
+  if(!Object.prototype.hasOwnProperty.call(OFFLINE_AREA_COL_SPECS,key))return;
+  const table=h.closest(".offline-areas-table"),list=document.getElementById("offlineAreasList");
+  if(!table||!list||!list.contains(table)||drag)return;
+  const idx=Object.keys(OFFLINE_AREA_COL_SPECS).indexOf(key)+1,spec=OFFLINE_AREA_COL_SPECS[key];
+  const cell=table.querySelector("tbody tr td:nth-child("+idx+")");
+  const prev=state._offlineAreaColumnWidths||{};
+  const startW=typeof prev[key]==="number"?prev[key]:
+   Math.max(spec.min,Math.min(spec.max,Math.round(cell?cell.getBoundingClientRect().width:spec.def)));
+  let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+  drag={table,key,spec,startX:ev.clientX,startW,current:startW,pointerId:ev.pointerId,
+   before:offlineAreaTableSanitizeWidths(prev),raw};
+  ev.preventDefault();
+  document.addEventListener("pointermove",onMove);
+  document.addEventListener("pointerup",onEnd);
+  document.addEventListener("pointercancel",onEnd);
+ },true);
 }
-
 function ensureRangeRingsTableColResizeWired(){
   if (window._rrTableColResizeWired) return;
   window._rrTableColResizeWired = true;
@@ -67588,14 +67613,23 @@ function ensureOfflineAreasListDelegation(){
     if (sortBtn){
       ev.preventDefault();
       const k = String(sortBtn.getAttribute("data-offa-sort") || "name");
-      const s = state._offlineAreasSort && typeof state._offlineAreasSort === "object"
-        ? state._offlineAreasSort
-        : (state._offlineAreasSort = { key: "name", dir: "asc" });
-      if (s.key === k){
-        s.dir = (s.dir === "asc") ? "desc" : "asc";
-      } else {
-        s.key = k;
-        s.dir = "asc";
+      if(!OFFLINE_AREA_SORT_KEYS.has(k))return;
+      const before=offlineAreaTableSanitizeSort(state._offlineAreasSort);
+      const next=before.key===k?{key:k,dir:before.dir==="asc"?"desc":"asc"}:{key:k,dir:"asc"};
+      state._offlineAreasSort=next;
+      if(trackSinglePanelDesktop()){
+        let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+        let ok=false;
+        try{
+          const rep=saveStoreReported(),obj=JSON.parse(localStorage.getItem(STORAGE_KEY));
+          const stored=obj&&obj.settings&&obj.settings.offlineAreaSort;
+          ok=!!rep&&rep.ok&&stored&&stored.key===next.key&&stored.dir===next.dir;
+        }catch(_){}
+        if(!ok){
+          state._offlineAreasSort=before;
+          try{if(raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,raw);}catch(_){}
+          try{setBadge("error",t("offcache.tablePrefSaveFail"));}catch(_){}
+        }
       }
       renderOfflineAreasList();
       return;
@@ -105816,6 +105850,8 @@ function init(){
        state._wpTableSort=wpTableSanitizeSort(stored.settings.wpTableSort);
        state._polygonPanelColumnWidths=polygonPanelSanitizeColumnWidths(stored.settings.polygonPanelColumnWidths);
        state._polygonPanelListSort=polygonPanelSanitizeSortPreference(stored.settings.polygonPanelSort);
+       state._offlineAreaColumnWidths=offlineAreaTableSanitizeWidths(stored.settings.offlineAreaColumnWidths);
+       state._offlineAreasSort=offlineAreaTableSanitizeSort(stored.settings.offlineAreaSort);
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
       if (stored.settings.gisMeasureFlow === "direct" || stored.settings.gisMeasureFlow === "inverse2"){
