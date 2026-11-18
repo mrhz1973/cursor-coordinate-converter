@@ -4780,6 +4780,21 @@ table.batch-table{
   width:100%; border-collapse:collapse; font-size:.82rem;
   font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
+#batch-results .batch-table-wrap{max-width:100%;overflow-x:auto;scrollbar-gutter:stable;}
+#batch-results table.batch-table th{position:relative;padding-right:14px;white-space:nowrap;}
+#batch-results table.batch-table .batch-col-resize{
+ position:absolute;top:0;right:0;width:10px;height:100%;min-height:28px;
+ cursor:col-resize;user-select:none;touch-action:none;border-radius:4px;
+}
+#batch-results table.batch-table .batch-col-resize:hover{background:color-mix(in srgb,var(--accent) 22%,transparent);}
+#batch-results table.batch-table .batch-table-sort-btn{
+ border:none;background:transparent;color:inherit;font:inherit;padding:0;cursor:pointer;text-align:inherit;
+}
+#batch-results table.batch-table .batch-table-sort-btn:hover{text-decoration:underline;}
+#batch-results table.batch-table .batch-table-sort-mark{margin-left:3px;font-size:.72em;}
+@media(max-width:768px),(hover:none) and (pointer:coarse){
+ #batch-results table.batch-table .batch-col-resize{display:none!important;}
+}
 table.batch-table th, table.batch-table td{
   border:1px solid var(--border); padding:5px 7px; text-align:left;
   word-break:break-word;
@@ -5714,14 +5729,16 @@ html[data-theme="dark"] .range-rings-overlay .rr-distance-label{
   table-layout:fixed;
   border-collapse:collapse;
   font-size:.88rem;
-  --rr-name-col: 120px;
+  --rr-sel-col:36px;
+  --rr-vis-col:44px;
+  --rr-name-col:120px;
   --rr-center-col: 110px;
   --rr-rings-col: 120px;
   --rr-when-col: 100px;
   --rr-actions-col: 220px;
 }
-#sec-rangerings .rr-table col.rr-col-sel{ width:36px; min-width:36px; }
-#sec-rangerings .rr-table col.rr-col-vis{ width:44px; min-width:44px; }
+#sec-rangerings .rr-table col.rr-col-sel{width:var(--rr-sel-col);min-width:36px;}
+#sec-rangerings .rr-table col.rr-col-vis{width:var(--rr-vis-col);min-width:44px;}
 #sec-rangerings .rr-table col.rr-col-name{ width: var(--rr-name-col); min-width: 72px; }
 #sec-rangerings .rr-table col.rr-col-center{ width: var(--rr-center-col); min-width: 72px; }
 #sec-rangerings .rr-table col.rr-col-rings{ width: var(--rr-rings-col); min-width: 80px; }
@@ -5743,10 +5760,21 @@ html[data-theme="dark"] .range-rings-overlay .rr-distance-label{
   z-index:1;
   white-space:nowrap;
 }
-#sec-rangerings .rr-table th.rr-th-rrz{ padding-right: 12px; }
+#sec-rangerings .rr-table th.rr-th-rrz{padding-right:12px;}
+#sec-rangerings .rr-table .rr-col-resize{
+ position:absolute;top:0;right:0;width:10px;height:100%;min-height:28px;
+ cursor:col-resize;user-select:none;touch-action:none;border-radius:4px;
+}
+#sec-rangerings .rr-table .rr-col-resize:hover{background:color-mix(in srgb,var(--accent) 22%,transparent);}
+#sec-rangerings .rr-table .rr-table-sort-btn{border:none;background:transparent;color:inherit;font:inherit;cursor:pointer;padding:0;text-align:inherit;}
+#sec-rangerings .rr-table .rr-table-sort-btn:hover{text-decoration:underline;}
+#sec-rangerings .rr-table .rr-table-sort-mark{font-size:.72em;margin-left:3px;}
+@media(max-width:768px),(hover:none) and (pointer:coarse){
+ #sec-rangerings .rr-table .rr-col-resize{display:none!important;}
+}
 #sec-rangerings .rr-table tbody tr[data-rr-row]:hover{ background:color-mix(in srgb, var(--accent) 6%, var(--panel)); }
 #sec-rangerings .rr-table tbody tr[data-rr-row].is-selected{ background:color-mix(in srgb, var(--accent) 10%, var(--panel)); }
-#sec-rangerings .rr-table .rr-vis-cell{ text-align:center; width:44px; }
+#sec-rangerings .rr-table .rr-vis-cell{text-align:center;width:var(--rr-vis-col);}
 #sec-rangerings .rr-table .rr-actions-cell{ min-width:260px; white-space:nowrap; }
 #sec-rangerings .rr-table .rr-row-actions{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 #sec-rangerings .rr-table .btn-rr-edit,
@@ -5853,6 +5881,21 @@ dialog#astroFavoritePicker table.astro-wp-table th{
   text-align:left; padding:6px 8px; border-bottom:1px solid var(--border);
   white-space:nowrap; user-select:none; background:var(--panel2);
   position:sticky; top:0; z-index:1;
+}
+dialog#astroWaypointPicker table.astro-wp-table th,
+dialog#astroFavoritePicker table.astro-wp-table th{padding-right:14px;}
+dialog#astroWaypointPicker .astro-col-resize,
+dialog#astroFavoritePicker .astro-col-resize{
+ position:absolute;top:0;right:0;width:10px;height:100%;min-height:28px;
+ cursor:col-resize;user-select:none;touch-action:none;border-radius:4px;
+}
+dialog#astroWaypointPicker .astro-wp-th-action .astro-col-resize,
+dialog#astroFavoritePicker .astro-wp-th-action .astro-col-resize{right:18px;}
+dialog#astroWaypointPicker .astro-col-resize:hover,
+dialog#astroFavoritePicker .astro-col-resize:hover{background:color-mix(in srgb,var(--accent) 22%,transparent);}
+@media(max-width:768px),(hover:none) and (pointer:coarse){
+ dialog#astroWaypointPicker .astro-col-resize,
+ dialog#astroFavoritePicker .astro-col-resize{display:none!important;}
 }
 dialog#astroWaypointPicker table.astro-wp-table th[data-astro-wp-sort]:hover,
 dialog#astroFavoritePicker table.astro-wp-table th[data-astro-fav-sort]:hover{
@@ -6036,6 +6079,32 @@ dialog#astroFavoritePicker table.astro-wp-table .astro-wp-td-action{ text-align:
 .mils-val{color:var(--muted); font-size:.88em; margin-left:4px; font-weight:500}
 
 /* Favorites list (Pass 6 Step 6A): tabella compatta + sub-riga note — legacy .favorite-item rimosso dal render */
+#sec-favorites #favorites-list .favorites-modal-table{table-layout:fixed;}
+#sec-favorites #favorites-list .favorites-modal-table col.fav-col-sel{width:var(--fav-sel-col,36px);}
+#sec-favorites #favorites-list .favorites-modal-table col.fav-col-name{width:var(--fav-name-col,175px);}
+#sec-favorites #favorites-list .favorites-modal-table col.fav-col-coord{width:var(--fav-coord-col,220px);}
+#sec-favorites #favorites-list .favorites-modal-table col.fav-col-details{width:var(--fav-details-col,220px);}
+#sec-favorites #favorites-list .favorites-modal-table col.fav-col-actions{width:var(--fav-actions-col,380px);}
+#sec-favorites #favorites-list .favorites-modal-table thead th{position:sticky;padding-right:12px;}
+#sec-favorites #favorites-list .favorites-modal-table .fav-col-resize{
+ position:absolute;right:0;top:0;height:100%;min-height:28px;width:10px;
+ cursor:col-resize;touch-action:none;user-select:none;border-radius:4px;
+}
+#sec-favorites #favorites-list .favorites-modal-table .fav-col-resize:hover{background:color-mix(in srgb,var(--accent) 22%,transparent);}
+#sec-favorites #favorites-list .favorites-modal-table .fav-th-sel,
+#sec-favorites #favorites-list .favorites-modal-table .fav-sel-cell{text-align:center;}
+#sec-favorites #favorites-list .favorites-modal-table .fav-table-sort-btn{border:0;background:transparent;color:inherit;font:inherit;padding:0;cursor:pointer;}
+#sec-favorites #favorites-list .favorites-modal-table .fav-table-sort-btn:hover{text-decoration:underline;}
+#sec-favorites #favorites-list .favorites-modal-table .fav-table-sort-mark{font-size:.72em;margin-left:3px;}
+#sec-favorites #favorites-list .fav-table-selection-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 0;}
+#sec-favorites #favorites-list .fav-selected-count{font-size:.8rem;color:var(--muted);}
+@media(max-width:768px),(hover:none) and (pointer:coarse){
+ #sec-favorites #favorites-list .favorites-modal-table .fav-col-resize{display:none!important;}
+ #sec-favorites #favorites-list .fav-table-selection-bar{display:none!important;}
+ #sec-favorites #favorites-list .favorites-modal-table .fav-th-sel,
+ #sec-favorites #favorites-list .favorites-modal-table .fav-sel-cell{display:none!important;}
+}
+
 #sec-favorites #favorites-list .favorites-table-wrap{
   overflow-x:auto;
   overflow-y:visible;
@@ -19449,6 +19518,7 @@ const I18N = {
     "rangeRings.colSel":"Sel.",
     "rangeRings.colVis":"Vis.",
     "rangeRings.colName":"Nome",
+    "rr.tablePrefSaveFail":"Impossibile salvare la larghezza o l'ordinamento degli anelli: preferenza precedente ripristinata.",
     "rangeRings.colCenter":"Centro",
     "rangeRings.colRings":"Anelli",
     "rangeRings.colWhen":"Data",
@@ -19524,6 +19594,7 @@ const I18N = {
     "batch.ph":"5.259444, -4.043909\n33T 291952 4640699\n30NUL8431881439",
     "batch.convert":"Converti lista","batch.csv":"Copia CSV","batch.empty":"Nessuna riga valida.",
     "batch.th.input":"Input","batch.th.dd":"Lat/Lon DD","batch.th.utm":"UTM","batch.th.mgrs":"MGRS","batch.th.err":"Errore",
+    "batch.tablePrefSaveFail":"Impossibile salvare larghezze o ordinamento Batch: preferenze precedenti ripristinate.",
     "meas.p1":"Punto 1","meas.p2":"Punto 2","meas.compute":"Calcola",
     "meas.dist":"Distanza geodetica","meas.bInit":"Azimuth iniziale","meas.bFin":"Azimuth finale","meas.method":"Metodo",
     "hist.hint":"Ultime 10 conversioni di questa sessione.","hist.clear":"Pulisci cronologia","hist.empty":"Nessuna conversione recente.",
@@ -19811,6 +19882,12 @@ const I18N = {
     "fav.notesPh":"Note (max 500 caratteri)",
     "fav.notesPrompt":"Note (opzionale, max 500 caratteri):",
     "fav.noMatch":"Nessun preferito corrisponde al filtro.",
+    "fav.tablePrefSaveFail":"Impossibile salvare preferenze tabella Preferiti.",
+    "fav.selectedCount":"Selezionati {0} / {1}",
+    "fav.exportSelected":"Esporta selezionati GeoJSON",
+    "fav.clearSelected":"Deseleziona",
+    "fav.selectAll":"Seleziona tutti i preferiti visibili",
+    "fav.selectRow":"Seleziona preferito",
     "fav.listColCoord":"Coordinate",
     "fav.listColActions":"Azioni",
     "fav.coordFmtLabel":"Formato coordinate (lista)",
@@ -20362,6 +20439,7 @@ const I18N = {
     "astro.wp.columns":"Colonne",
     "astro.wp.columnsTip":"Mostra o nascondi colonne opzionali nella tabella.",
     "astro.wp.col.name":"Nome",
+    "astro.tablePrefSaveFail":"Impossibile salvare le preferenze colonne Astro: preferenza precedente ripristinata.",
     "astro.wp.col.coord":"Coordinate",
     "astro.wp.col.mgrs":"MGRS",
     "astro.wp.col.when":"Quando",
@@ -21820,6 +21898,7 @@ const I18N = {
     "rangeRings.colSel":"Sel.",
     "rangeRings.colVis":"Vis.",
     "rangeRings.colName":"Name",
+    "rr.tablePrefSaveFail":"Could not save range ring widths/sorting; previous preferences restored.",
     "rangeRings.colCenter":"Center",
     "rangeRings.colRings":"Rings",
     "rangeRings.colWhen":"Date",
@@ -21895,6 +21974,7 @@ const I18N = {
     "batch.ph":"5.259444, -4.043909\n33T 291952 4640699\n30NUL8431881439",
     "batch.convert":"Convert list","batch.csv":"Copy CSV","batch.empty":"No valid rows.",
     "batch.th.input":"Input","batch.th.dd":"Lat/Lon DD","batch.th.utm":"UTM","batch.th.mgrs":"MGRS","batch.th.err":"Error",
+    "batch.tablePrefSaveFail":"Could not save Batch table widths or sorting; previous settings restored.",
     "meas.p1":"Point 1","meas.p2":"Point 2","meas.compute":"Compute",
     "meas.dist":"Geodesic distance","meas.bInit":"Initial bearing","meas.bFin":"Final bearing","meas.method":"Method",
     "hist.hint":"Last 10 conversions of this session.","hist.clear":"Clear history","hist.empty":"No recent conversions.",
@@ -22183,6 +22263,12 @@ const I18N = {
     "fav.notesPh":"Notes (max 500 characters)",
     "fav.notesPrompt":"Optional notes (max 500 characters):",
     "fav.noMatch":"No favorites match the filter.",
+    "fav.tablePrefSaveFail":"Favorites table preferences could not be saved.",
+    "fav.selectedCount":"Selected {0} / {1}",
+    "fav.exportSelected":"Export selected GeoJSON",
+    "fav.clearSelected":"Clear selection",
+    "fav.selectAll":"Select all visible favorites",
+    "fav.selectRow":"Select favorite",
     "fav.listColCoord":"Coordinates",
     "fav.listColActions":"Actions",
     "fav.coordFmtLabel":"Coordinate format (list)",
@@ -22650,6 +22736,7 @@ const I18N = {
     "astro.wp.columns":"Columns",
     "astro.wp.columnsTip":"Show or hide optional columns in the table.",
     "astro.wp.col.name":"Name",
+    "astro.tablePrefSaveFail":"Could not save Astro picker preferences; previous settings restored.",
     "astro.wp.col.coord":"Coordinates",
     "astro.wp.col.mgrs":"MGRS",
     "astro.wp.col.when":"When",
@@ -23988,6 +24075,7 @@ const I18N = {
     "rangeRings.colSel":"Sel.",
     "rangeRings.colVis":"Vis.",
     "rangeRings.colName":"Nom",
+    "rr.tablePrefSaveFail":"Impossible d'enregistrer les largeurs ou le tri des anneaux, préférences précédentes restaurées.",
     "rangeRings.colCenter":"Centre",
     "rangeRings.colRings":"Anneaux",
     "rangeRings.colWhen":"Date",
@@ -24063,6 +24151,7 @@ const I18N = {
     "batch.ph":"5.259444, -4.043909\n33T 291952 4640699\n30NUL8431881439",
     "batch.convert":"Convertir la liste","batch.csv":"Copier CSV","batch.empty":"Aucune ligne valide.",
     "batch.th.input":"Entrée","batch.th.dd":"Lat/Lon DD","batch.th.utm":"UTM","batch.th.mgrs":"MGRS","batch.th.err":"Erreur",
+    "batch.tablePrefSaveFail":"Largeurs ou tri Batch non enregistrés, préférences précédentes restaurées.",
     "meas.p1":"Point 1","meas.p2":"Point 2","meas.compute":"Calculer",
     "meas.dist":"Distance géodésique","meas.bInit":"Azimut initial","meas.bFin":"Azimut final","meas.method":"Méthode",
     "hist.hint":"Les 10 dernières conversions de cette session.","hist.clear":"Effacer l'historique","hist.empty":"Aucune conversion récente.",
@@ -24335,6 +24424,12 @@ const I18N = {
     "fav.notesPh":"Note (500 car. max)",
     "fav.notesPrompt":"Note (facultatif, 500 car. max) :",
     "fav.noMatch":"Aucun favori ne correspond au filtre.",
+    "fav.tablePrefSaveFail":"Impossible d'enregistrer les préférences des favoris.",
+    "fav.selectedCount":"Sélectionnés {0} / {1}",
+    "fav.exportSelected":"Exporter la sélection en GeoJSON",
+    "fav.clearSelected":"Effacer la sélection",
+    "fav.selectAll":"Sélectionner tous les favoris visibles",
+    "fav.selectRow":"Sélectionner le favori",
     "fav.listColCoord":"Coordonnées",
     "fav.listColActions":"Actions",
     "fav.coordFmtLabel":"Format des coordonnées (liste)",
@@ -24587,6 +24682,7 @@ const I18N = {
     "astro.wp.columns":"Colonnes",
     "astro.wp.columnsTip":"Afficher ou masquer les colonnes optionnelles du tableau.",
     "astro.wp.col.name":"Nom",
+    "astro.tablePrefSaveFail":"Impossible d'enregistrer les préférences Astro, paramètres précédents restaurés.",
     "astro.wp.col.coord":"Coordonnées",
     "astro.wp.col.mgrs":"MGRS",
     "astro.wp.col.when":"Quand",
@@ -26496,10 +26592,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3";
-const APP_BUILD_DETAIL = "Aree offline desktop: 10 colonne ridimensionabili e ordinamento persistito.";
+const APP_BUILD_ID = "GIS-TABLES-ALL-REMAINING-P2";
+const APP_BUILD_DETAIL = "Desktop P2: Range rings, Preferiti, Astro e Batch; QA finale unica.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 315;
+const APP_BUILD_NUM = 316;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28956,6 +29052,16 @@ function saveStore(){
         polygonPanelSort: polygonPanelSanitizeSortPreference(state._polygonPanelListSort),
         offlineAreaColumnWidths: offlineAreaTableSanitizeWidths(state._offlineAreaColumnWidths),
         offlineAreaSort: offlineAreaTableSanitizeSort(state._offlineAreasSort),
+        rrTableWidths: rrTableSanitizeWidths(state._rrTableWidths),
+        rrTableSort: rrTableSanitizeSort(state._rrTableSort),
+        favTableWidths: favTableSanitizeWidths(state._favTableWidths),
+        favTableSort: favTableSanitizeSort(state._favTableSort),
+        astroWpTableWidths: astroTableSanitizeWidths(state._astroWpTableWidths),
+        astroFavTableWidths: astroTableSanitizeWidths(state._astroFavTableWidths),
+        astroWpTableSort: astroTableSanitizeSort("wp",state.astroWpPickerSort),
+        astroFavTableSort: astroTableSanitizeSort("fav",state.astroFavPickerSort),
+        batchTableWidths: batchTableSanitizeWidths(state._batchTableWidths),
+        batchTableSort: batchTableSanitizeSort(state._batchTableSort),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
         mapPolyClosed: state.mapPolyClosed !== false,
         gisMeasureFlow: sanitizeGisMeasureFlow(state.gisMeasureFlow),
@@ -67160,67 +67266,68 @@ function ensureOfflineAreasNameColResizeWired(){
  },true);
 }
 function ensureRangeRingsTableColResizeWired(){
-  if (window._rrTableColResizeWired) return;
-  window._rrTableColResizeWired = true;
-  let drag = null;
-  function endDrag(){
-    drag = null;
-    try {
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", endDrag);
-      document.removeEventListener("pointercancel", endDrag);
-    } catch(_){}
+ if(window._rrTableColResizeWired)return;
+ window._rrTableColResizeWired=true;
+ let drag=null;
+ function sum(w){return Object.keys(RR_TABLE_COLUMN_SPECS).reduce((n,k)=>n+(w[k]||RR_TABLE_COLUMN_SPECS[k].def),0);}
+ function detach(){
+  document.removeEventListener("pointermove",move);
+  document.removeEventListener("pointerup",end);
+  document.removeEventListener("pointercancel",end);
+ }
+ function restore(d){
+  state._rrTableWidths=d.previous;
+  d.table.style.setProperty("--rr-"+d.key+"-col",d.startW+"px");
+  d.table.style.minWidth=sum(d.previous)+"px";
+ }
+ function move(ev){
+  if(!drag||drag.pid!==ev.pointerId)return;
+  const n=Math.max(drag.meta.min,Math.min(drag.meta.max,Math.round(drag.startW+ev.clientX-drag.startX)));
+  if(n===drag.current)return;
+  drag.current=n;
+  const w=rrTableSanitizeWidths({...state._rrTableWidths,[drag.key]:n});
+  state._rrTableWidths=w;
+  drag.table.style.setProperty("--rr-"+drag.key+"-col",n+"px");
+  drag.table.style.minWidth=sum(w)+"px";
+ }
+ function end(ev){
+  if(!drag||drag.pid!==ev.pointerId)return;
+  const d=drag;drag=null;detach();
+  if(ev.type==="pointercancel"||d.current===d.startW){
+   if(ev.type==="pointercancel")restore(d);return;
   }
-  function rrColMetaFromHandle(h, table){
-    const rectT = table.getBoundingClientRect();
-    const w = Math.max(200, rectT.width);
-    if (h.classList.contains("rr-name-col-resize")){
-      return { varName: "--rr-name-col", prop: "_rrNameColPx", td: 3, min: 72, max: Math.min(420, Math.max(100, Math.floor(w * 0.45))) };
-    }
-    if (h.classList.contains("rr-center-col-resize")){
-      return { varName: "--rr-center-col", prop: "_rrCenterColPx", td: 4, min: 72, max: Math.min(300, Math.max(90, Math.floor(w * 0.30))) };
-    }
-    if (h.classList.contains("rr-rings-col-resize")){
-      return { varName: "--rr-rings-col", prop: "_rrRingsColPx", td: 5, min: 80, max: Math.min(360, Math.max(100, Math.floor(w * 0.32))) };
-    }
-    if (h.classList.contains("rr-when-col-resize")){
-      return { varName: "--rr-when-col", prop: "_rrWhenColPx", td: 6, min: 72, max: Math.min(320, Math.max(100, Math.floor(w * 0.24))) };
-    }
-    if (h.classList.contains("rr-actions-col-resize")){
-      return { varName: "--rr-actions-col", prop: "_rrActionsColPx", td: 7, min: 200, max: Math.min(480, Math.max(220, Math.floor(w * 0.40))) };
-    }
-    return null;
+  let ok=false;
+  try{
+   const done=saveStoreReported(),obj=JSON.parse(localStorage.getItem(STORAGE_KEY));
+   ok=!!done&&done.ok&&obj.settings.rrTableWidths[d.key]===d.current;
+  }catch(_){}
+  if(!ok){
+   restore(d);
+   try{if(d.raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,d.raw);}catch(_){}
+   try{setBadge("error",t("rr.tablePrefSaveFail"));}catch(_){}
   }
-  function onMove(ev){
-    if (!drag) return;
-    const dx = ev.clientX - drag.startX;
-    const nw = Math.max(drag.meta.min, Math.min(drag.meta.max, Math.round(drag.startW + dx)));
-    drag.table.style.setProperty(drag.meta.varName, nw + "px");
-    const list = document.getElementById("rrList");
-    if (list) list[drag.meta.prop] = nw;
-  }
-  document.addEventListener("pointerdown", (ev) => {
-    const h = ev.target.closest && ev.target.closest(
-      ".rr-name-col-resize, .rr-center-col-resize, .rr-rings-col-resize, .rr-when-col-resize, .rr-actions-col-resize"
-    );
-    if (!h) return;
-    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
-    const table = h.closest(".rr-table");
-    if (!table) return;
-    const list = document.getElementById("rrList");
-    if (!list || !list.contains(table)) return;
-    const meta = rrColMetaFromHandle(h, table);
-    if (!meta) return;
-    const cell = table.querySelector("tbody tr td:nth-child(" + meta.td + ")");
-    const startW = cell ? cell.getBoundingClientRect().width : 120;
-    drag = { table, meta, startX: ev.clientX, startW: startW };
-    ev.preventDefault();
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", endDrag);
-    document.addEventListener("pointercancel", endDrag);
-  }, true);
+ }
+ document.addEventListener("pointerdown",ev=>{
+  const h=ev.target&&ev.target.closest&&ev.target.closest("#rrList [data-rr-resize]");
+  if(!h||!trackSinglePanelDesktop()||(window.matchMedia&&window.matchMedia("(pointer:coarse)").matches))return;
+  const key=String(h.getAttribute("data-rr-resize")||"");
+  if(!Object.prototype.hasOwnProperty.call(RR_TABLE_COLUMN_SPECS,key))return;
+  const table=h.closest(".rr-table"),root=document.getElementById("rrList");
+  if(!table||!root||!root.contains(table)||drag)return;
+  const keys=Object.keys(RR_TABLE_COLUMN_SPECS),idx=keys.indexOf(key)+1;
+  const meta=RR_TABLE_COLUMN_SPECS[key],cell=table.querySelector("tbody tr td:nth-child("+idx+")");
+  const old=state._rrTableWidths||{};
+  const startW=typeof old[key]==="number"?old[key]:
+   Math.max(meta.min,Math.min(meta.max,Math.round(cell?cell.getBoundingClientRect().width:meta.def)));
+  let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+  drag={table,key,meta,pid:ev.pointerId,startX:ev.clientX,startW,current:startW,
+    previous:rrTableSanitizeWidths(old),raw};
+  ev.preventDefault();
+  document.addEventListener("pointermove",move);
+  document.addEventListener("pointerup",end);
+  document.addEventListener("pointercancel",end);
+ },true);
 }
-
 /** Desktop: colonne Nome / Distanza in Tracce salvate (sessione su #savedTracksMount, no localStorage). */
 function ensureSavedTracksNameColResizeWired(){
  if(window._savedTracksNameColResizeWired)return;
@@ -75572,6 +75679,134 @@ function favoriteAddAsWaypoint(favId){
   }
 }
 
+/* P2-C: Favorites sortable, resizable, selectable with an explicit GeoJSON export action. */
+const FAV_TABLE_COLS=Object.freeze({
+ sel:{min:36,max:92,def:36},name:{min:120,max:560,def:175},
+ coord:{min:150,max:450,def:220},details:{min:130,max:560,def:220},
+ actions:{min:260,max:680,def:380}
+});
+const FAV_TABLE_SORT_KEYS=new Set(["name","coord","details"]);
+function favTableSanitizeWidths(raw){
+ const out={};
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return out;
+ for(const k of Object.keys(FAV_TABLE_COLS)){
+  const v=raw[k],spec=FAV_TABLE_COLS[k];
+  if(typeof v==="number"&&Number.isFinite(v))
+   out[k]=Math.max(spec.min,Math.min(spec.max,Math.round(v)));
+ }
+ return out;
+}
+function favTableSanitizeSort(raw){
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return {key:"name",dir:"asc"};
+ const key=FAV_TABLE_SORT_KEYS.has(raw.key)?raw.key:"name";
+ return {key,dir:raw.dir==="asc"||raw.dir==="desc"?raw.dir:"asc"};
+}
+function favTableSorted(items){
+ const rows=(items||[]).slice();
+ if(!trackSinglePanelDesktop())return rows;
+ const p=favTableSanitizeSort(state._favTableSort);
+ state._favTableSort=p;const m=p.dir==="asc"?1:-1;
+ rows.sort((a,b)=>{
+  let c=0;
+  if(p.key==="name")c=String(a.name||"").localeCompare(String(b.name||""),undefined,{sensitivity:"base",numeric:true});
+  else if(p.key==="details"){const v=Number(a.createdAt)||0,w=Number(b.createdAt)||0;c=v<w?-1:v>w?1:0;}
+  else{
+   const v=Number(a.lat)||0,w=Number(b.lat)||0;c=v<w?-1:v>w?1:0;
+   if(!c){const x=Number(a.lon)||0,y=Number(b.lon)||0;c=x<y?-1:x>y?1:0;}
+  }
+  return c?c*m:String(a.id||"").localeCompare(String(b.id||""));
+ });
+ return rows;
+}
+function favTableHead(key,label){
+ if(!trackSinglePanelDesktop())return label;
+ const p=favTableSanitizeSort(state._favTableSort);
+ const mark=p.key===key?(p.dir==="asc"?"▲":"▼"):"";
+ return '<button type="button" class="fav-table-sort-btn" data-fav-sort="'+key+'">'+label+
+  '<span aria-hidden="true" class="fav-table-sort-mark">'+mark+'</span></button>';
+}
+function favTableHandle(key){
+ const lab=esc(t("track.colResizeAria")||"");
+ return '<span class="fav-col-resize" data-fav-resize="'+key+'" role="separator" aria-orientation="vertical" aria-label="'+lab+'" title="'+lab+'"></span>';
+}
+function favSelectedIds(){
+ const valid=new Set((state.favorites||[]).map(f=>String(f&&f.id)));
+ const ids=Array.isArray(state._favSelectedIds)?state._favSelectedIds:[];
+ state._favSelectedIds=[...new Set(ids.map(String).filter(id=>valid.has(id)))];
+ return new Set(state._favSelectedIds);
+}
+function favExportSelected(){
+ const ids=favSelectedIds();
+ const selected=(state.favorites||[]).filter(f=>ids.has(String(f.id)));
+ if(!selected.length)return false;
+ const rows=selected.map(f=>({lat:f.lat,lon:f.lon,name:f.name||"",
+   desc:[String(f.notes||"").trim(),String(f.locality||"").trim()].filter(Boolean).join(" — ")}));
+ downloadBlob(buildGeoJSON(rows),"favorites_selected_"+rows.length+"_"+new Date().toISOString().slice(0,10)+".geojson","application/geo+json;charset=utf-8");
+ return true;
+}
+function favTableChangeSort(key){
+ if(!trackSinglePanelDesktop()||!FAV_TABLE_SORT_KEYS.has(key))return false;
+ const old=favTableSanitizeSort(state._favTableSort);
+ const next=old.key===key?{key,dir:old.dir==="asc"?"desc":"asc"}:{key,dir:"asc"};
+ let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+ state._favTableSort=next;let ok=false;
+ try{
+  const result=saveStoreReported(),stored=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  const v=stored.settings.favTableSort;ok=!!result&&result.ok&&v.key===next.key&&v.dir===next.dir;
+ }catch(_){}
+ if(!ok){
+  state._favTableSort=old;
+  try{if(raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,raw);}catch(_){}
+  try{setBadge("error",t("fav.tablePrefSaveFail"));}catch(_){}
+ }
+ renderFavorites();return ok;
+}
+function favTableResizeOnce(){
+ if(window._favTableResizeWired)return;window._favTableResizeWired=true;
+ let d=null;
+ const total=w=>Object.keys(FAV_TABLE_COLS).reduce((n,k)=>n+(w[k]||FAV_TABLE_COLS[k].def),0);
+ function detach(){document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",end);document.removeEventListener("pointercancel",end);}
+ function restore(v){state._favTableWidths=v.before;v.tbl.style.setProperty("--fav-"+v.key+"-col",v.start+"px");v.tbl.style.minWidth=total(v.before)+"px";}
+ function move(e){
+  if(!d||e.pointerId!==d.pid)return;
+  const n=Math.max(d.spec.min,Math.min(d.spec.max,Math.round(d.start+e.clientX-d.x)));
+  if(n===d.now)return;d.now=n;
+  const w=favTableSanitizeWidths({...state._favTableWidths,[d.key]:n});
+  state._favTableWidths=w;d.tbl.style.setProperty("--fav-"+d.key+"-col",n+"px");
+  d.tbl.style.minWidth=total(w)+"px";
+ }
+ function end(e){
+  if(!d||e.pointerId!==d.pid)return;
+  const v=d;d=null;detach();
+  if(e.type==="pointercancel"||v.now===v.start){if(e.type==="pointercancel")restore(v);return;}
+  let ok=false;
+  try{
+   const res=saveStoreReported(),j=JSON.parse(localStorage.getItem(STORAGE_KEY));
+   ok=!!res&&res.ok&&j.settings.favTableWidths[v.key]===v.now;
+  }catch(_){}
+  if(!ok){
+   restore(v);
+   try{if(v.raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,v.raw);}catch(_){}
+   try{setBadge("error",t("fav.tablePrefSaveFail"));}catch(_){}
+  }
+ }
+ document.addEventListener("pointerdown",e=>{
+  const h=e.target&&e.target.closest&&e.target.closest("#favorites-list [data-fav-resize]");
+  if(!h||!trackSinglePanelDesktop()||(window.matchMedia&&window.matchMedia("(pointer:coarse)").matches))return;
+  const key=String(h.getAttribute("data-fav-resize")||"");
+  if(!Object.prototype.hasOwnProperty.call(FAV_TABLE_COLS,key))return;
+  const root=document.getElementById("favorites-list"),tbl=h.closest(".favorites-modal-table");
+  if(!tbl||!root||!root.contains(tbl)||d)return;
+  const spec=FAV_TABLE_COLS[key],idx=Object.keys(FAV_TABLE_COLS).indexOf(key)+1;
+  const cell=tbl.querySelector("tbody tr td:nth-child("+idx+")"),prior=state._favTableWidths||{};
+  const start=typeof prior[key]==="number"?prior[key]:
+   Math.max(spec.min,Math.min(spec.max,Math.round(cell?cell.getBoundingClientRect().width:spec.def)));
+  let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+  d={tbl,key,spec,pid:e.pointerId,x:e.clientX,start,now:start,before:favTableSanitizeWidths(prior),raw};
+  e.preventDefault();document.addEventListener("pointermove",move);document.addEventListener("pointerup",end);document.addEventListener("pointercancel",end);
+ },true);
+}
+
 function renderFavorites(){
   const root = document.getElementById("favorites-list");
   if (!root) return;
@@ -75579,6 +75814,12 @@ function renderFavorites(){
   if (!root._favWpDelegated){
     root._favWpDelegated = true;
     root.addEventListener("click", (ev) => {
+      const sorter=ev.target&&ev.target.closest&&ev.target.closest("[data-fav-sort]");
+      if(sorter&&root.contains(sorter)){ev.preventDefault();favTableChangeSort(String(sorter.getAttribute("data-fav-sort")||""));return;}
+      const exporter=ev.target&&ev.target.closest&&ev.target.closest("[data-fav-export-selected]");
+      if(exporter&&root.contains(exporter)){ev.preventDefault();favExportSelected();return;}
+      const clear=ev.target&&ev.target.closest&&ev.target.closest("[data-fav-clear-selected]");
+      if(clear&&root.contains(clear)){ev.preventDefault();state._favSelectedIds=[];renderFavorites();return;}
       const foc = ev.target && ev.target.closest && ev.target.closest("[data-fav-focus-name]");
       if (foc){
         ev.preventDefault();
@@ -75614,7 +75855,18 @@ function renderFavorites(){
       inp.dataset._prevFavName = fav ? String(fav.name || "") : "";
     });
     root.addEventListener("change", (ev) => {
-      const inp = ev.target;
+      const inp=ev.target;
+      if(inp&&(inp.matches("[data-fav-sel]")||inp.id==="favSelectAll")){
+        const set=favSelectedIds();
+        if(inp.id==="favSelectAll"){
+          const displayed=[...root.querySelectorAll("[data-fav-sel]")].map(e=>String(e.getAttribute("data-fav-sel")));
+          if(inp.checked)displayed.forEach(id=>set.add(id));else displayed.forEach(id=>set.delete(id));
+        }else{
+          const id=String(inp.getAttribute("data-fav-sel"));
+          if(inp.checked)set.add(id);else set.delete(id);
+        }
+        state._favSelectedIds=[...set];renderFavorites();return;
+      }
       if (!inp || !inp.matches || !inp.matches("[data-fav-rename]")) return;
       const id = inp.getAttribute("data-fav-rename");
       const fav = state.favorites.find(x => x.id === id);
@@ -75633,13 +75885,15 @@ function renderFavorites(){
     });
   }
   const flt = (document.getElementById("favFilter") && document.getElementById("favFilter").value || "").trim().toLowerCase();
-  const list = state.favorites.filter(f => {
+  const filtered = state.favorites.filter(f => {
     if (!flt) return true;
     let mgrs = "";
     try { mgrs = latLonToMGRS(f.lat, f.lon, 5).toLowerCase(); } catch(_){}
     const blob = ((f.name || "") + " " + (f.notes || "") + " " + mgrs).toLowerCase();
     return blob.indexOf(flt) !== -1;
   });
+  const list=favTableSorted(filtered);
+  const selected=favSelectedIds();
   if (!state.favorites.length){
     root.innerHTML = `<div class="panel-empty-state" role="status"><p class="panel-empty-main">${esc(t("fav.empty"))}</p><p class="panel-empty-hint">${esc(t("fav.emptyHint"))}</p></div>`;
     return;
@@ -75665,6 +75919,7 @@ function renderFavorites(){
     const copyLbl = esc(t("btn.copy"));
     const copyTip = esc(t("tip.copy"));
     bodyRows += `<tr class="fav-data-row" data-fav-row data-fav-id="${fid}">
+      <td class="fav-sel-cell"><input type="checkbox" data-fav-sel="${fid}"${selected.has(String(f.id))?" checked":""} aria-label="${esc(t("fav.selectRow"))}"></td>
       <td><input type="text" class="fav-name-inp" data-fav-rename="${fid}" data-tip="${esc(String(f.name || "").slice(0, 200))}" value="${esc(f.name)}" maxlength="120" aria-label="${ariaNm}"></td>
       <td class="fav-coords-cell"><code class="fav-coord-select" tabindex="0">${coordDisp}</code></td>
       <td class="fav-detail-cell"><div class="fav-detail-stack">
@@ -75681,9 +75936,33 @@ function renderFavorites(){
       </div></td>
     </tr>`;
   });
-  root.innerHTML = `<div class="favorites-table-wrap"><table class="favorites-modal-table"><thead><tr>
-    <th>${thName}</th><th>${thCoord}</th><th>${thDet}</th><th>${thAct}</th>
+  const selectedVisible=list.filter(f=>selected.has(String(f.id))).length;
+  root.innerHTML = `<div class="fav-table-selection-bar">
+    <span class="fav-selected-count">${esc(String(t("fav.selectedCount")||"").replace("{0}",String(selectedVisible)).replace("{1}",String(list.length)))}</span>
+    <button type="button" class="btn btn-sm" data-fav-export-selected${!selectedVisible?" disabled":""}>${esc(t("fav.exportSelected"))}</button>
+    <button type="button" class="btn btn-sm" data-fav-clear-selected${!selectedVisible?" disabled":""}>${esc(t("fav.clearSelected"))}</button>
+  </div><div class="favorites-table-wrap"><table class="favorites-modal-table"><colgroup>
+    <col class="fav-col-sel"><col class="fav-col-name"><col class="fav-col-coord"><col class="fav-col-details"><col class="fav-col-actions">
+  </colgroup><thead><tr>
+    <th class="fav-th-sel"><input type="checkbox" id="favSelectAll" aria-label="${esc(t("fav.selectAll"))}"${selectedVisible===list.length?" checked":""}>${favTableHandle("sel")}</th>
+    <th>${favTableHead("name",thName)}${favTableHandle("name")}</th>
+    <th>${favTableHead("coord",thCoord)}${favTableHandle("coord")}</th>
+    <th>${favTableHead("details",thDet)}${favTableHandle("details")}</th>
+    <th>${thAct}${favTableHandle("actions")}</th>
   </tr></thead><tbody>${bodyRows}</tbody></table></div>`;
+  if(trackSinglePanelDesktop()){
+    const tbl=root.querySelector(".favorites-modal-table");
+    if(tbl){
+      const w=favTableSanitizeWidths(state._favTableWidths);
+      state._favTableWidths=w;let size=0;
+      for(const k of Object.keys(FAV_TABLE_COLS)){
+        const v=w[k]||FAV_TABLE_COLS[k].def;size+=v;
+        tbl.style.setProperty("--fav-"+k+"-col",v+"px");
+      }
+      tbl.style.minWidth=size+"px";
+    }
+    favTableResizeOnce();
+  }
   root.querySelectorAll("button[data-fav-load]").forEach(b => b.addEventListener("click", () => loadFavorite(b.dataset.favLoad)));
   root.querySelectorAll("button[data-fav-del]").forEach(b => b.addEventListener("click", () => requestRemoveFavorite(b.dataset.favDel)));
   root.querySelectorAll("textarea[data-fav-notes]").forEach(tx => {
@@ -76042,6 +76321,142 @@ function astroIndexPickerWaypoints(){
   }
   return out;
 }
+/* P2-C Astro pickers: per-column width persistence, single-target selection preserved. */
+const ASTRO_TABLE_COL_SPECS=Object.freeze({
+ name:{min:100,max:460,def:160},coord:{min:135,max:420,def:190},
+ mgrs:{min:135,max:380,def:180},when:{min:90,max:330,def:140},
+ icon:{min:58,max:220,def:100},notes:{min:95,max:460,def:175},
+ meta:{min:75,max:380,def:130},locality:{min:95,max:460,def:170},
+ action:{min:72,max:180,def:98}
+});
+function astroTableSanitizeWidths(raw){
+ const out={};
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return out;
+ for(const k of Object.keys(ASTRO_TABLE_COL_SPECS)){
+  const v=raw[k],meta=ASTRO_TABLE_COL_SPECS[k];
+  if(typeof v==="number"&&Number.isFinite(v))
+   out[k]=Math.max(meta.min,Math.min(meta.max,Math.round(v)));
+ }
+ return out;
+}
+function astroTableSanitizeSort(kind,raw){
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return {key:"name",dir:"asc"};
+ const keys=kind==="wp"?new Set(["name","coord","mgrs","when","icon","notes","meta"]):
+  new Set(["name","coord","mgrs","when","locality","notes","meta"]);
+ const key=keys.has(raw.key)?raw.key:"name";
+ return {key,dir:raw.dir==="asc"||raw.dir==="desc"?raw.dir:"asc"};
+}
+function astroTableHandle(kind,key){
+ if(!trackSinglePanelDesktop())return "";
+ const label=esc(t("track.colResizeAria")||"");
+ return '<span class="astro-col-resize" data-astro-resize-kind="'+kind+
+   '" data-astro-resize-key="'+key+'" role="separator" aria-orientation="vertical" aria-label="'+label+'" title="'+label+'"></span>';
+}
+function astroTableApplyWidths(kind,root){
+ if(!trackSinglePanelDesktop()||!root)return;
+ const table=root.querySelector(".astro-wp-table");
+ if(!table)return;
+ const prop=kind==="wp"?"_astroWpTableWidths":"_astroFavTableWidths";
+ const w=astroTableSanitizeWidths(state[prop]);state[prop]=w;
+ const keys=[...table.querySelectorAll("[data-astro-resize-kind]")].map(x=>String(x.getAttribute("data-astro-resize-key")||""));
+ if(!keys.length)return;
+ const group=document.createElement("colgroup");
+ let total=0;
+ for(const key of keys){
+  if(!Object.prototype.hasOwnProperty.call(ASTRO_TABLE_COL_SPECS,key))continue;
+  const spec=ASTRO_TABLE_COL_SPECS[key],v=w[key]||spec.def;
+  const col=document.createElement("col");
+  col.setAttribute("data-astro-col",key);col.style.width=v+"px";
+  group.appendChild(col);total+=v;
+ }
+ table.insertBefore(group,table.tHead);
+ table.style.tableLayout="fixed";table.style.minWidth=total+"px";
+ astroTableResizeOnce();
+}
+function astroTableSortChoose(kind,key){
+ if(!trackSinglePanelDesktop())return false;
+ const prop=kind==="wp"?"astroWpPickerSort":"astroFavPickerSort";
+ const storeKey=kind==="wp"?"astroWpTableSort":"astroFavTableSort";
+ const old=astroTableSanitizeSort(kind,state[prop]);
+ if(!astroTableSanitizeSort(kind,{key,dir:"asc"})||astroTableSanitizeSort(kind,{key,dir:"asc"}).key!==key)return false;
+ const next=old.key===key?{key,dir:old.dir==="asc"?"desc":"asc"}:{key,dir:"asc"};
+ let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+ state[prop]=next;
+ let ok=false;
+ try{
+  const rep=saveStoreReported(),data=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  const v=data.settings[storeKey];
+  ok=!!rep&&rep.ok&&v&&v.key===next.key&&v.dir===next.dir;
+ }catch(_){}
+ if(!ok){
+  state[prop]=old;
+  try{if(raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,raw);}catch(_){}
+  try{setBadge("error",t("astro.tablePrefSaveFail"));}catch(_){}
+ }
+ const inp=document.getElementById(kind==="wp"?"astroWaypointPickerSearch":"astroFavoritePickerSearch");
+ if(kind==="wp")astroFillWaypointPicker(inp?inp.value:"");
+ else astroFillFavoritePicker(inp?inp.value:"");
+ return ok;
+}
+function astroTableResizeOnce(){
+ if(window._astroTableResizeWired)return;window._astroTableResizeWired=true;
+ let drag=null;
+ function off(){
+  document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",finish);
+  document.removeEventListener("pointercancel",finish);
+ }
+ function restore(d){
+  state[d.prop]=d.before;
+  d.col.style.width=d.initial+"px";
+  d.table.style.minWidth=d.originalMin+"px";
+ }
+ function move(ev){
+  if(!drag||ev.pointerId!==drag.pid)return;
+  const n=Math.max(drag.spec.min,Math.min(drag.spec.max,Math.round(drag.initial+ev.clientX-drag.x)));
+  if(n===drag.now)return;drag.now=n;
+  state[drag.prop]=astroTableSanitizeWidths({...state[drag.prop],[drag.key]:n});
+  drag.col.style.width=n+"px";
+  drag.table.style.minWidth=(drag.originalMin+n-drag.initial)+"px";
+ }
+ function finish(ev){
+  if(!drag||ev.pointerId!==drag.pid)return;
+  const d=drag;drag=null;off();
+  if(ev.type==="pointercancel"||d.now===d.initial){if(ev.type==="pointercancel")restore(d);return;}
+  let ok=false;
+  try{
+   const rep=saveStoreReported(),data=JSON.parse(localStorage.getItem(STORAGE_KEY));
+   ok=!!rep&&rep.ok&&data.settings[d.storeKey][d.key]===d.now;
+  }catch(_){}
+  if(!ok){
+   restore(d);
+   try{if(d.raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,d.raw);}catch(_){}
+   try{setBadge("error",t("astro.tablePrefSaveFail"));}catch(_){}
+  }
+ }
+ document.addEventListener("pointerdown",ev=>{
+  const h=ev.target&&ev.target.closest&&ev.target.closest("[data-astro-resize-kind][data-astro-resize-key]");
+  if(!h||!trackSinglePanelDesktop()||(window.matchMedia&&window.matchMedia("(pointer:coarse)").matches))return;
+  const kind=String(h.getAttribute("data-astro-resize-kind")||"");
+  const key=String(h.getAttribute("data-astro-resize-key")||"");
+  if(!["wp","fav"].includes(kind)||!Object.prototype.hasOwnProperty.call(ASTRO_TABLE_COL_SPECS,key))return;
+  const root=h.closest(kind==="wp"?"#astroWaypointPickerList":"#astroFavoritePickerList");
+  if(!root||drag)return;
+  const tbl=h.closest(".astro-wp-table"),col=tbl&&tbl.querySelector('col[data-astro-col="'+key+'"]');
+  if(!tbl||!col)return;
+  const spec=ASTRO_TABLE_COL_SPECS[key],prop=kind==="wp"?"_astroWpTableWidths":"_astroFavTableWidths";
+  const old=state[prop]||{};
+  const initial=typeof old[key]==="number"?old[key]:
+   Math.max(spec.min,Math.min(spec.max,Math.round(col.getBoundingClientRect().width||spec.def)));
+  let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+  drag={table:tbl,col,key,prop,spec,pid:ev.pointerId,x:ev.clientX,
+    initial,now:initial,originalMin:parseFloat(tbl.style.minWidth)||0,
+    before:astroTableSanitizeWidths(old),storeKey:kind==="wp"?"astroWpTableWidths":"astroFavTableWidths",raw};
+  ev.preventDefault();ev.stopPropagation();
+  document.addEventListener("pointermove",move);document.addEventListener("pointerup",finish);
+  document.addEventListener("pointercancel",finish);
+ },true);
+}
+
 function astroFillWaypointPicker(qStr){
   const list = document.getElementById("astroWaypointPickerList");
   if (!list) return;
@@ -76082,7 +76497,7 @@ function astroFillWaypointPicker(qStr){
   };
   const thSort = (k) =>
     "<th scope=\"col\" data-astro-wp-sort=\"" + k + "\" class=\"astro-wp-th-sort\" title=\"" + sortTip + "\" aria-sort=\"" + ariaSortVal(k) + "\">" +
-    thLbl(k) + esc(sortInd(k)) + "</th>";
+    thLbl(k) + esc(sortInd(k)) + astroTableHandle("wp",k) + "</th>";
   let thead = "<tr>";
   thead += thSort("name") + thSort("coord");
   if (col.mgrs) thead += thSort("mgrs");
@@ -76090,7 +76505,7 @@ function astroFillWaypointPicker(qStr){
   if (col.icon) thead += thSort("icon");
   if (col.notes) thead += thSort("notes");
   if (col.meta) thead += thSort("meta");
-  thead += "<th scope=\"col\" class=\"astro-wp-th-action\">" + thLbl("action") + "</th></tr>";
+  thead += "<th scope=\"col\" class=\"astro-wp-th-action\">" + thLbl("action") + astroTableHandle("wp","action") + "</th></tr>";
   let tbody = "";
   for (const it of slice){
     let dotHtml = "";
@@ -76121,6 +76536,7 @@ function astroFillWaypointPicker(qStr){
     tbody += tr;
   }
   list.innerHTML = "<div class=\"astro-wp-table-wrap\"><table class=\"astro-wp-table\"><thead>" + thead + "</thead><tbody>" + tbody + "</tbody></table></div>";
+  astroTableApplyWidths("wp",list);
 }
 function astroCloseWaypointPicker(){
   try { if (typeof astroCloseWpColsPopover === "function") astroCloseWpColsPopover(); } catch(_){}
@@ -76239,17 +76655,14 @@ function ensureAstroWaypointPickerWired(){
   if (list && !list._astroWpListClickBound){
     list._astroWpListClickBound = true;
     list.addEventListener("click", (ev) => {
+      if(ev.target&&ev.target.closest&&ev.target.closest("[data-astro-resize-kind]"))return;
       const th = ev.target && ev.target.closest && ev.target.closest("[data-astro-wp-sort]");
       if (th && list.contains(th)){
         ev.preventDefault();
         const k = th.getAttribute("data-astro-wp-sort");
         if (!k) return;
         astroEnsureWpPickerUiState();
-        const srt = state.astroWpPickerSort;
-        if (srt.key === k) srt.dir = srt.dir === "asc" ? "desc" : "asc";
-        else { srt.key = k; srt.dir = "asc"; }
-        const sInp = document.getElementById("astroWaypointPickerSearch");
-        try { astroFillWaypointPicker(sInp ? sInp.value : ""); } catch(_){}
+        astroTableSortChoose("wp",k);
         return;
       }
       const b = ev.target && ev.target.closest && ev.target.closest("[data-astro-wp-use]");
@@ -76448,7 +76861,7 @@ function astroFillFavoritePicker(qStr){
   };
   const thSort = (k) =>
     "<th scope=\"col\" data-astro-fav-sort=\"" + k + "\" class=\"astro-wp-th-sort\" title=\"" + sortTip + "\" aria-sort=\"" + ariaSortVal(k) + "\">" +
-    thLbl(k) + esc(sortInd(k)) + "</th>";
+    thLbl(k) + esc(sortInd(k)) + astroTableHandle("fav",k) + "</th>";
   let thead = "<tr>";
   thead += thSort("name") + thSort("coord");
   if (col.mgrs) thead += thSort("mgrs");
@@ -76456,7 +76869,7 @@ function astroFillFavoritePicker(qStr){
   if (col.locality) thead += thSort("locality");
   if (col.notes) thead += thSort("notes");
   if (col.meta) thead += thSort("meta");
-  thead += "<th scope=\"col\" class=\"astro-wp-th-action\">" + thLbl("action") + "</th></tr>";
+  thead += "<th scope=\"col\" class=\"astro-wp-th-action\">" + thLbl("action") + astroTableHandle("fav","action") + "</th></tr>";
   let tbody = "";
   const dash = esc("\u2014");
   for (const it of slice){
@@ -76482,6 +76895,7 @@ function astroFillFavoritePicker(qStr){
     tbody += tr;
   }
   list.innerHTML = "<div class=\"astro-wp-table-wrap\"><table class=\"astro-wp-table\"><thead>" + thead + "</thead><tbody>" + tbody + "</tbody></table></div>";
+  astroTableApplyWidths("fav",list);
 }
 function astroCloseFavoritePicker(){
   try { if (typeof astroCloseFavColsPopover === "function") astroCloseFavColsPopover(); } catch(_){}
@@ -76600,17 +77014,14 @@ function ensureAstroFavoritePickerWired(){
   if (list && !list._astroFavListClickBound){
     list._astroFavListClickBound = true;
     list.addEventListener("click", (ev) => {
+      if(ev.target&&ev.target.closest&&ev.target.closest("[data-astro-resize-kind]"))return;
       const th = ev.target && ev.target.closest && ev.target.closest("[data-astro-fav-sort]");
       if (th && list.contains(th)){
         ev.preventDefault();
         const k = th.getAttribute("data-astro-fav-sort");
         if (!k) return;
         astroEnsureFavPickerUiState();
-        const srt = state.astroFavPickerSort;
-        if (srt.key === k) srt.dir = srt.dir === "asc" ? "desc" : "asc";
-        else { srt.key = k; srt.dir = "asc"; }
-        const sInp = document.getElementById("astroFavoritePickerSearch");
-        try { astroFillFavoritePicker(sInp ? sInp.value : ""); } catch(_){}
+        astroTableSortChoose("fav",k);
         return;
       }
       const b = ev.target && ev.target.closest && ev.target.closest("[data-astro-fav-use]");
@@ -77561,6 +77972,155 @@ async function batchFillLocalities(rows){
   state.lastBatchRows = rows;
   if (state.persist) saveStore();
 }
+/* P2-C Batch: view-sort without changing row origin index, bounded persisted columns. */
+const BATCH_TABLE_SORT_KEYS=new Set(["idx","input","dd","utm","mgrs","loc","err"]);
+const BATCH_TABLE_COLS=Object.freeze({
+ idx:{min:42,max:90,def:50},input:{min:110,max:560,def:190},
+ dd:{min:135,max:440,def:210},utm:{min:130,max:430,def:175},
+ mgrs:{min:130,max:430,def:175},loc:{min:130,max:480,def:190},
+ err:{min:120,max:480,def:220}
+});
+function batchTableSanitizeWidths(raw){
+ const out={};
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return out;
+ for(const key of Object.keys(BATCH_TABLE_COLS)){
+  const v=raw[key],spec=BATCH_TABLE_COLS[key];
+  if(typeof v==="number"&&Number.isFinite(v))
+   out[key]=Math.max(spec.min,Math.min(spec.max,Math.round(v)));
+ }
+ return out;
+}
+function batchTableSanitizeSort(raw){
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return {key:"idx",dir:"asc"};
+ const key=BATCH_TABLE_SORT_KEYS.has(raw.key)?raw.key:"idx";
+ return {key,dir:raw.dir==="asc"||raw.dir==="desc"?raw.dir:"asc"};
+}
+function batchTableDisplayRows(rows){
+ const out=(rows||[]).map((r,i)=>({row:r,index:i}));
+ if(!trackSinglePanelDesktop())return out;
+ const sort=batchTableSanitizeSort(state._batchTableSort);
+ state._batchTableSort=sort;const mul=sort.dir==="asc"?1:-1;
+ out.sort((a,b)=>{
+  let va,vb;
+  if(sort.key==="idx"){va=a.index;vb=b.index;}
+  else if(sort.key==="dd"){
+   va=a.row&&a.row.ok&&Number.isFinite(a.row.lat)?a.row.lat:-1000;
+   vb=b.row&&b.row.ok&&Number.isFinite(b.row.lat)?b.row.lat:-1000;
+  }else{
+   va=String(a.row&&a.row[sort.key]||"").toLowerCase();
+   vb=String(b.row&&b.row[sort.key]||"").toLowerCase();
+  }
+  const c=typeof va==="string"?va.localeCompare(vb,undefined,{sensitivity:"base",numeric:true}):va<vb?-1:va>vb?1:0;
+  return c?c*mul:a.index-b.index;
+ });
+ return out;
+}
+function batchTableHandle(key){
+ if(!trackSinglePanelDesktop())return "";
+ const lab=esc(t("track.colResizeAria")||"");
+ return '<span class="batch-col-resize" data-batch-resize="'+key+'" role="separator" aria-orientation="vertical" aria-label="'+lab+'" title="'+lab+'"></span>';
+}
+function batchTableHeader(key,label){
+ const text=esc(label);
+ if(!trackSinglePanelDesktop())return text;
+ const stateSort=batchTableSanitizeSort(state._batchTableSort);
+ const arrow=stateSort.key===key?(stateSort.dir==="asc"?"▲":"▼"):"";
+ return '<button type="button" class="batch-table-sort-btn" data-batch-sort="'+key+'">'+text+
+  '<span aria-hidden="true" class="batch-table-sort-mark">'+arrow+'</span></button>';
+}
+function batchTableApplyWidths(root){
+ if(!trackSinglePanelDesktop()||!root)return;
+ const table=root.querySelector("table.batch-table");
+ if(!table)return;
+ const widths=batchTableSanitizeWidths(state._batchTableWidths);
+ state._batchTableWidths=widths;
+ const keys=[...table.querySelectorAll("thead [data-batch-column]")].map(th=>th.getAttribute("data-batch-column"));
+ const colgroup=document.createElement("colgroup");let total=0;
+ for(const key of keys){
+  if(!Object.prototype.hasOwnProperty.call(BATCH_TABLE_COLS,key))continue;
+  const n=widths[key]||BATCH_TABLE_COLS[key].def,totalWidth=n+"px";
+  const col=document.createElement("col");
+  col.setAttribute("data-batch-col",key);col.style.width=totalWidth;
+  colgroup.appendChild(col);total+=n;
+ }
+ table.insertBefore(colgroup,table.tHead);
+ table.style.tableLayout="fixed";table.style.minWidth=total+"px";
+ batchTableResizeOnce();
+}
+function batchTableChangeSort(key){
+ if(!trackSinglePanelDesktop()||!BATCH_TABLE_SORT_KEYS.has(key))return false;
+ const old=batchTableSanitizeSort(state._batchTableSort);
+ const next=old.key===key?{key,dir:old.dir==="asc"?"desc":"asc"}:{key,dir:"asc"};
+ let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+ state._batchTableSort=next;
+ let ok=false;
+ try{
+  const rep=saveStoreReported(),obj=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  const v=obj.settings.batchTableSort;
+  ok=!!rep&&rep.ok&&v.key===next.key&&v.dir===next.dir;
+ }catch(_){}
+ if(!ok){
+  state._batchTableSort=old;
+  try{if(raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,raw);}catch(_){}
+  try{setBadge("error",t("batch.tablePrefSaveFail"));}catch(_){}
+ }
+ const root=document.getElementById("batch-results");
+ let rows=[];try{rows=JSON.parse(root.dataset.rows||"[]");}catch(_){}
+ renderBatch(rows);return ok;
+}
+function batchTableResizeOnce(){
+ if(window._batchTableResizeWired)return;window._batchTableResizeWired=true;
+ let drag=null;
+ function stop(){
+  document.removeEventListener("pointermove",move);
+  document.removeEventListener("pointerup",finish);
+  document.removeEventListener("pointercancel",finish);
+ }
+ function restore(d){
+  state._batchTableWidths=d.before;d.col.style.width=d.initial+"px";
+  d.table.style.minWidth=d.originalMin+"px";
+ }
+ function move(e){
+  if(!drag||drag.pid!==e.pointerId)return;
+  const n=Math.max(drag.meta.min,Math.min(drag.meta.max,Math.round(drag.initial+e.clientX-drag.x)));
+  if(n===drag.now)return;drag.now=n;
+  state._batchTableWidths=batchTableSanitizeWidths({...state._batchTableWidths,[drag.key]:n});
+  drag.col.style.width=n+"px";drag.table.style.minWidth=drag.originalMin+n-drag.initial+"px";
+ }
+ function finish(e){
+  if(!drag||drag.pid!==e.pointerId)return;
+  const d=drag;drag=null;stop();
+  if(e.type==="pointercancel"||d.now===d.initial){if(e.type==="pointercancel")restore(d);return;}
+  let ok=false;
+  try{
+   const rep=saveStoreReported(),obj=JSON.parse(localStorage.getItem(STORAGE_KEY));
+   ok=!!rep&&rep.ok&&obj.settings.batchTableWidths[d.key]===d.now;
+  }catch(_){}
+  if(!ok){
+   restore(d);
+   try{if(d.raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,d.raw);}catch(_){}
+   try{setBadge("error",t("batch.tablePrefSaveFail"));}catch(_){}
+  }
+ }
+ document.addEventListener("pointerdown",e=>{
+  const h=e.target&&e.target.closest&&e.target.closest("#batch-results [data-batch-resize]");
+  if(!h||!trackSinglePanelDesktop()||(window.matchMedia&&window.matchMedia("(pointer:coarse)").matches))return;
+  const key=String(h.getAttribute("data-batch-resize")||"");
+  if(!Object.prototype.hasOwnProperty.call(BATCH_TABLE_COLS,key))return;
+  const root=document.getElementById("batch-results"),table=h.closest(".batch-table");
+  if(!table||!root||!root.contains(table)||drag)return;
+  const col=table.querySelector('col[data-batch-col="'+key+'"]');if(!col)return;
+  const spec=BATCH_TABLE_COLS[key],prior=state._batchTableWidths||{};
+  const initial=typeof prior[key]==="number"?prior[key]:
+   Math.max(spec.min,Math.min(spec.max,Math.round(col.getBoundingClientRect().width||spec.def)));
+  let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+  drag={table,col,key,meta:spec,pid:e.pointerId,x:e.clientX,initial,now:initial,
+   originalMin:parseFloat(table.style.minWidth)||0,before:batchTableSanitizeWidths(prior),raw};
+  e.preventDefault();document.addEventListener("pointermove",move);
+  document.addEventListener("pointerup",finish);document.addEventListener("pointercancel",finish);
+ },true);
+}
+
 function renderBatch(rows){
   const root = document.getElementById("batch-results");
   if (!rows.length){
@@ -77568,17 +78128,16 @@ function renderBatch(rows){
     return;
   }
   const showLoc = !!state.geocodeBatchLoc;
-  let html = `<table class="batch-table"><thead><tr>
-    <th>#</th>
-    <th>${t("batch.th.input")}</th>
-    <th>${t("batch.th.dd")}</th>
-    <th>${t("batch.th.utm")}</th>
-    <th>${t("batch.th.mgrs")}</th>
-    ${showLoc ? `<th>${t("batch.th.loc")}</th>` : ""}
-    <th>${t("batch.th.err")}</th></tr></thead><tbody>`;
-  let idx = 0;
-  for (const r of rows){
-    const i = idx; idx++;
+  let html = `<div class="batch-table-wrap"><table class="batch-table"><thead><tr>
+    <th data-batch-column="idx">${batchTableHeader("idx","#")}${batchTableHandle("idx")}</th>
+    <th data-batch-column="input">${batchTableHeader("input",t("batch.th.input"))}${batchTableHandle("input")}</th>
+    <th data-batch-column="dd">${batchTableHeader("dd",t("batch.th.dd"))}${batchTableHandle("dd")}</th>
+    <th data-batch-column="utm">${batchTableHeader("utm",t("batch.th.utm"))}${batchTableHandle("utm")}</th>
+    <th data-batch-column="mgrs">${batchTableHeader("mgrs",t("batch.th.mgrs"))}${batchTableHandle("mgrs")}</th>
+    ${showLoc ? `<th data-batch-column="loc">${batchTableHeader("loc",t("batch.th.loc"))}${batchTableHandle("loc")}</th>` : ""}
+    <th data-batch-column="err">${batchTableHeader("err",t("batch.th.err"))}${batchTableHandle("err")}</th></tr></thead><tbody>`;
+  for(const item of batchTableDisplayRows(rows)){
+    const r=item.row,i=item.index,idx=i+1;
     if (r.ok){
       const locCell = showLoc ? `<td class="loc-cell" data-tip="${esc(r.loc || "")}">${esc(r.loc || "")}</td>` : "";
       html += `<tr data-batch-idx="${i}"><td class="num">${idx}</td><td>${esc(r.input)}</td><td>${esc(r.dd)}</td><td>${esc(r.utm)}</td><td>${esc(r.mgrs)}</td>${locCell}<td></td></tr>`;
@@ -77587,7 +78146,7 @@ function renderBatch(rows){
       html += `<tr class="err" data-batch-idx="${i}"><td class="num">${idx}</td><td>${esc(r.input)}</td><td></td><td></td><td></td>${emptyLoc}<td>${esc(r.err)}</td></tr>`;
     }
   }
-  html += "</tbody></table>";
+  html += "</tbody></table></div>";
 
   // Route / Area summary panel: requires at least 2 valid points.
   const pts = rows.filter(r => r.ok && typeof r.lat === "number" && typeof r.lon === "number");
@@ -77605,6 +78164,15 @@ function renderBatch(rows){
 
   root.innerHTML = html;
   root.dataset.rows = JSON.stringify(rows);
+  batchTableApplyWidths(root);
+  if(!root._batchSortWired){
+    root._batchSortWired=true;
+    root.addEventListener("click",e=>{
+      if(e.target&&e.target.closest&&e.target.closest("[data-batch-resize]"))return;
+      const b=e.target&&e.target.closest&&e.target.closest("[data-batch-sort]");
+      if(b&&root.contains(b)){e.preventDefault();batchTableChangeSort(String(b.getAttribute("data-batch-sort")||"")); }
+    });
+  }
 
   // Wire up the toggle + render the numbers
   if (pts.length >= 2){
@@ -79747,12 +80315,100 @@ function renderRangeRingsPanel(){
   renderRangeRingsList();
 }
 
+/* P2-B4: presentation-only ordering, strict persisted RR table widths. */
+const RR_TABLE_SORT_KEYS=new Set(["vis","name","center","rings","when"]);
+const RR_TABLE_COLUMN_SPECS=Object.freeze({
+ sel:{min:36,max:92,def:36},vis:{min:44,max:112,def:44},
+ name:{min:72,max:460,def:120},center:{min:72,max:400,def:110},
+ rings:{min:80,max:440,def:120},when:{min:72,max:320,def:100},
+ actions:{min:260,max:600,def:260}
+});
+function rrTableSanitizeWidths(raw){
+ const out={};
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return out;
+ for(const k of Object.keys(RR_TABLE_COLUMN_SPECS)){
+  const v=raw[k],c=RR_TABLE_COLUMN_SPECS[k];
+  if(typeof v==="number"&&Number.isFinite(v))out[k]=Math.max(c.min,Math.min(c.max,Math.round(v)));
+ }
+ return out;
+}
+function rrTableSanitizeSort(raw){
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))return {key:"when",dir:"desc"};
+ const key=RR_TABLE_SORT_KEYS.has(raw.key)?raw.key:"when";
+ return {key,dir:raw.dir==="asc"||raw.dir==="desc"?raw.dir:key==="name"?"asc":"desc"};
+}
+function rrTableSortedRows(source){
+ const out=(source||[]).slice();
+ if(!trackSinglePanelDesktop())return out;
+ const sort=rrTableSanitizeSort(state._rrTableSort);
+ state._rrTableSort=sort;
+ const val=o=>{
+  if(sort.key==="vis")return o.visible===false?0:1;
+  if(sort.key==="name")return String(o.name||"").toLowerCase();
+  if(sort.key==="center")return o.center&&Number.isFinite(o.center.lat)?o.center.lat:-1000;
+  if(sort.key==="rings"){
+   const arr=Array.isArray(o.distancesM)?o.distancesM.filter(Number.isFinite):[];
+   return arr.length*1000000+(arr.length?Math.max(...arr):0);
+  }
+  return Number.isFinite(o.createdAt)?o.createdAt:0;
+ };
+ const m=sort.dir==="asc"?1:-1;
+ out.sort((a,b)=>{
+  const v=val(a),w=val(b);
+  let cmp=typeof v==="string"&&typeof w==="string"?v.localeCompare(w,undefined,{sensitivity:"base",numeric:true}):v<w?-1:v>w?1:0;
+  if(!cmp&&sort.key==="center"){
+   const x=Number(a.center&&a.center.lon)||0,y=Number(b.center&&b.center.lon)||0;
+   cmp=x<y?-1:x>y?1:0;
+  }
+  return cmp?cmp*m:String(a.id||"").localeCompare(String(b.id||""));
+ });
+ return out;
+}
+function rrTableHeader(key,label){
+ if(!trackSinglePanelDesktop())return label;
+ const p=rrTableSanitizeSort(state._rrTableSort);
+ const arrow=p.key===key?(p.dir==="asc"?"▲":"▼"):"";
+ return '<button type="button" class="rr-table-sort-btn" data-rr-sort="'+key+'" aria-label="'+label+'">'+
+  label+'<span class="rr-table-sort-mark" aria-hidden="true">'+arrow+'</span></button>';
+}
+function rrTableChooseSort(key){
+ if(!trackSinglePanelDesktop()||!RR_TABLE_SORT_KEYS.has(key))return false;
+ const old=rrTableSanitizeSort(state._rrTableSort);
+ const next=old.key===key?{key,dir:old.dir==="asc"?"desc":"asc"}:{key,dir:key==="name"?"asc":"desc"};
+ let raw=null;try{raw=localStorage.getItem(STORAGE_KEY);}catch(_){}
+ state._rrTableSort=next;
+ let ok=false;
+ try{
+  const saved=saveStoreReported(),obj=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  const v=obj.settings.rrTableSort;
+  ok=!!saved&&saved.ok&&v.key===next.key&&v.dir===next.dir;
+ }catch(_){}
+ if(!ok){
+  state._rrTableSort=old;
+  try{if(raw===null)localStorage.removeItem(STORAGE_KEY);else localStorage.setItem(STORAGE_KEY,raw);}catch(_){}
+  try{setBadge("error",t("rr.tablePrefSaveFail"));}catch(_){}
+ }
+ renderRangeRingsList();
+ return ok;
+}
+function rrTableApplyWidths(table){
+ if(!table||!trackSinglePanelDesktop())return;
+ const w=rrTableSanitizeWidths(state._rrTableWidths);
+ state._rrTableWidths=w;
+ let total=0;
+ for(const k of Object.keys(RR_TABLE_COLUMN_SPECS)){
+  const v=w[k]||RR_TABLE_COLUMN_SPECS[k].def;
+  table.style.setProperty("--rr-"+k+"-col",v+"px");total+=v;
+ }
+ table.style.minWidth=total+"px";
+}
+
 function renderRangeRingsList(){
   const root = document.getElementById("rrList");
   if (!root) return;
   ensureRangeRingState();
   ensureRangeRingsSelectionState();
-  const sets = Array.isArray(state.rangeRingSets) ? state.rangeRingSets.filter(Boolean) : [];
+  const sets = rrTableSortedRows(Array.isArray(state.rangeRingSets)?state.rangeRingSets.filter(Boolean):[]);
   if (!sets.length){
     try { rrClearPendingDelete(); } catch(_){}
     try { if (typeof rrCancelPendingRename === "function") rrCancelPendingRename(); } catch(_){}
@@ -79773,23 +80429,23 @@ function renderRangeRingsList(){
   const ariaNameLab = esc((typeof t === "function") ? (t("rangeRings.colName") || "") : "");
   const colRa = esc((typeof t === "function") ? (t("rangeRings.colResizeAria") || "") : "");
   const rrH = (slug) => (
-    `<span class="rr-${esc(slug)}-col-resize" role="separator" aria-orientation="vertical" aria-label="${colRa}" title="${colRa}"></span>`
+    `<span class="rr-col-resize rr-${esc(slug)}-col-resize" data-rr-resize="${esc(slug)}" role="separator" aria-orientation="vertical" aria-label="${colRa}" title="${colRa}"></span>`
   );
   let html = `<table class="rr-table"><colgroup>
-    <col class="rr-col-sel" style="width:36px" />
-    <col class="rr-col-vis" style="width:44px" />
+    <col class="rr-col-sel" />
+    <col class="rr-col-vis" />
     <col class="rr-col-name" />
     <col class="rr-col-center" />
     <col class="rr-col-rings" />
     <col class="rr-col-when" />
     <col class="rr-col-actions" />
   </colgroup><thead><tr>
-    <th class="rr-th-sel" title="${thSel}"><input type="checkbox" id="rrSelectAll" aria-label=""></th>
-    <th class="rr-th-vis rr-vis-head">${thVis}</th>
-    <th class="rr-th-name rr-th-rrz">${thName}${rrH("name")}</th>
-    <th class="rr-th-center rr-th-rrz">${thCenter}${rrH("center")}</th>
-    <th class="rr-th-rings rr-th-rrz">${thRings}${rrH("rings")}</th>
-    <th class="rr-th-when rr-th-rrz">${thWhen}${rrH("when")}</th>
+    <th class="rr-th-sel rr-th-rrz" title="${thSel}"><input type="checkbox" id="rrSelectAll" aria-label="">${rrH("sel")}</th>
+    <th class="rr-th-vis rr-vis-head rr-th-rrz">${rrTableHeader("vis",thVis)}${rrH("vis")}</th>
+    <th class="rr-th-name rr-th-rrz">${rrTableHeader("name",thName)}${rrH("name")}</th>
+    <th class="rr-th-center rr-th-rrz">${rrTableHeader("center",thCenter)}${rrH("center")}</th>
+    <th class="rr-th-rings rr-th-rrz">${rrTableHeader("rings",thRings)}${rrH("rings")}</th>
+    <th class="rr-th-when rr-th-rrz">${rrTableHeader("when",thWhen)}${rrH("when")}</th>
     <th class="rr-th-actions rr-actions-cell rr-th-rrz">${thAct}${rrH("actions")}</th>
   </tr></thead><tbody>`;
   for (const s of sets){
@@ -79821,17 +80477,7 @@ function renderRangeRingsList(){
   }
   html += "</tbody></table>";
   root.innerHTML = html;
-  try {
-    const tbl = root.querySelector("table.rr-table");
-    if (tbl && sets.length){
-      const c = (v, lo, hi) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : null);
-      const a = c(root._rrNameColPx, 72, 420); if (a != null) tbl.style.setProperty("--rr-name-col", a + "px");
-      const b = c(root._rrCenterColPx, 72, 300); if (b != null) tbl.style.setProperty("--rr-center-col", b + "px");
-      const c1 = c(root._rrRingsColPx, 80, 360); if (c1 != null) tbl.style.setProperty("--rr-rings-col", c1 + "px");
-      const d = c(root._rrWhenColPx, 72, 320); if (d != null) tbl.style.setProperty("--rr-when-col", d + "px");
-      const e = c(root._rrActionsColPx, 260, 520); if (e != null) tbl.style.setProperty("--rr-actions-col", e + "px");
-    }
-  } catch(_){ }
+  try{rrTableApplyWidths(root.querySelector("table.rr-table"));}catch(_){}
   try { ensureRangeRingsTableColResizeWired(); } catch(_){ }
   try {
     const sa = root.querySelector("#rrSelectAll");
@@ -80252,6 +80898,10 @@ function bindRangeRingsUI(){
       }
     });
     list.addEventListener("click", (ev) => {
+      const sorter=ev.target&&ev.target.closest&&ev.target.closest("[data-rr-sort]");
+      if(sorter&&list.contains(sorter)){
+        ev.preventDefault();rrTableChooseSort(String(sorter.getAttribute("data-rr-sort")||""));return;
+      }
       const ed = ev.target.closest && ev.target.closest("[data-rr-edit]");
       if (ed){
         ev.preventDefault();
@@ -105852,6 +106502,16 @@ function init(){
        state._polygonPanelListSort=polygonPanelSanitizeSortPreference(stored.settings.polygonPanelSort);
        state._offlineAreaColumnWidths=offlineAreaTableSanitizeWidths(stored.settings.offlineAreaColumnWidths);
        state._offlineAreasSort=offlineAreaTableSanitizeSort(stored.settings.offlineAreaSort);
+       state._rrTableWidths=rrTableSanitizeWidths(stored.settings.rrTableWidths);
+       state._rrTableSort=rrTableSanitizeSort(stored.settings.rrTableSort);
+       state._favTableWidths=favTableSanitizeWidths(stored.settings.favTableWidths);
+       state._favTableSort=favTableSanitizeSort(stored.settings.favTableSort);
+       state._astroWpTableWidths=astroTableSanitizeWidths(stored.settings.astroWpTableWidths);
+       state._astroFavTableWidths=astroTableSanitizeWidths(stored.settings.astroFavTableWidths);
+       state.astroWpPickerSort=astroTableSanitizeSort("wp",stored.settings.astroWpTableSort);
+       state.astroFavPickerSort=astroTableSanitizeSort("fav",stored.settings.astroFavTableSort);
+       state._batchTableWidths=batchTableSanitizeWidths(stored.settings.batchTableWidths);
+       state._batchTableSort=batchTableSanitizeSort(stored.settings.batchTableSort);
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
       if (stored.settings.gisMeasureFlow === "direct" || stored.settings.gisMeasureFlow === "inverse2"){
