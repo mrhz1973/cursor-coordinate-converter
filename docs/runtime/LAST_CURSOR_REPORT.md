@@ -1,3 +1,15 @@
+# Build316 / P2 tabelle desktop — QA finale PASS / CLOSED
+
+BLOCK: GIS-TABLES-ALL-REMAINING-P2.
+QA: QA GIS-TABLES-ALL-REMAINING-P2 PASS operatore del 18/11/2026; unica attestazione finale richiesta.
+TECNICO: review GPT-SOSTITUTIVA DELICATO 27/27 PASS, JS inline 2/2, candidato 134/134, HTTPS LIVE 134/134, reviewer esterno NOT_PERFORMED/backstop.
+CLOSURE: Regola H docs-only, nessun deploy/nuova build/riavvio GIS.
+RUNTIME LIVE INVARIATO: Build316 source de583b4a1d774544b53b3277c334680f2a973652, SHA256 edf2042254b53852ee7402655b139c698cc09d958be555b397fdc13162525917.
+NEXT: P3 quote parziali non coperte; P0 inventario origine HTTP senza cancellazioni; P4 menu unico SOLO FUTURO; mobile PAUSA, DTM terreno HOLD.
+EVIDENCE: [Ricevuta](../orchestrator/evidence/2026-11-18-qa316-p2-final-closure/REPORT.md).
+
+## Pass precedenti (storico, non LIVE STATE)
+
 # Build316 P2 finale multi-tab LIVE — QA operatore UNICA PENDING
 
 BLOCK: GIS-TABLES-ALL-REMAINING-P2.
