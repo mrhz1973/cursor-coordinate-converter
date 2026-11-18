@@ -18552,6 +18552,10 @@ const I18N = {
     "track.profile.maxElevation":"Quota max",
     "track.profile.savedWithoutElevation":"Traccia salvata senza profilo altimetrico.",
     "track.profile.calculateTerrain":"Calcola quote dal terreno",
+    "track.profile.calculateMissing":"Calcola quote mancanti",
+    "track.profile.originalCount":"Originali: {0}",
+    "track.profile.estimatedCount":"Stimate: {0}",
+    "track.profile.mixedCaution":"Quote originali e stime distinte: dislivelli complessivi misti omessi, pendenze tra fonti non calcolate.",
     "track.profile.calculating":"Calcolo quote...",
     "track.profile.terrainOpenMeteo":"Profilo calcolato da Open-Meteo Elevation (Copernicus DEM GLO-90, 90 m)",
     "track.profile.terrainLocalDtm":"Profilo calcolato da DTM locale 5 m (EPSG:3003)",
@@ -21124,6 +21128,10 @@ const I18N = {
     "track.profile.maxElevation":"Max elevation",
     "track.profile.savedWithoutElevation":"Track saved without an elevation profile.",
     "track.profile.calculateTerrain":"Calculate terrain elevation",
+    "track.profile.calculateMissing":"Calculate missing elevations",
+    "track.profile.originalCount":"Original: {0}",
+    "track.profile.estimatedCount":"Estimated: {0}",
+    "track.profile.mixedCaution":"Original and estimated elevations stay separate; mixed-source ascent/descent and grades are not calculated.",
     "track.profile.calculating":"Calculating elevations...",
     "track.profile.terrainOpenMeteo":"Estimated profile from Open-Meteo Elevation (Copernicus DEM GLO-90, 90 m)",
     "track.profile.terrainLocalDtm":"Estimated profile from local 5 m DTM (EPSG:3003)",
@@ -23421,6 +23429,10 @@ const I18N = {
     "track.profile.maxElevation":"Altitude max",
     "track.profile.savedWithoutElevation":"Trace enregistrée sans profil altimétrique.",
     "track.profile.calculateTerrain":"Calculer les altitudes du terrain",
+    "track.profile.calculateMissing":"Calculer les altitudes manquantes",
+    "track.profile.originalCount":"Originales : {0}",
+    "track.profile.estimatedCount":"Estimées : {0}",
+    "track.profile.mixedCaution":"Altitudes originales et estimées séparées : dénivelés mixtes omis et pentes entre sources non calculées.",
     "track.profile.calculating":"Calcul des altitudes...",
     "track.profile.terrainOpenMeteo":"Profil estimé via Open-Meteo Elevation (Copernicus DEM GLO-90, 90 m)",
     "track.profile.terrainLocalDtm":"Profil estimé via le MNT local 5 m (EPSG:3003)",
@@ -26592,10 +26604,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-TABLES-ALL-REMAINING-P2";
-const APP_BUILD_DETAIL = "Desktop P2: Range rings, Preferiti, Astro e Batch; QA finale unica.";
+const APP_BUILD_ID = "GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A";
+const APP_BUILD_DETAIL = "Tracce importate: quote mancanti stimate separatamente dalle originali, su richiesta.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 316;
+const APP_BUILD_NUM = 317;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29112,9 +29124,11 @@ function saveStore(){
           if (typeof st.lineStyle === "string" && typeof RR_LINE_STYLES !== "undefined" && RR_LINE_STYLES.has(st.lineStyle)) row.lineStyle = st.lineStyle;
           const ep = savedTrackSanitizeElevationProfile(st.elevationProfile, st);
           if (ep) row.elevationProfile = savedTrackCloneElevationProfilePlain(ep) || ep;
-          const imported=savedTrackSanitizeImportedElevations(st.importedElevations,st);
-          if(imported)row.importedElevations=imported;
-          return row;
+           const imported=savedTrackSanitizeImportedElevations(st.importedElevations,st);
+           if(imported)row.importedElevations=imported;
+           const terrainFill=savedTrackSanitizeTerrainFill(st.terrainFill,st);
+           if(terrainFill)row.terrainFill=terrainFill;
+           return row;
         });
       })(),
       gisTracks: gisSanitizeFeatureArray(state.gisTracks, "track"),
@@ -61695,6 +61709,72 @@ function savedTrackBuildImportedElevations(track,rawPoints){
   },track);
 }
 
+/* P3: terrain estimates only for gaps in original file elevations. */
+const SAVED_TRACK_TERRAIN_FILL_SCHEMA=1;
+function savedTrackOriginalElevationHash(imported){
+ if(!imported||!Array.isArray(imported.heights))return null;
+ return "fnv1a32:"+savedTrackFnv1a32Hex(imported.heights.length+"|"+
+  imported.heights.map(v=>v===null?"x":Number(v).toFixed(5)).join("|"));
+}
+function savedTrackSanitizeTerrainFill(raw,st){
+ try{
+  if(!raw||typeof raw!=="object"||Array.isArray(raw)||!st||st.closed)return null;
+  const imported=savedTrackSanitizeImportedElevations(st.importedElevations,st);
+  if(!imported||!imported.heights.some(v=>v===null))return null;
+  if(raw.schema!==SAVED_TRACK_TERRAIN_FILL_SCHEMA ||
+    (raw.source!==SAVED_TRACK_ELEVATION_SOURCE_TERRAIN_OPEN_METEO &&
+     raw.source!==SAVED_TRACK_ELEVATION_SOURCE_TERRAIN_LOCAL_DTM))return null;
+  if(!savedTrackIsIso8601(raw.capturedAt)||
+     raw.geometryHash!==savedTrackGeometryHash(st)||
+     raw.originalHash!==savedTrackOriginalElevationHash(imported)||
+     raw.pointCount!==st.points.length)return null;
+  if(!Array.isArray(raw.heights)||raw.heights.length!==imported.heights.length)return null;
+  let valid=0;const heights=[];
+  for(let i=0;i<imported.heights.length;i++){
+   const v=raw.heights[i];
+   if(imported.heights[i]!==null){
+    if(v!==null)return null;
+    heights.push(null);continue;
+   }
+   if(v===null){heights.push(null);continue;}
+   if(!spatialImportedElevationNumber(v))return null;
+   heights.push(v);valid++;
+  }
+  if(!valid)return null;
+  return {schema:SAVED_TRACK_TERRAIN_FILL_SCHEMA,source:raw.source,
+   capturedAt:raw.capturedAt,geometryHash:savedTrackGeometryHash(st),
+   originalHash:savedTrackOriginalElevationHash(imported),
+   pointCount:st.points.length,heights};
+ }catch(_){return null;}
+}
+function savedTrackTerrainFillMissingIndices(imported,fill){
+ if(!imported||!Array.isArray(imported.heights))return [];
+ const out=[];
+ for(let i=0;i<imported.heights.length;i++)
+  if(imported.heights[i]===null && !(fill && spatialImportedElevationNumber(fill.heights[i])))
+   out.push(i);
+ return out;
+}
+function savedTrackBuildTerrainFill(st,imported,positions,heights,source,previous){
+ if(!Array.isArray(positions)||!Array.isArray(heights)||positions.length!==heights.length)return null;
+ const values=previous&&previous.source===source?previous.heights.slice():
+  Array(st.points.length).fill(null);
+ const seen=new Set();
+ for(let i=0;i<positions.length;i++){
+  const ix=positions[i].index,v=heights[i];
+  if(!Number.isInteger(ix)||ix<0||ix>=st.points.length||seen.has(ix)||
+     imported.heights[ix]!==null)return null;
+  seen.add(ix);
+  if(v!==null&&!spatialImportedElevationNumber(v))return null;
+  if(v!==null)values[ix]=v;
+ }
+ return savedTrackSanitizeTerrainFill({
+  schema:SAVED_TRACK_TERRAIN_FILL_SCHEMA,source,
+  capturedAt:new Date().toISOString(),geometryHash:savedTrackGeometryHash(st),
+  originalHash:savedTrackOriginalElevationHash(imported),
+  pointCount:st.points.length,heights:values
+ },st);
+}
 function savedTrackSanitizeElevationProfile(rawProfile, track){
   try {
     if (!rawProfile || typeof rawProfile !== "object") return null;
@@ -62237,16 +62317,20 @@ function savedTrackGeometryDistToProfileDist(geometryDistM, geometryTotalM, prof
  * elevations. Never persist inferred slopes or imply 5 m DEM accuracy. */
 function savedTrackBuildRuntimeImportedElevationProfile(st){
   try {
-    const imported = savedTrackSanitizeImportedElevations(st && st.importedElevations, st);
-    const cache = imported ? savedTrackBuildGeometryCumCache(st) : null;
+     const imported = savedTrackSanitizeImportedElevations(st && st.importedElevations, st);
+     const fill=imported?savedTrackSanitizeTerrainFill(st.terrainFill,st):null;
+     const cache = imported ? savedTrackBuildGeometryCumCache(st) : null;
     if (!cache || !Number.isFinite(cache.total) || cache.total <= 0 ||
         !Array.isArray(cache.geo) || cache.geo.length !== imported.heights.length) return null;
     const samples = [];
     let minEle = Infinity, maxEle = -Infinity;
-    let ascent = 0, descent = 0, valid = 0, validPairs = 0, run = 0, prev = null;
+     let ascent = 0, descent = 0, valid = 0, validPairs = 0, run = 0, prev = null;
+     let originalCount=0,estimatedCount=0;
     const minSeg = (typeof ROUTING_ELEV_MIN_SEG_M === "number") ? ROUTING_ELEV_MIN_SEG_M : 0.5;
     for (let i = 0; i < imported.heights.length; i++){
-      const ele = imported.heights[i], d = cache.cum[i];
+       const original=imported.heights[i];
+       const isEstimated=original===null&&!!fill&&spatialImportedElevationNumber(fill.heights[i]);
+       const ele=isEstimated?fill.heights[i]:original,d=cache.cum[i];
       if (!Number.isFinite(d)) return null;
       if (ele === null){
         if (prev !== null) run++;
@@ -62254,40 +62338,45 @@ function savedTrackBuildRuntimeImportedElevationProfile(st){
         prev = null;
         continue;
       }
-      valid++;
-      minEle = Math.min(minEle, ele);
+       valid++;
+       if(isEstimated)estimatedCount++;else originalCount++;
+       minEle = Math.min(minEle, ele);
       maxEle = Math.max(maxEle, ele);
       let gradePct = null;
-      if (prev !== null){
-        const segment = d - prev.cumDistM;
-        if (segment > 0){
-          validPairs++;
-          const diff = ele - prev.ele;
-          if (diff > 0) ascent += diff;
-          else descent -= diff;
-          if (segment >= minSeg){
-            const rawGrade = 100 * diff / segment;
-            if (Number.isFinite(rawGrade) &&
-                Math.abs(rawGrade) <= ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT + ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT)
-              gradePct = rawGrade;
-          }
+      if(prev!==null){
+       const segment=d-prev.cumDistM;
+       if(segment>0){
+        validPairs++;
+        // Do not compute slopes or climb across different elevation sources.
+        if(prev.estimated===isEstimated){
+         const diff=ele-prev.ele;
+         if(diff>0)ascent+=diff;else descent-=diff;
+         if(segment>=minSeg){
+          const rawGrade=100*diff/segment;
+          if(Number.isFinite(rawGrade)&&
+             Math.abs(rawGrade)<=ROUTING_ELEV_SUSPECT_MAX_GRADE_PCT+ROUTING_ELEV_SUSPECT_GRADE_EPS_PCT)
+            gradePct=rawGrade;
+         }
         }
+       }
       }
       const geo = cache.geo[i];
       samples.push({
         index:i,cumDistM:d,ele,gradePct,
-        lat:geo.lat,lon:normalizeLon(geo.lon),runIndex:run
+         lat:geo.lat,lon:normalizeLon(geo.lon),runIndex:run,estimated:isEstimated
       });
       prev = samples[samples.length-1];
     }
     if (valid < 2 || validPairs < 1) return null;
-    const summary = {ascentM:ascent,descentM:descent,minEleM:minEle,maxEleM:maxEle};
+    const summary={ascentM:estimatedCount?null:ascent,descentM:estimatedCount?null:descent,minEleM:minEle,maxEleM:maxEle};
     return {
       samples,
       meta:{
         hasAnyElevation:true,completeProfile:valid === imported.heights.length,
-        mapSyncEnabled:true,source:"imported-gpx-kml",
-        originalSamples:imported.heights.length,validSamples:valid
+         mapSyncEnabled:true,source:estimatedCount?"imported-gpx-kml-terrain":"imported-gpx-kml",
+         originalSamples:imported.heights.length,validSamples:valid,
+         originalCount,estimatedCount,
+         estimatedSource:estimatedCount&&fill?fill.source:null
       },
       stats:{totalDistM:cache.total},summary
     };
@@ -62914,15 +63003,19 @@ function renderSavedTrackElevationSection(){
   const tt = (k, fb) => ((typeof t === "function" && t(k)) ? String(t(k)) : (fb || ""));
 
   const ep = st.elevationProfile;
-  const imported = !ep ? savedTrackSanitizeImportedElevations(st.importedElevations, st) : null;
-  const calcWrap = document.getElementById("trackSavedElevationCalcAction");
-  const calc = document.getElementById("trackSavedElevationCalculate");
-  const canCalc = !ep && !imported && Array.isArray(st.points) && st.points.length >= 2;
+   const imported = !ep ? savedTrackSanitizeImportedElevations(st.importedElevations, st) : null;
+   const fill=imported?savedTrackSanitizeTerrainFill(st.terrainFill,st):null;
+   const missing=imported?savedTrackTerrainFillMissingIndices(imported,fill):[];
+   const calcWrap = document.getElementById("trackSavedElevationCalcAction");
+   const calc = document.getElementById("trackSavedElevationCalculate");
+   const canCalc = !ep && Array.isArray(st.points) && st.points.length>=2 &&
+     (!imported || missing.length>0);
   if (calcWrap) calcWrap.hidden = !canCalc;
   if (calc){
     calc.disabled = !!view.terrainBusy;
-    calc.textContent = view.terrainBusy ? tt("track.profile.calculating", "Calcolo quote...") :
-      tt("track.profile.calculateTerrain", "Calcola quote dal terreno");
+     calc.textContent=view.terrainBusy?tt("track.profile.calculating","Calcolo quote..."):
+       imported?tt("track.profile.calculateMissing","Calcola quote mancanti"):
+       tt("track.profile.calculateTerrain","Calcola quote dal terreno");
   }
   if (!ep && !imported){
     sec.classList.add("is-unavailable");
@@ -62977,7 +63070,8 @@ function renderSavedTrackElevationSection(){
   }
 
   const partial = !runtime.meta.completeProfile;
-  const fromFile = runtime.meta.source === "imported-gpx-kml";
+   const mixed=runtime.meta.source==="imported-gpx-kml-terrain";
+   const fromFile=runtime.meta.source==="imported-gpx-kml"||mixed;
   const fileLabel = tt("track.profile.importedLabel", "Quote originali GPX/KML");
   const fileCaution = tt("track.profile.importedCaution",
     "Dati altimetrici del file importato, non DTM a 5 m. Le pendenze sono riferite alla distanza fra punti originali; precisione non verificata.");
@@ -62985,20 +63079,32 @@ function renderSavedTrackElevationSection(){
     tt("track.profile.terrainOpenMeteo", "Profilo calcolato da Open-Meteo Elevation (Copernicus DEM GLO-90, 90 m)") :
     ep && ep.source === SAVED_TRACK_ELEVATION_SOURCE_TERRAIN_LOCAL_DTM ?
       tt("track.profile.terrainLocalDtm", "Profilo calcolato da DTM locale 5 m (EPSG:3003)") : "";
-  const terrainCaution = terrainLabel ?
-    tt("track.profile.terrainCaution",
-      "Quote stimate da un modello digitale del terreno. Accuratezza non verificata; pendenze 5-10 m non certificate.") : "";
-  if (partial){
+   const terrainCaution = terrainLabel ?
+     tt("track.profile.terrainCaution",
+       "Quote stimate da un modello digitale del terreno. Accuratezza non verificata; pendenze 5-10 m non certificate.") : "";
+   const mixedSource=mixed&&runtime.meta.estimatedSource===
+     SAVED_TRACK_ELEVATION_SOURCE_TERRAIN_LOCAL_DTM?
+       tt("track.profile.terrainLocalDtm","DTM locale 5 m"):
+       tt("track.profile.terrainOpenMeteo","Open-Meteo GLO-90, 90 m");
+   const mixedCounts=mixed?
+     tt("track.profile.originalCount","Originali: {0}").replace("{0}",String(runtime.meta.originalCount))+
+       " · "+tt("track.profile.estimatedCount","Stimate: {0}").replace("{0}",String(runtime.meta.estimatedCount))+
+       " ("+mixedSource+")":"";
+   const mixedCaution=mixed?fileCaution+" "+
+     tt("track.profile.terrainCaution","Quote stimate; accuratezza non verificata.")+" "+
+     tt("track.profile.mixedCaution","Quote originali e stime distinte; pendenze miste indicative."):"";
+   if (partial){
     sec.classList.add("is-partial");
-    if (status) status.textContent = (fromFile ? fileLabel + " — " : terrainLabel ? terrainLabel + " — " : "") +
-      tt("track.profile.partial", "Profilo parziale");
-    if (warn){ warn.hidden = false; warn.textContent =
-      (fromFile ? fileCaution : terrainCaution) + " " + tt("track.profile.partial", "Profilo parziale"); }
+     if(status)status.textContent=(mixed?mixedCounts:fromFile?fileLabel:terrainLabel)+
+       " — "+tt("track.profile.partial","Profilo parziale");
+     if(warn){warn.hidden=false;warn.textContent=
+       (mixed?mixedCaution:fromFile?fileCaution:terrainCaution)+" "+
+       tt("track.profile.partial","Profilo parziale");}
   } else {
     sec.classList.add("is-valid");
-    if (status) status.textContent = fromFile ? fileLabel : terrainLabel;
-    if (warn){ warn.hidden = !(fromFile || terrainLabel);
-      warn.textContent = fromFile ? fileCaution : terrainCaution; }
+     if(status)status.textContent=mixed?mixedCounts:fromFile?fileLabel:terrainLabel;
+     if(warn){warn.hidden=!(fromFile||terrainLabel);
+       warn.textContent=mixed?mixedCaution:fromFile?fileCaution:terrainCaution;}
   }
 
   if (metrics){
@@ -63188,6 +63294,95 @@ function savedTrackTerrainBuildProfile(st, positions, heights, source){
   };
   return savedTrackSanitizeElevationProfile(candidate,st);
 }
+async function savedTrackFillMissingImportedTerrain(original,imported,view){
+ const id=String(original.id);
+ const hasLocalDtm=typeof _routingLocalDtm!=="undefined"&&!!_routingLocalDtm&&
+   typeof _routingLocalDtm.sampleXY==="function";
+ const source=hasLocalDtm?SAVED_TRACK_ELEVATION_SOURCE_TERRAIN_LOCAL_DTM:
+   SAVED_TRACK_ELEVATION_SOURCE_TERRAIN_OPEN_METEO;
+ const currentFill=savedTrackSanitizeTerrainFill(original.terrainFill,original);
+ const sameSource=currentFill&&currentFill.source===source?currentFill:null;
+ const missing=savedTrackTerrainFillMissingIndices(imported,sameSource);
+ if(!missing.length)return;
+ if(!hasLocalDtm&&missing.length>SAVED_TRACK_ELEVATION_MAX_SAMPLES){
+  view.terrainMessage="Quote mancanti: "+missing.length+
+    ". Limite rete di 300 coordinate per operazione. Caricare un DTM locale.";
+  renderSavedTrackElevationSection();return;
+ }
+ const positions=missing.map(index=>({
+  index,lat:original.points[index].lat,lon:original.points[index].lon
+ }));
+ if(!positions.every(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)&&
+   Math.abs(p.lat)<=90&&Math.abs(p.lon)<=180)){
+  view.terrainMessage="Coordinate non valide: nessuna quota calcolata.";
+  renderSavedTrackElevationSection();return;
+ }
+ if(!hasLocalDtm){
+  if(!internetApiFetchAllowed()||!navigator.onLine){
+   view.terrainMessage="Offline/OPSEC Strict: nessuna richiesta inviata. Caricare un DTM locale.";
+   renderSavedTrackElevationSection();return;
+  }
+  const prompt="Inviare esclusivamente "+positions.length+
+    " coordinate dei punti con quota mancante a Open-Meteo Elevation "+
+    "(Copernicus DEM GLO-90, 90 m), in massimo "+Math.ceil(positions.length/100)+
+    " richieste GET? Le quote originali resteranno immutate e le stime saranno distinte. "+
+    "Nessun GPS. Accuratezza e pendenze 5–10 m non certificate.";
+  if(!window.confirm(prompt))return;
+ }
+ const geometryHash=savedTrackGeometryHash(original);
+ const originalHash=savedTrackOriginalElevationHash(imported);
+ const beforeFill=JSON.stringify(currentFill||null);
+ const request=(view.terrainRequest||0)+1;
+ view.terrainRequest=request;
+ view.terrainBusy=true;
+ view.terrainMessage=hasLocalDtm?"Campionamento DTM locale per quote mancanti...":
+   "Recupero quote mancanti da Open-Meteo, su richiesta...";
+ renderSavedTrackElevationSection();
+ try{
+  const heights=hasLocalDtm?savedTrackTerrainLocalHeights(positions):
+    await savedTrackTerrainOpenMeteoHeights(positions);
+  if(view.terrainRequest!==request||String(view.trackId)!==id)return;
+  ensureSavedTracksState();
+  const st=state.savedTracks.find(x=>x&&String(x.id)===id);
+  const nowImported=st?savedTrackSanitizeImportedElevations(st.importedElevations,st):null;
+  if(!st||st.elevationProfile||savedTrackGeometryHash(st)!==geometryHash||
+     !nowImported||savedTrackOriginalElevationHash(nowImported)!==originalHash||
+     JSON.stringify(savedTrackSanitizeTerrainFill(st.terrainFill,st)||null)!==beforeFill)
+    throw Error("Traccia o quote originali modificate durante il calcolo; nessuna stima salvata.");
+  const addon=savedTrackBuildTerrainFill(st,nowImported,positions,heights,source,sameSource);
+  if(!addon)throw Error("DTM/provider senza quote valide: nessuna stima salvata.");
+  const beforeRaw=localStorage.getItem(STORAGE_KEY);
+  const existed=Object.prototype.hasOwnProperty.call(st,"terrainFill");
+  const oldInMemory=existed?st.terrainFill:null;
+  st.terrainFill=addon;
+  let reported=null,persisted=null;
+  try{
+   reported=saveStoreReported();
+   persisted=reported&&reported.ok?savedTrackReadPersistedById(id):null;
+  }catch(_){}
+  if(!reported||!reported.ok||!persisted||!savedTrackPersistedEqualCanonical(st,persisted)){
+   if(existed)st.terrainFill=oldInMemory;else delete st.terrainFill;
+   let rolled=false;
+   try{
+    if(localStorage.getItem(STORAGE_KEY)!==beforeRaw){
+      if(beforeRaw===null)localStorage.removeItem(STORAGE_KEY);
+      else localStorage.setItem(STORAGE_KEY,beforeRaw);
+    }
+    rolled=localStorage.getItem(STORAGE_KEY)===beforeRaw;
+   }catch(_){}
+   if(!rolled)throw Error("ERRORE: rollback delle quote non verificato.");
+   throw Error("Salvataggio non verificato: stime annullate.");
+  }
+  view.terrainMessage="";
+ }catch(e){
+  if(view.terrainRequest===request)view.terrainMessage=String(e&&e.message||e);
+ }finally{
+  if(view.terrainRequest===request&&String(view.trackId)===id){
+   view.terrainBusy=false;
+   renderSavedTrackElevationSection();
+  }
+ }
+}
 async function savedTrackCalculateTerrainProfile(){
   const view = ensureSavedTrackElevationViewState();
   if (view.terrainBusy || !view.trackId) return;
@@ -63195,9 +63390,13 @@ async function savedTrackCalculateTerrainProfile(){
   const id = String(view.trackId);
   const original = state.savedTracks.find(st => st && String(st.id) === id);
   if (!original) return;
-  if (original.elevationProfile || savedTrackSanitizeImportedElevations(original.importedElevations,original))
-    return;
-  const hasLocalDtm = typeof _routingLocalDtm !== "undefined" && !!_routingLocalDtm;
+   if(original.elevationProfile)return;
+   const imported=savedTrackSanitizeImportedElevations(original.importedElevations,original);
+   if(imported){
+     await savedTrackFillMissingImportedTerrain(original,imported,view);
+     return;
+   }
+   const hasLocalDtm = typeof _routingLocalDtm !== "undefined" && !!_routingLocalDtm;
   const source = hasLocalDtm ? SAVED_TRACK_ELEVATION_SOURCE_TERRAIN_LOCAL_DTM :
     SAVED_TRACK_ELEVATION_SOURCE_TERRAIN_OPEN_METEO;
   let positions;
@@ -63395,9 +63594,12 @@ function ensureSavedTracksState(){
     const sanitizedElevation = savedTrackSanitizeElevationProfile(st.elevationProfile, st);
     if (sanitizedElevation) st.elevationProfile = sanitizedElevation;
     else delete st.elevationProfile;
-    const imported = savedTrackSanitizeImportedElevations(st.importedElevations,st);
-    if(imported)st.importedElevations=imported;
-    else delete st.importedElevations;
+     const imported = savedTrackSanitizeImportedElevations(st.importedElevations,st);
+     if(imported)st.importedElevations=imported;
+     else delete st.importedElevations;
+     const fill=savedTrackSanitizeTerrainFill(st.terrainFill,st);
+     if(fill)st.terrainFill=fill;
+     else delete st.terrainFill;
   }
   if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
   const _stIdSet = new Set(state.savedTracks.map(s => String(s.id)));
@@ -65383,8 +65585,12 @@ function savedTrackPersistShapeForVerify(st){
   const imported=savedTrackSanitizeImportedElevations(clean.importedElevations,{
     points:row.points,closed:row.closed
   });
-  if(imported)row.importedElevations=imported;
-  return row;
+   if(imported)row.importedElevations=imported;
+   const fill=savedTrackSanitizeTerrainFill(clean.terrainFill,{
+    importedElevations:row.importedElevations,points:row.points,closed:row.closed
+   });
+   if(fill)row.terrainFill=fill;
+   return row;
 }
 function savedTrackPointMetaEqualForVerify(a, b){
   if (a == null && b == null) return true;
@@ -65453,12 +65659,20 @@ function savedTrackPersistedEqualCanonical(expectedSt, actualSt){
   if (expEp && !savedTrackElevationProfilesEquivalent(expEp, actEp)) return false;
   const ei=exp.importedElevations||null,ai=act.importedElevations||null;
   if(!!ei!==!!ai)return false;
-  if(ei){
-    if(ei.schema!==ai.schema||ei.source!==ai.source||
-       ei.geometryHash!==ai.geometryHash||ei.heights.length!==ai.heights.length)return false;
-    for(let i=0;i<ei.heights.length;i++)if(ei.heights[i]!==ai.heights[i])return false;
-  }
-  return true;
+   if(ei){
+     if(ei.schema!==ai.schema||ei.source!==ai.source||
+        ei.geometryHash!==ai.geometryHash||ei.heights.length!==ai.heights.length)return false;
+     for(let i=0;i<ei.heights.length;i++)if(ei.heights[i]!==ai.heights[i])return false;
+   }
+   const ef=exp.terrainFill||null,af=act.terrainFill||null;
+   if(!!ef!==!!af)return false;
+   if(ef){
+     if(ef.schema!==af.schema||ef.source!==af.source||ef.capturedAt!==af.capturedAt||
+       ef.geometryHash!==af.geometryHash||ef.originalHash!==af.originalHash||
+       ef.pointCount!==af.pointCount||ef.heights.length!==af.heights.length)return false;
+     for(let i=0;i<ef.heights.length;i++)if(ef.heights[i]!==af.heights[i])return false;
+   }
+   return true;
 }
 function savedTrackReadPersistedById(id){
   try {
