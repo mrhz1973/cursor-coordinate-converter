@@ -4,24 +4,24 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | P2 uniformità tabelle desktop — P2-B3 Aree offline Build315 LIVE, QA operatore PENDING; P2-B4 e P2-C ancora APERTI. |
+| **WORKSTREAM ATTIVO** | P2 uniformità tabelle desktop: Build315 Aree offline QA operatore PASS/CLOSED; mandato operatore completare P2-B4 e P2-C su tutti i tab con una sola QA umana finale. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 |
-| **STATO BLOCCO** | Build315 LIVE: Aree offline 10 colonne ridimensionabili, otto sort persistiti, checkbox per ID invariata, preferenze sane/rollback; nessun download o cache tile modificati. QA operatore PENDING. |
-| **GATE CORRENTE** | DELICATO: review GPT-SOSTITUTIVA PASS, reviewer esterno NOT_PERFORMED/backstop, JS2/2, Edge candidato 98/98 e HTTPS LIVE 98/98 PASS; QA FINALE CHATGPT / QA operatore PENDING. Cleanup dati test PASS, alcune directory temporanee Edge non rimosse. |
+| **BLOCCO ATTIVO** | — (Build315 P2-B3 CLOSED; P2 finale multi-tab da aprire con gate dedicato). |
+| **STATO BLOCCO** | Build315 LIVE/CLOSED con QA GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 PASS operatore 18/11/2026. Chiusura Regola H docs-only. Nessuna Build316 ancora attestata. |
+| **GATE CORRENTE** | P2-B3 DELICATO: review GPT-SOSTITUTIVA PASS, JS2/2, candidato98/98, HTTPS LIVE98/98 e QA operatore PASS. Prossimi bundle P2-B4/P2-C: review+ABQA per tranche, QA umana unica finale autorizzata dal proprietario; blocco non ancora qualificato. |
 | **RUNTIME LIVE** | Build315 source 92c45c22797979b1f374d1c66b974ce204e54151, blob 07c55db6986e6be2886582d8446e4c5482b4f7d2, SHA256 ee2941001ca693d769df093d1e041e6cf5b33f94280bea7ac3383b6fe0aaccef, 11.241.529 byte CR192/CRLF0; VPS/HTTP/HTTPS concordi. |
 | **RUNTIME CANDIDATE** | Nessun candidato successivo alla Build315 verificato. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-POLYGON-TABLE-COLUMNS-P2B2 — Build314, approvazione operatore 18/11/2026 «Pass vai avanti»; [ricevuta](orchestrator/evidence/2026-11-18-qa314-p2b2-closure/REPORT.md). |
-| **NEXT** | QA operatore mirata Build315: Mappe Offline > Aree offline salvate, resize 10 colonne, 8 sort asc/desc, selezione riga/tutte, reload preferenze, senza azioni Scarica/Verifica/Svuota cache. Riga canonica QA GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 PASS operatore. Solo dopo QA/Regola H procedere P2-B4 Range rings e P2-C. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 CLOSED Build311; P2-A CLOSED Build312; P2-B1 Waypoint CLOSED Build313; P2-B2 Poligoni CLOSED Build314. P2-B3 Aree offline LIVE Build315 in QA; P2-B4 e P2-C ancora aperti. DTM HOLD. |
-| **BACKLOG OPERATORE 16/11** | [Backlog](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-B3 LIVE in QA; P2-B4 Range rings e P2-C APERTI; menu unico Nuova traccia FUTURO, mobile PAUSA. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3 — Build315, QA PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa315-p2b3-closure/REPORT.md). |
+| **NEXT** | Completare tutti i tab desktop operativi P2 ancora aperti: P2-B4 Range rings, P2-C Preferiti, picker Astro (selezione singola preservata), Batch, liste dinamiche verificate. Intermedi: review e browser QA, niente QA umana. QA operatore una volta sola al completamento complessivo. Mobile PAUSA, DTM5/10m HOLD. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 CLOSED Build311; P2-A CLOSED Build312; P2-B1 CLOSED Build313; P2-B2 CLOSED Build314; P2-B3 CLOSED Build315; P2-B4/P2-C ancora APERTI. DTM terreno HOLD. |
+| **BACKLOG OPERATORE 16/11** | [Backlog](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). P2-B3 CLOSED; P2-B4/P2-C NEXT con richiesta QA unica finale; menu Nuova traccia FUTURO, mobile PAUSA. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | GPX/KML originali conservate e non sovrascritte. Profili stimati separati, fonte DTM locale 5m oppure Open-Meteo GLO-90 90m; stime non esportate come quote originali. Parziali importati non completati da questo blocco. KML3D solo quote interamente valide; DTM5/10m precisione HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 18/11/2026: Build315 GIS-only LIVE, backup Build314 /var/backups/goi-gis-runtime/prebuild315-7FdQ5EdT, un restart GIS PID1450249→1609084; hash VPS/HTTP/HTTPS concordi. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ee294100). |
-| **EVIDENCE** | [Build315 LIVE](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/REVIEW.md) - [QA HTTPS](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/live-qa.json) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md). |
+| **EVIDENCE** | [QA operatore P2-B3](orchestrator/evidence/2026-11-18-qa315-p2b3-closure/REPORT.md) - [Build315 LIVE](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/RELEASE.md) - [Review](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/REVIEW.md). |
 
-## Build315 — P2-B3 Aree offline LIVE, QA operatore PENDING (18 novembre 2026)
+## Build315 — P2-B3 Aree offline LIVE / QA operatore PASS / CLOSED (18 novembre 2026)
 
 Dieci colonne Aree offline ridimensionabili, otto sort persistiti, storage whitelist senza modifiche tile/OPSEC. REVIEW GPT-SOSTITUTIVA PASS, Edge candidato e HTTPS LIVE 98/98 PASS. P2-B4 e P2-C ancora aperti. [Release](orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/RELEASE.md).
 

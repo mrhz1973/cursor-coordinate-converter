@@ -1,3 +1,13 @@
+# Build315 P2-B3 CLOSED — QA PASS operatore
+
+BLOCK GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3; QA letterale ricevuta 18/11/2026.
+Regola H docs-only, review/Edge candidato/live98/98 PASS, reviewer esterno NOT_PERFORMED/backstop.
+Runtime Build315 LIVE invariato SHA ee2941001ca693d769df093d1e041e6cf5b33f94280bea7ac3383b6fe0aaccef.
+Nuova istruzione: P2-B4 e P2-C tutti i tab desktop, QA unica finale dopo gate tecnici per tranche.
+Evidence: [ricevuta](../orchestrator/evidence/2026-11-18-qa315-p2b3-closure/REPORT.md).
+
+## Storico precedente
+
 # Build315 / P2-B3 Aree offline LIVE — QA operatore PENDING
 
 BLOCK: GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3.
