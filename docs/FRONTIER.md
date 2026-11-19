@@ -4,22 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | P3 quote altimetriche parziali importate COMPLETATO nel perimetro qualificato — Build317 LIVE, QA operatore PASS / CLOSED; nessun nuovo runtime bundle aperto. |
+| **WORKSTREAM ATTIVO** | P0 inventario non distruttivo origine HTTP e verifica backup — metadati fisici acquisiti su AsusDesktop/Edge Default; inventario logico e backup BLOCKED. P1/P2/P3 CLOSED; runtime Build317 invariato. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | — (nessun bundle runtime attivo; ultimo GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A CLOSED). |
-| **STATO BLOCCO** | P3 CLOSED con attestazione esatta QA operatore PASS del 19/11/2026. Chiusura Regola H docs-only; Build317 LIVE invariata. |
-| **GATE CORRENTE** | Build317 DELICATO: review GPT-SOSTITUTIVA PASS, statici32 e JS2/2, candidato151/151 e HTTPS LIVE151/151 PASS già acquisiti; QA operatore PASS del 19/11/2026. Regola H completata docs-only. Reviewer esterno NOT_PERFORMED/backstop. Nessun nuovo gate runtime aperto. |
+| **BLOCCO ATTIVO** | GIS-HTTP-ORIGIN-INVENTORY-P0 — audit non distruttivo, nessun bundle runtime. |
+| **STATO BLOCCO** | P0 APERTO / METADATA_ONLY. Presenti archivi HTTP e HTTPS nel profilo Edge Default; copia iniziale INCOMPLETE per accesso negato, zero sorgenti copiate. Nessuna migrazione o pulizia. |
+| **GATE CORRENTE** | BLOCKED — Browser privo di originating context; lettura file Local Storage negata da Windows (Win32 5). Backup non verificato e confronto logico HTTP/HTTPS non eseguito. Build317/P3 conserva QA operatore PASS/CLOSED. |
 | **RUNTIME LIVE** | Build317 source aff215323c97a309cbd5c6c7e0c694d35dd45ad0, blob 4578788467822123ea7ad7e929d3bdf0e262b1a8, SHA256 ed760bbd704db0e925f8af7f52a7880d9cffda4be2e2f0af9a2044c9cdf56fec, 11.288.727 byte CR192/CRLF0; GitHub/VPS/file/HTTP/HTTPS concordi. |
 | **RUNTIME CANDIDATE** | Build317 già distribuita e verificata; nessun candidato successivo aperto. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A — Build317, QA operatore PASS 19/11/2026; [ricevuta](orchestrator/evidence/2026-11-19-qa317-p3-closure/REPORT.md). |
-| **NEXT** | P3 CLOSED. Prossimo residuo da qualificare in blocco distinto: P0 inventario non distruttivo origine HTTP e verifica backup prima di qualunque pulizia. P4 menu Nuova traccia SOLO FUTURO/non implementare ora; DTM 5–10m HOLD, mobile PAUSA. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch import CLOSED Build311; P2 tabelle desktop CLOSED Build316; P3 quote parziali importate CLOSED Build317 con QA operatore PASS. P0 inventario origine HTTP/backup non eseguito. P4 menu Nuova traccia SOLO FUTURO, mobile PAUSA. |
-| **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED nei rispettivi perimetri qualificati; P0 residuo con gate dedicato, P4 FUTURO. |
+| **NEXT** | Rendere disponibile un accesso ordinario autorizzato al profilo Edge operativo, preferibilmente Browser collegato; poi inventario logico, backup completo verificato e confronto HTTP/HTTPS. Nessuna pulizia o migrazione prima di questi gate. P4 FUTURO, DTM5/10m HOLD, mobile PAUSA. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch import CLOSED Build311; P2 tabelle desktop CLOSED Build316; P3 quote parziali CLOSED Build317. P0 metadati fisici acquisiti, inventario logico/backup/confronto BLOCKED per accesso. P4 menu Nuova traccia SOLO FUTURO, mobile PAUSA. |
+| **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 metadati acquisiti, accesso/backup BLOCKED](orchestrator/evidence/2026-11-19-http-origin-p0-inventory/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 19/11/2026: Build317 già servita, verificata senza nuovo deploy/riavvio. Backup316 preesistente /var/backups/goi-gis-runtime/prebuild317-FdlskfH8; servizio GIS active/running, PID3001592. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd). |
-| **EVIDENCE** | [QA operatore P3 CLOSED](orchestrator/evidence/2026-11-19-qa317-p3-closure/REPORT.md) - [Riconciliazione Build317](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/RELEASE.md) - [Identità](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/runtime-identity.json) - [QA HTTPS151](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/live-qa.json) - [Review predeploy](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/REVIEW.md) - [P2 CLOSED](orchestrator/evidence/2026-11-18-qa316-p2-final-closure/REPORT.md). |
+| **EVIDENCE** | [P0 inventario preliminare e blocker](orchestrator/evidence/2026-11-19-http-origin-p0-inventory/REPORT.md) - [QA operatore P3 CLOSED](orchestrator/evidence/2026-11-19-qa317-p3-closure/REPORT.md) - [Riconciliazione Build317](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/RELEASE.md) - [Identità](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/runtime-identity.json) - [QA HTTPS151](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/live-qa.json) - [Review predeploy](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/REVIEW.md) - [P2 CLOSED](orchestrator/evidence/2026-11-18-qa316-p2-final-closure/REPORT.md). |
+
+## P0 — metadati HTTP/HTTPS acquisiti, backup BLOCKED (19 novembre 2026)
+
+Profilo Edge Default su AsusDesktop segnato attivo; presenti directory IDB di entrambe le origini. Nessun conteggio logico o confronto dei record acquisito. Tentativo di copia fermato prima di copiare dati: Win32 ACCESS_DENIED5 su Local Storage; Browser collegato non disponibile nella sessione. Backup INCOMPLETE, zero sorgenti copiate. Nessuna pulizia, migrazione, modifica runtime o riavvio. [Ricevuta e gate di ripresa](orchestrator/evidence/2026-11-19-http-origin-p0-inventory/REPORT.md).
 
 ## Build317 — P3 QA operatore PASS / CLOSED (19 novembre 2026)
 
