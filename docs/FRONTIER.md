@@ -4,22 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | P3 quote altimetriche parziali importate — Build317 LIVE riconciliata; QA tecnica HTTPS PASS, QA operatore PENDING. P2 tabelle desktop resta CLOSED. |
+| **WORKSTREAM ATTIVO** | P3 quote altimetriche parziali importate COMPLETATO nel perimetro qualificato — Build317 LIVE, QA operatore PASS / CLOSED; nessun nuovo runtime bundle aperto. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A — Build317, tier DELICATO, closure STANDARD_RUNTIME_BUNDLE. |
-| **STATO BLOCCO** | Build317 LIVE, identità GitHub/VPS/HTTP/HTTPS concorde e QA HTTPS 151/151 PASS del 19/11/2026. QA operatore PENDING; blocco non CLOSED. |
-| **GATE CORRENTE** | Review GPT-SOSTITUTIVA predeploy PASS, statici 32 e JS inline 2/2, candidato Edge 151/151 PASS già acquisiti; HTTPS LIVE 151/151 PASS verificati il 19/11. QA FINALE CHATGPT — PENDING / QA operatore PENDING. Reviewer esterno NOT_PERFORMED/backstop. |
+| **BLOCCO ATTIVO** | — (nessun bundle runtime attivo; ultimo GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A CLOSED). |
+| **STATO BLOCCO** | P3 CLOSED con attestazione esatta QA operatore PASS del 19/11/2026. Chiusura Regola H docs-only; Build317 LIVE invariata. |
+| **GATE CORRENTE** | Build317 DELICATO: review GPT-SOSTITUTIVA PASS, statici32 e JS2/2, candidato151/151 e HTTPS LIVE151/151 PASS già acquisiti; QA operatore PASS del 19/11/2026. Regola H completata docs-only. Reviewer esterno NOT_PERFORMED/backstop. Nessun nuovo gate runtime aperto. |
 | **RUNTIME LIVE** | Build317 source aff215323c97a309cbd5c6c7e0c694d35dd45ad0, blob 4578788467822123ea7ad7e929d3bdf0e262b1a8, SHA256 ed760bbd704db0e925f8af7f52a7880d9cffda4be2e2f0af9a2044c9cdf56fec, 11.288.727 byte CR192/CRLF0; GitHub/VPS/file/HTTP/HTTPS concordi. |
 | **RUNTIME CANDIDATE** | Build317 già distribuita e verificata; nessun candidato successivo aperto. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-TABLES-ALL-REMAINING-P2 — Build316, QA finale unica PASS operatore 18/11/2026; [ricevuta](orchestrator/evidence/2026-11-18-qa316-p2-final-closure/REPORT.md). |
-| **NEXT** | QA umana residua P3: comando Calcola quote mancanti, distinzione Originali/Stimate e leggibilità del profilo. Attendere attestazione operatore; poi chiusura Regola H. P0 inventario non distruttivo origine HTTP/backup resta aperto; P4 SOLO FUTURO, DTM 5–10m HOLD, mobile PAUSA. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch import CLOSED Build311; P2 tabelle operative CLOSED Build316. P3 quote parziali tecnicamente LIVE Build317, QA operatore PENDING. P0 inventario origine HTTP/backup non eseguito. P4 menu Nuova traccia SOLO FUTURO, mobile PAUSA. |
-| **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2 CLOSED nel perimetro qualificato; P0/P3 residui con gate dedicati, P4 FUTURO. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A — Build317, QA operatore PASS 19/11/2026; [ricevuta](orchestrator/evidence/2026-11-19-qa317-p3-closure/REPORT.md). |
+| **NEXT** | P3 CLOSED. Prossimo residuo da qualificare in blocco distinto: P0 inventario non distruttivo origine HTTP e verifica backup prima di qualunque pulizia. P4 menu Nuova traccia SOLO FUTURO/non implementare ora; DTM 5–10m HOLD, mobile PAUSA. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1 batch import CLOSED Build311; P2 tabelle desktop CLOSED Build316; P3 quote parziali importate CLOSED Build317 con QA operatore PASS. P0 inventario origine HTTP/backup non eseguito. P4 menu Nuova traccia SOLO FUTURO, mobile PAUSA. |
+| **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED nei rispettivi perimetri qualificati; P0 residuo con gate dedicato, P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
 | **SVILUPPO TELEFONO** | PAUSA fino a nuovo ordine dell'utente. Funzioni mobili preesistenti non disabilitate. |
 | **ACCESSO / DEPLOY** | 19/11/2026: Build317 già servita, verificata senza nuovo deploy/riavvio. Backup316 preesistente /var/backups/goi-gis-runtime/prebuild317-FdlskfH8; servizio GIS active/running, PID3001592. [Apri](https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd). |
-| **EVIDENCE** | [Riconciliazione Build317](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/RELEASE.md) - [Identità](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/runtime-identity.json) - [QA HTTPS151](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/live-qa.json) - [Review predeploy](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/REVIEW.md) - [P2 CLOSED](orchestrator/evidence/2026-11-18-qa316-p2-final-closure/REPORT.md). |
+| **EVIDENCE** | [QA operatore P3 CLOSED](orchestrator/evidence/2026-11-19-qa317-p3-closure/REPORT.md) - [Riconciliazione Build317](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/RELEASE.md) - [Identità](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/runtime-identity.json) - [QA HTTPS151](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/live-qa.json) - [Review predeploy](orchestrator/evidence/2026-11-18-partial-imported-elevation-317/REVIEW.md) - [P2 CLOSED](orchestrator/evidence/2026-11-18-qa316-p2-final-closure/REPORT.md). |
+
+## Build317 — P3 QA operatore PASS / CLOSED (19 novembre 2026)
+
+Attestazione esatta ricevuta: `QA GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A PASS operatore`. Review sostitutiva, distribuzione verificata e QA HTTPS151/151 già acquisite; chiusura Regola H esclusivamente documentale. Nessun nuovo deploy o ripetizione QA. [Ricevuta](orchestrator/evidence/2026-11-19-qa317-p3-closure/REPORT.md). P0 resta aperto come blocco distinto; DTM5/10m HOLD, mobile PAUSA, P4 FUTURO.
 
 ## Build317 — P3 quote parziali LIVE, QA operatore PENDING (19 novembre 2026)
 
