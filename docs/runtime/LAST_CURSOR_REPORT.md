@@ -1,247 +1,89 @@
-# Build316 / P2 tabelle desktop — QA finale PASS / CLOSED
+# Build317 / P3 — LIVE riconciliata, QA operatore PENDING
 
-BLOCK: GIS-TABLES-ALL-REMAINING-P2.
-QA: QA GIS-TABLES-ALL-REMAINING-P2 PASS operatore del 18/11/2026; unica attestazione finale richiesta.
-TECNICO: review GPT-SOSTITUTIVA DELICATO 27/27 PASS, JS inline 2/2, candidato 134/134, HTTPS LIVE 134/134, reviewer esterno NOT_PERFORMED/backstop.
-CLOSURE: Regola H docs-only, nessun deploy/nuova build/riavvio GIS.
-RUNTIME LIVE INVARIATO: Build316 source de583b4a1d774544b53b3277c334680f2a973652, SHA256 edf2042254b53852ee7402655b139c698cc09d958be555b397fdc13162525917.
-NEXT: P3 quote parziali non coperte; P0 inventario origine HTTP senza cancellazioni; P4 menu unico SOLO FUTURO; mobile PAUSA, DTM terreno HOLD.
-EVIDENCE: [Ricevuta](../orchestrator/evidence/2026-11-18-qa316-p2-final-closure/REPORT.md).
-
-## Pass precedenti (storico, non LIVE STATE)
-
-# Build316 P2 finale multi-tab LIVE — QA operatore UNICA PENDING
-
-BLOCK: GIS-TABLES-ALL-REMAINING-P2.
-GATE: REVIEW GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato134/134, HTTPS LIVE134/134 PASS. Reviewer esterno NOT_PERFORMED/post-hoc. QA FINALE CHATGPT PENDING.
-RUNTIME LIVE: source de583b4a1d774544b53b3277c334680f2a973652, SHA256 edf2042254b53852ee7402655b139c698cc09d958be555b397fdc13162525917.
-DEPLOY: 18/11/2026 14:59:17 UTC, backup Build315 prebuild316-B1DgSrs6, un restart GIS PID2150284.
-NEXT: un solo PASS operatore finale su tutte le viste P2, nessuna QA intermedia; mobile PAUSA e DTM accuracy HOLD.
-EVIDENCE: [Release](../orchestrator/evidence/2026-11-18-all-remaining-p2-316/RELEASE.md).
-
-## Pass runtime precedenti (storico, non LIVE STATE)
-
-# Build315 P2-B3 CLOSED — QA PASS operatore
-
-BLOCK GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3; QA letterale ricevuta 18/11/2026.
-Regola H docs-only, review/Edge candidato/live98/98 PASS, reviewer esterno NOT_PERFORMED/backstop.
-Runtime Build315 LIVE invariato SHA ee2941001ca693d769df093d1e041e6cf5b33f94280bea7ac3383b6fe0aaccef.
-Nuova istruzione: P2-B4 e P2-C tutti i tab desktop, QA unica finale dopo gate tecnici per tranche.
-Evidence: [ricevuta](../orchestrator/evidence/2026-11-18-qa315-p2b3-closure/REPORT.md).
-
-## Storico precedente
-
-# Build315 / P2-B3 Aree offline LIVE — QA operatore PENDING
-
-BLOCK: GIS-OFFLINE-AREAS-TABLE-COLUMNS-P2B3.
-GATE: review GPT-SOSTITUTIVA DELICATO PASS, JS2/2, Edge candidato98/98, HTTPS LIVE98/98; reviewer esterno NOT_PERFORMED/backstop, QA FINALE CHATGPT PENDING.
-RUNTIME LIVE: source 92c45c22797979b1f374d1c66b974ce204e54151, SHA256 ee2941001ca693d769df093d1e041e6cf5b33f94280bea7ac3383b6fe0aaccef.
-DEPLOY: 18/11/2026 09:35:08 UTC, backup Build314 prebuild315-7FdQ5EdT, un restart GIS PID1609084.
-NEXT: QA operatore solo UI Aree offline; poi P2-B4 Range rings e P2-C. Mobile PAUSA, accuracy DTM HOLD.
-EVIDENCE: [Release](../orchestrator/evidence/2026-11-18-offline-areas-table-p2b3-315/RELEASE.md).
-
-## Pass precedenti (storico, non LIVE STATE)
-
-# Build314 P2-B2 CLOSED — approvazione operatore
-
-Testo ricevuto: «Pass vai avanti»; approvazione contestuale positiva, non formula esatta Regola H. Chiusura documentale autorizzata esplicitamente.
-Review GPT-SOSTITUTIVA PASS, ABQA candidato/HTTPS 82/82, reviewer esterno NOT_PERFORMED/backstop.
-LIVE invariato Build314, SHA256 9fba532f5dec9e8aee2833da78997055819326d44b7d356bbbb12ba545c39e37.
-NEXT P2-B3 Aree offline. [Ricevuta](../orchestrator/evidence/2026-11-18-qa314-p2b2-closure/REPORT.md).
-
-## Storico precedente
-
-# Build314 / P2-B2 Poligoni LIVE — QA operatore PENDING
-
-BLOCK: GIS-POLYGON-TABLE-COLUMNS-P2B2.
-GATE: REVIEW GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato Edge82/82, HTTPS LIVE82/82 PASS. Reviewer AI esterno NOT_PERFORMED/backstop; QA FINALE CHATGPT PENDING.
-RUNTIME LIVE: source ff1db25a4242b8258c4de7c9a705af0197f26d32; SHA256 9fba532f5dec9e8aee2833da78997055819326d44b7d356bbbb12ba545c39e37.
-DEPLOY: 18/11/2026 08:00:20 UTC, backup Build313 prebuild314-ggBzLtoP, un restart GIS PID1450249.
-NEXT: QA operatore Poligoni. Dopo PASS e Regola H, P2-B3 Aree offline, P2-B4 Range rings e P2-C. Mobile PAUSA, DTM terreno HOLD.
-EVIDENCE: [Release](../orchestrator/evidence/2026-11-18-polygon-table-p2b2-314/RELEASE.md).
-
-## Pass precedenti (storico, non LIVE STATE)
-
-# Build313 / P2-B1 QA operatore PASS — CLOSED
-
-BLOCK: GIS-WAYPOINT-TABLE-COLUMNS-P2B1
-GATE: QA GIS-WAYPOINT-TABLE-COLUMNS-P2B1 PASS operatore (18/11/2026); review GPT-SOSTITUTIVA DELICATO PASS, JS2/2, Edge candidato65/65, HTTPS LIVE65/65. Reviewer esterno NOT_PERFORMED/backstop.
-CLOSURE: Regola H docs-only, nessun runtime/deploy/riavvio.
-RUNTIME LIVE: Build313 source 2d4518c297ea977caf79177075ba031053a568b5; SHA256 5cb7989947a2095f9f1499a87828b3929e25167c03d1836fe93de763d06ac242.
-NEXT: distinto P2-B2 Poligoni; P2-B3 Aree offline, P2-B4 Range rings e P2-C ancora APERTI. Mobile PAUSA, accuratezza DTM terreno HOLD.
-EVIDENCE: [Ricevuta QA](../orchestrator/evidence/2026-11-18-qa313-p2b1-closure/REPORT.md).
-
-## Pass precedenti (storico, non LIVE STATE)
-
-# Build313 / P2-B1 Waypoint LIVE — QA operatore PENDING
-
-BLOCK: GIS-WAYPOINT-TABLE-COLUMNS-P2B1.
-GATE: REVIEW GPT-SOSTITUTIVA DELICATO PASS, JS2/2, Edge candidato65/65, HTTPS LIVE65/65. Reviewer AI esterno NOT_PERFORMED/backstop, QA FINALE CHATGPT PENDING.
-RUNTIME LIVE: source 2d4518c297ea977caf79177075ba031053a568b5; SHA256 5cb7989947a2095f9f1499a87828b3929e25167c03d1836fe93de763d06ac242.
-DEPLOY: 18/11/2026 03:05:16 UTC, backup Build312 prebuild313-bwexT3hV, un restart GIS PID961813.
-NEXT: QA operatore solo Waypoint; poi P2-B2 Poligoni. P2-B3/B4 e P2-C aperti, mobile PAUSA, DTM accuracy HOLD.
-EVIDENCE: [Release](../orchestrator/evidence/2026-11-18-waypoint-table-p2b1-313/RELEASE.md).
-
-## Pass precedenti (storico, non LIVE STATE)
-
-# Build312 / P2-A QA operatore PASS — CLOSED
-
-BLOCK: GIS-SAVED-TRACKS-COLUMNS-P2A
-GATE: QA GIS-SAVED-TRACKS-COLUMNS-P2A PASS operatore del 18/11/2026; review GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato46/46 e HTTPS LIVE46/46. Reviewer esterno NOT_PERFORMED/backstop.
-CLOSURE: OM §4 Regola H, docs-only; nessun deploy/nuova build/riavvio.
-RUNTIME LIVE: Build312 source 433795275d3b17cc06a738d918eef7c0f48e51bd; SHA256 66a7b6a94271bc107e67c0a8028a2b41be0d194a0233ba7008c7c1f60999d2e1.
-NEXT: distinto bundle P2-B Waypoint/Poligoni/Aree offline/Range rings. P2-C ancora APERTO. Mobile PAUSA, DTM 5–10m accuratezza HOLD.
-EVIDENCE: [Ricevuta](../orchestrator/evidence/2026-11-18-qa312-p2a-closure/REPORT.md).
-
-## Pass precedenti (storico, non LIVE STATE)
-
-# Build312 P2-A — LIVE, QA operatore PENDING
-
-BLOCK: GIS-SAVED-TRACKS-COLUMNS-P2A
-GATE: REVIEW GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato46/46, HTTPS46/46. Reviewer AI esterno NOT_PERFORMED/post-hoc. QA FINALE CHATGPT PENDING.
-RUNTIME LIVE: source 433795275d3b17cc06a738d918eef7c0f48e51bd, SHA256 66a7b6a94271bc107e67c0a8028a2b41be0d194a0233ba7008c7c1f60999d2e1.
-DEPLOY: 18/11/2026 01:41:11 UTC, backup Build311 prebuild312-gKYpleKY, un restart GIS PID821723.
-NEXT: QA umana mirata; P2-B/C ancora aperti ma non iniziare nuovi runtime prima di PASS P2-A.
-EVIDENCE: [Release](../orchestrator/evidence/2026-11-18-saved-tracks-columns-p2a-312/RELEASE.md).
-
-## Pass precedenti (storico, non LIVE STATE)
-
-# Build311 QA operatore PASS — CLOSED
-
-BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A
-GATE: QA GIS-TRACK-ARCHIVE-BATCH-10-A PASS operatore del 18/11/2026. Review GPT-SOSTITUTIVA DELICATO PASS, JS2/2, candidato30/30 e HTTPS30/30 PASS; review AI esterna NOT_PERFORMED/backstop.
-CLOSURE: Regola H, documentazione esclusiva; runtime LIVE non modificato e nessun nuovo riavvio.
-RUNTIME LIVE: Build311 source 4ddcb641b756ac987f619c2cd7fa09e236734147; SHA256 4381c1930a358fc8ad5842507a40a5d44caaa8466708e66c050991e5b2c0fc4d.
-NEXT: blocco distinto P2 uniformità tabelle desktop; mobile PAUSA, DTM 5/10m accuratezza HOLD.
-EVIDENCE: [Ricevuta QA](../orchestrator/evidence/2026-11-18-qa311-closure/REPORT.md).
-
-## Pass runtime precedenti (storico, non LIVE STATE)
-
-# Build311 LIVE — QA operatore PENDING
-BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A
-GATE: REVIEW GPT-SOSTITUTIVA PASS, JS2/2, candidato30/30 e HTTPS LIVE30/30 PASS, QA FINALE CHATGPT PENDING. Reviewer esterno NOT_PERFORMED.
-RUNTIME LIVE: source 4ddcb641b756ac987f619c2cd7fa09e236734147; SHA256 4381c1930a358fc8ad5842507a40a5d44caaa8466708e66c050991e5b2c0fc4d.
-DEPLOY: 18/11/2026 00:27:03 UTC; backup prebuild311-MUfXTpAv, GIS service active PID697099, HTTPS/file/HTTP concordi.
-NEXT: QA operatore mirata importazione batch fino a 10 percorsi. DTM accuracy HOLD, mobile PAUSA.
-EVIDENCE: [RELEASE](../orchestrator/evidence/2026-11-17-track-archive-batch-311/RELEASE.md).
-
-## Pass precedenti (storico; non LIVE STATE)
-
-# Build311 candidate — deploy BLOCCATO dallo strumento
-
-BLOCK: GIS-TRACK-ARCHIVE-BATCH-10-A.
-CANDIDATO: 4ddcb641b756ac987f619c2cd7fa09e236734147 / 4381c1930a358fc8ad5842507a40a5d44caaa8466708e66c050991e5b2c0fc4d.
-GATE: REVIEW GPT-SOSTITUTIVA PASS, JavaScript 2/2, Edge candidato 30/30 PASS. Nessuna HTTPS QA Build311, nessun deploy, nessun PASS operatore.
-LIVE: Build310, VPS active, SHA ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea.
-NEXT: attendere disponibilità percorso autorizzato per deploy GIS-only; non aggirare tool safety.
-EVIDENCE: [Rapporto blocker](../orchestrator/evidence/2026-11-17-track-archive-batch-311/DEPLOY-BLOCKED.md).
-
-## Pass storico (non LIVE STATE)
-
-# Build310 QA operatore PASS — CLOSED
-
-BLOCK: GIS-SAVED-TRACK-PROFILE-XY-A
-GATE: QA GIS-SAVED-TRACK-PROFILE-XY-A PASS operatore del 17/11/2026; Regola H docs-only.
-RUNTIME LIVE invariato: Build310 source e0b7e133dea16e38d083a53a50276a232609e8fd, SHA256 ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea.
-NEXT: P1 importazione batch archivio fino a 10 (non implementato). Reviewer esterno NOT_PERFORMED/backstop.
-EVIDENCE: [QA ricevuta](../orchestrator/evidence/2026-11-17-qa310-closure/REPORT.md).
-
-## Pass runtime precedente (storico, non LIVE STATE)
-
-# Build310 GIS — profilo XY LIVE, QA operatore PENDING
-BLOCK: GIS-SAVED-TRACK-PROFILE-XY-A
-GATE: Review GPT-SOSTITUTIVA PASS; JS2/2, candidato30/30, HTTPS30/30. Reviewer AI esterno NOT_PERFORMED; QA operatore PENDING.
-RUNTIME LIVE: source e0b7e133dea16e38d083a53a50276a232609e8fd; SHA256 ff0c618e089a56cdba221e9f69d35273f0b34996c4e17be4ed6c013152373aea.
-NEXT: far provare Profilo > Calcola quote sulla traccia pennello salvata; conferma opt-in Open-Meteo solo quando consentita. DTM5/10m accuracy HOLD.
-EVIDENCE: [RELEASE](../orchestrator/evidence/2026-11-16-track-profile-xy-310/RELEASE.md).
-
-## Pass precedenti (storico; non LIVE STATE)
-
-# Chiusura Build309 — QA operatore PASS / CLOSED
-BLOCK: GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2
-PASS operatore ricevuto 16/11/2026. Regola H applicata tramite documentazione. Nessun deploy per la sola chiusura.
-NEXT: GIS-SAVED-TRACK-PROFILE-XY-A (nuovo incarico profilo altimetrico, non ancora rilasciato).
-Vivo Build309 source 8ddb70f1e02f24207c50baa3622b344023e5155c, SHA256 ad07d54d3a9e0242dfc482468feba32f0b3527e2b4101536daae0bc4b842c683.
-
-## Evidenza tecnica del pass precedente (storica, non nuovo LIVE STATE)
-
-# Build309 — Centra corrente
-BLOCK: GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2
-GATE: QA FINALE CHATGPT PENDING / QA operatore PENDING.
-NEXT: valutazione Centra dopo importazione della seconda traccia; successiva chiusura Regola H soltanto con PASS operatore.
-RUNTIME LIVE: 8ddb70f1e02f24207c50baa3622b344023e5155c, Build309, SHA256 ad07d54d3a9e0242dfc482468feba32f0b3527e2b4101536daae0bc4b842c683.
-Candidate deployed: YES. Statici 2/2; candidato e HTTPS LIVE 17/17 PASS.
+BLOCK: GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A; DELICATO; CLOSURE STANDARD_RUNTIME_BUNDLE.
+GATE: identità GitHub/VPS/HTTP/HTTPS PASS; Automated Browser QA HTTPS LIVE 151/151 PASS. QA FINALE CHATGPT — PENDING / QA operatore PENDING.
+NEXT: QA umana residua P3 sul comando Calcola quote mancanti e sul profilo misto; chiusura Regola H solo dopo attestazione operatore.
+RUNTIME LIVE: Build317, source aff215323c97a309cbd5c6c7e0c694d35dd45ad0, blob 4578788467822123ea7ad7e929d3bdf0e262b1a8, SHA256 ed760bbd704db0e925f8af7f52a7880d9cffda4be2e2f0af9a2044c9cdf56fec, 11.288.727 byte CR192/CRLF0.
+CANDIDATE: source aff215323c97a309cbd5c6c7e0c694d35dd45ad0 già distribuito; nessun candidato successivo. Nessun nuovo deploy in questo pass.
+RESULT: riconciliazione tecnica e documentale PASS; reviewer AI esterno NOT_PERFORMED/backstop, distinta dalla review GPT-SOSTITUTIVA predeploy già PASS.
+WORKING TREE: pulito sul commit task prima dell'autosync; esito finale del contenitore EXTERNAL_ONLY.
+EVIDENCE: [Release e limiti](../orchestrator/evidence/2026-11-18-partial-imported-elevation-317/RELEASE.md).
 
 ## Riepilogo completo
 
-# Build309 LIVE — Centra la traccia corrente
+1. **Mandato e discrepanza.** Ripresa dal CORE BOOT minimo a origin/main 6dc476918a2a6f4c5f1e7971c76ecfe0f9eec4bd. FRONTIER attestava P2 CLOSED/Build316, mentre l'handoff segnalava Build317 già servita. La lettura successiva on-demand di LAST_CURSOR_REPORT mostrava ancora lo stato storico316; la review317 attestava candidato e gate predeploy. Acquisiti soltanto metodo e fonti necessari alla riconciliazione.
 
-Data: 16 novembre 2026. Blocco `GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2`. CLOSURE: STANDARD_RUNTIME_BUNDLE. Tier ROUTINE.
+2. **Identità verificata.** Il runtime GitHub, il file del clone VPS, l'HTTP8000 e l'HTTPS canonico coincidono nello SHA256 e nella dimensione riportati nell'header. VPS osservato sul branch main, working tree pulito, HEAD/tracking 6dc4769 al momento della ricevuta. URL: https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd. [Ricevuta indipendente](../orchestrator/evidence/2026-11-18-partial-imported-elevation-317/runtime-identity.json).
 
-## Finding dell'operatore e scope
+3. **Distribuzione preesistente.** Servizio goi-gis-app osservato active/running, PID3001592; avvio registrato 19/11/2026 00:25:03 CET. Backup Build316 presente in /var/backups/goi-gis-runtime/prebuild317-FdlskfH8, SHA256 edf2042254b53852ee7402655b139c698cc09d958be555b397fdc13162525917. Nessun nuovo deploy, pull runtime o riavvio eseguito da questo pass; proxy e servizi condivisi invariati.
 
-L'operatore ha descritto questa sequenza: disegno con pennello e salvataggio della prima traccia; importazione di una seconda traccia nella zona Traccia in modifica; assenza di un comando per ritrovare la seconda traccia sulla mappa. Richiesta esplicita: «ci vuole un pulsante con scritto centra».
-Il feedback impedisce la chiusura positiva della Build308; nessun PASS operatore308 e stato dedotto o aggiunto. Questo FIX2 conserva il lavoro single-panel della Build308 e corregge il finding circoscritto.
+4. **Evidenze già consumate.** Review GPT-SOSTITUTIVA predeploy PASS del 18/11, statici32, JS2/2 e candidato151/151 sono stati riutilizzati. Nessuno sviluppo, nessuna nuova review del runtime, nessuna ripetizione di QA candidato o test statici. Reviewer esterno NOT_PERFORMED/backstop rimane tale.
 
-Aggiunto `Centra` fra Salva ed Esporta nella zona corrente. Il comando e abilitato se esistono punti e richiama `flyMapToTrackPoints`, gia usata dalle tracce salvate. Il fit considera l'area libera dai pannelli e lo zoom. Non richiede il salvataggio preliminare della traccia corrente. Un singolo punto e centrabile; senza punti il comando e disabilitato.
+5. **Nuova QA LIVE.** Runner browser-qa.cjs invariato, una sola esecuzione live su Edge Windows in profilo temporaneo: 151/151 PASS, inclusi17 P3 e134 controlli già nel runner;79 clic nativi,10 selettori file, zero POST/eccezioni/errori console. Provider simulato e richieste estranee bloccate: nessun invio reale di coordinate, nessun uso del browser personale. Hash documento HTTPS provato dai GET separati, non dal campo vuoto network.documentHashes del runner. [Risultato integrale](../orchestrator/evidence/2026-11-18-partial-imported-elevation-317/live-qa.json).
 
-Modifica runtime: 16 righe aggiunte e 4 rimosse, comprese identita Build309 e due sole stringhe IT. Nuovo handler collegato una sola volta alla creazione del pannello; stato del pulsante aggiornato dal sync esistente. L'helper di centratura e byte-identico alla base. Nessuna nuova dipendenza, endpoint, schema dati, parser o traduzione EN/FR.
+6. **Screenshot e cleanup.** Screenshot P3 realmente ispezionato: Originali2/Stimate2, fonte e grafico visibili; la carta esterna è bloccata dalla suite. Un solo PNG persistito con manifest, altri12 screenshot accessori restano temporanei. Pulizia dati sintetici dell'origine PASS; rimozione cartella del profilo temporaneo non riuscita per EPERM, senza forzare permessi o cancellazioni.
 
-## Identita e distribuzione
+7. **Modifiche documentali.** Commit task 4ccb7817706fff0ec5f64cfa584374c9a9674f18: FRONTIER aggiornato in11 righe vive e una sezione317; storia da Build316 in poi byte-preservata. Nuovi RELEASE.md, live-qa.json, runtime-identity.json, screenshots-manifest.json e un PNG nel dossier317. Autosync corrente: latest.md, un solo inbox e sovrascrittura del presente LAST_CURSOR_REPORT. Monolite, funzioni, chiavi i18n, metodo stabile, roadmap, checkpoint e sessioni legacy non modificati.
 
-- Runtime source: `8ddb70f1e02f24207c50baa3622b344023e5155c`.
-- Blob: `263e377652a9445634da253a3074e2175c419d49`.
-- SHA256: `ad07d54d3a9e0242dfc482468feba32f0b3527e2b4101536daae0bc4b842c683`.
-- Byte: 11.201.572; CR192 / CRLF0.
-- HTTPS: https://ionos-n8n-new.tailc01234.ts.net/gis?v=ad07d54d
-- Deploy GIS-only: 16 novembre 2026, 21:29:50 Europe/Rome. Un restart goi-gis-app; PID 1332131 → 2135386.
-- Backup308: `/var/backups/goi-gis-runtime/20261116T202949Z-prebuild309`.
-- VPS, HTTP interno e HTTPS nativo Windows: HTTP 200 e identita binaria concorde. [Ricevuta](runtime-identity.json).
+8. **Validazione documentale.** Diff check PASS e audit indipendente in sola lettura PASS. Corretto prima del commit un riferimento che attribuiva al CORE BOOT la lettura del report, rendendola esplicitamente successiva/on-demand. Identità, conteggi, hash e limiti coerenti; nessuna chiusura o QA umana inventata. I finding di payload della sessione sono registrati nella release, con accessi successivi ristretti.
 
-## Review e verifiche
+9. **Pubblicazione.** Il push dal workspace cloud è risultato indisponibile per assenza di credenziali di scrittura. Il contenuto e lo stesso commit task sono stati pubblicati dal Git Windows già autorizzato, in clone temporaneo isolato; albero e commit verificati prima del push. Nessuna modifica di credenziali, permessi o configurazione del repository operativo. Il contenitore autosync segue lo stesso percorso.
 
-Review mirata ROUTINE PASS sul diff e sul contenuto corrispondente allo SHA runtime. Reviewer esterno non richiesto per questo intervento; la review sostitutiva/backstop della precedente Build308 resta storica.
+10. **Gate e backlog.** P3 resta aperto con QA operatore PENDING. P2 CLOSED conserva il proprio PASS del18/11. Quote originali e addon terrainFill separati, stime non esportate come Z originale, dislivelli misti e pendenze tra fonti omessi. DTM5/10m precisione terreno HOLD, mobile PAUSA, P0 inventario HTTP/backup aperto, P4 SOLO FUTURO. Nessun nuovo blocco runtime avviato.
 
-- JavaScript inline 2/2 PASS e helper canonico invariato: [statici](static-checks.json).
-- Edge candidato 17/17 PASS: [risultati](candidate-qa.json).
-- Edge HTTPS LIVE 17/17 PASS: [risultati](live-qa.json).
-- Ogni esecuzione usa 11 clic nativi e 2 aperture reali del selettore file. Zero POST, eccezioni JavaScript ed errori console.
-- Prova centrale: importazione e salvataggio di una prima traccia GPX sintetica in Italia, importazione di una seconda a Sydney senza salvarla, click su Centra e verifica del fit di tutti i punti nell'area utile. La creazione originaria col pennello riferita dall'utente non e stata ripetuta: il test prepara il medesimo stato archivio/corrente mediante importazione e salvataggio canonici.
-- Verificate separazione del target tra Centra archivio e Centra corrente, conservazione byte-identica della geometria corrente, quote originali e archivio, finestra 1280x600, antimeridiano, punto singolo, disabilitazione senza punti e ripristino del layout desktop dopo il breakpoint mobile.
-- Screenshot realmente ispezionati: candidato 1280x600 e HTTPS LIVE 1440x900; entrambe le immagini sono conservate in questo dossier. [Manifest](screenshots-manifest.json).
-- Test con dati sintetici in profili Edge isolati e richieste esterne intercettate. Nessun dato del profilo personale usato. Pulizia dei dati e rimozione dei profili di test PASS in entrambi i run.
-- Nessuna regressione estesa fuori scope rieseguita; le prove Build308 gia consumate restano nel dossier precedente.
+## Autosync e identità F3
 
-## Gate residuo
-
-QA OPERATORE PENDING. Valutare nel proprio uso lo stesso caso di importazione della seconda traccia e il pulsante Centra. Attestazione, esclusivamente dopo esito positivo: `QA GIS-TRACK-IO-CURRENT-ARCHIVE-A-FIX2 PASS operatore`.
-Nessun avanzamento del backlog prima della chiusura valida. DTM terreno HOLD, profili XY separati, sviluppo mobile PAUSA.
-
-## Note di esecuzione
-
-Un primo tentativo del controllo statico ha incontrato il limite di buffer del runner Node; corretto il buffer, i due script sono stati verificati. Un'uscita iniziale di git status sul clone --no-checkout era troppo ampia: finding TOOL-PAYLOAD-GUARD, verifiche successive limitate. Il push HTTPS dal workspace cloud non disponeva di credenziali di scrittura: pubblicazione effettuata tramite il Git gia autorizzato del PC Windows. Nessuna modifica di credenziali o permessi.
-
-## Autosync e identita del rapporto
-
-real_task_commit: 8ddb70f1e02f24207c50baa3622b344023e5155c
-REMOTE_HEAD_AT_EVIDENCE_TIME: 8ddb70f1e02f24207c50baa3622b344023e5155c
+real_task_commit: 4ccb7817706fff0ec5f64cfa584374c9a9674f18
+RUNTIME_CANDIDATE_SHA: aff215323c97a309cbd5c6c7e0c694d35dd45ad0
+REMOTE_HEAD_AT_EVIDENCE_TIME: 4ccb7817706fff0ec5f64cfa584374c9a9674f18
 current_report_container: PENDING_SELF_REFERENCE
 Autosync publication verification: EXTERNAL_ONLY
+Autosync files: docs/orchestrator/latest.md; docs/orchestrator/inbox/2026-11-19_0202_build317-live-reconciliation.md; docs/runtime/LAST_CURSOR_REPORT.md.
 
-Il contenitore documentale include FRONTIER, dossier, latest, inbox e LAST_CURSOR_REPORT; il monolite e escluso. Working tree al momento di stesura: documenti del presente intervento in preparazione. Verifica clean/remoto dopo commit e push: EXTERNAL_ONLY.
+Il commit task è già pubblicato e verificato al momento della stesura. Questo contenitore non riporta autoreferenzialmente il proprio futuro SHA o esito push: HEAD finale, tracking, ls-remote e working tree sono verificati esternamente dopo la pubblicazione. Nessun terzo commit di finalize-hash.
 
-## Output Git prima del contenitore documentale
+## Diff del task pubblicato
 
 ```text
-git log --oneline -5:
-8ddb70f fix(gis): center current imported track from desktop panel
-bfa3ea6 docs(gis): backlog operator table resize batch elevation and single HTTPS
-git rev-parse HEAD:
-8ddb70f1e02f24207c50baa3622b344023e5155c
-git rev-parse origin/main:
-8ddb70f1e02f24207c50baa3622b344023e5155c
-git branch --show-current:
-main
-git ls-remote origin refs/heads/main:
-8ddb70f1e02f24207c50baa3622b344023e5155c	refs/heads/main
+4ccb781 docs(gis): reconcile Build317 live identity and HTTPS QA
+ docs/FRONTIER.md                                   |   26 +-
+ .../RELEASE.md                                     |   54 +
+ .../live-p3-partial-quoted-composite.png           |  Bin 0 -> 296902 bytes
+ .../live-qa.json                                   | 2142 ++++++++++++++++++++
+ .../runtime-identity.json                          |   94 +
+ .../screenshots-manifest.json                      |   25 +
+ 6 files changed, 2330 insertions(+), 11 deletions(-)
 ```
+
+## Output Git verbatim pre-container
+
+```text
+$ git log --oneline -5
+4ccb781 docs(gis): reconcile Build317 live identity and HTTPS QA
+6dc4769 docs(gis): review Build317 P3 partial elevation before deploy
+
+$ git rev-parse HEAD
+4ccb7817706fff0ec5f64cfa584374c9a9674f18
+
+$ git rev-parse origin/main
+4ccb7817706fff0ec5f64cfa584374c9a9674f18
+
+$ git branch --show-current
+main
+
+$ git ls-remote origin refs/heads/main
+4ccb7817706fff0ec5f64cfa584374c9a9674f18	refs/heads/main
+
+$ git status --short
+```
+
+Snapshot locale shallow: git log -5 mostra soltanto gli antenati acquisiti, senza ricostruzione dello storico non necessario al gate.
+
+## Stato fresco pre-container
+
+origin/main HEAD: 4ccb7817706fff0ec5f64cfa584374c9a9674f18
+working tree: pulito prima della preparazione di questo autosync.
+ultimo blocco PASS operatore: GIS-TABLES-ALL-REMAINING-P2 / Build316, CLOSED.
+blocco tecnico corrente: GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A / Build317 LIVE, Automated Browser QA PASS, operatore PENDING.
+prossimo candidato runtime: nessuno.
+note operative: preservare il gate umano e i limiti HOLD/PAUSA; final publication verification EXTERNAL_ONLY.

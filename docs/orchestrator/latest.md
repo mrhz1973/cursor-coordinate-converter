@@ -1,9 +1,9 @@
-# P2 tabelle desktop — Build316 LIVE / CLOSED
+# Orchestrator latest — Build317 P3 LIVE riconciliata
 
-BLOCK CHIUSO: GIS-TABLES-ALL-REMAINING-P2.
-QA: QA GIS-TABLES-ALL-REMAINING-P2 PASS operatore, 18/11/2026, attestazione unica finale su tutte le tabelle operative P2.
-TECNICO: review GPT-SOSTITUTIVA DELICATO 27/27 PASS, reviewer esterno NOT_PERFORMED/backstop; JS inline 2/2, Edge candidato 134/134 e HTTPS LIVE 134/134 PASS. Ripetizione LIVE 134/134 PASS.
-CLOSURE: Regola H docs-only. HTML, Build316 e PID GIS invariati, nessuna Build317.
-RUNTIME LIVE: source de583b4a1d774544b53b3277c334680f2a973652, SHA256 edf2042254b53852ee7402655b139c698cc09d958be555b397fdc13162525917.
-NEXT: P2 CLOSED. Fuori P2: P3 quote parziali non implementate, P0 inventario HTTP origin con backup, P4 menu Nuova traccia SOLO FUTURO; DTM terreno accuracy HOLD, mobile PAUSA. Nessun nuovo bundle aperto.
-EVIDENCE: [ricevuta QA](evidence/2026-11-18-qa316-p2-final-closure/REPORT.md) - [Build316](evidence/2026-11-18-all-remaining-p2-316/RELEASE.md) - [matrice](evidence/2026-11-18-all-remaining-p2-316/MATRIX.md).
+Data: 19/11/2026 02:02 Europe/Rome. FRONTIER è l'unica LIVE STATE.
+BLOCK: GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A.
+GATE: identità GitHub/VPS/HTTP/HTTPS PASS, HTTPS LIVE151/151 PASS; QA operatore PENDING. Nessun nuovo deploy o restart.
+LIVE: Build317 source aff215323c97a309cbd5c6c7e0c694d35dd45ad0, SHA256 ed760bbd704db0e925f8af7f52a7880d9cffda4be2e2f0af9a2044c9cdf56fec.
+NEXT: QA umana residua P3, poi Regola H; P0 aperto, P4 FUTURO, mobile PAUSA, DTM5/10m HOLD.
+TASK: 4ccb7817706fff0ec5f64cfa584374c9a9674f18; autosync container PENDING_SELF_REFERENCE, publication EXTERNAL_ONLY.
+[Inbox](inbox/2026-11-19_0202_build317-live-reconciliation.md) · [Release](evidence/2026-11-18-partial-imported-elevation-317/RELEASE.md) · [Rapporto completo](../runtime/LAST_CURSOR_REPORT.md).
