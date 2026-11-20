@@ -1,9 +1,9 @@
-# P0 — HTTP Local Storage leggibile; backup completo e confronto in attesa
+# P0 — HTTP Local Storage copiato e verificato; origine completa e confronto in attesa
 
 Data registrazione: 19/11/2026 20:38:41 Europe/Rome.
-Aggiornamento: 20/11/2026 Europe/Rome; nuovo esito console riferito dall’operatore, senza payload personali.
+Aggiornamento: 20/11/2026 03:25:39 Europe/Rome; download e copia locale verificati tramite TMAR, senza trasferire payload personali.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0. Tipo: audit non distruttivo, nessun bundle runtime.
-**Esito corrente: HTTP_LOCALSTORAGE_PARTIAL / BACKUP_PENDING. Acquisiti conteggi della sola chiave HTTP coordconv_v2 tramite console operatore. Backup completo non acquisito/verificato; confronto HTTP/HTTPS non eseguito. P0 resta APERTO.**
+**Esito corrente: HTTP_LOCALSTORAGE_VERIFIED / ORIGIN_BACKUP_PENDING. Verificati il file e la copia locale di tutte le coppie Local Storage HTTP. Copertura LOCALSTORAGE_ONLY; IndexedDB/contenitori residui, HTTPS e confronto non acquisiti. P0 resta APERTO.**
 
 ## Mandato e fonte viva
 
@@ -11,7 +11,25 @@ L'operatore ha richiesto «continua» dopo la chiusura P3. origin/main verificat
 
 URL operativo da usare: https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd. L'origine HTTP tecnica rimane documentata per questo confronto e per l'infrastruttura.
 
-## Aggiornamento operativo — 20 novembre 2026
+## Backup Local Storage HTTP verificato — 20 novembre 2026, 03:25 Europe/Rome
+
+L’operatore ha eseguito lo snippet e ricevuto `DOWNLOAD_AVVIATO`: file `TMAR-GIS-P0-HTTP-localStorage-20261120T022103176Z.json`, **36.618 byte**, **2 chiavi**, SHA256 **7811e2250e1b18e9651f0cd4467b79eb5a4f0511c8fc1e1602f144081db56a95**. L’avviso del browser segnala l’origine HTTP del Blob; non è stato trattato come prova di riuscita o fallimento del salvataggio e non sono state modificate protezioni del browser. I messaggi GET con URL redatti nel log operatore non sono stati attribuiti allo snippet, che non contiene richieste di rete.
+
+TMAR ha individuato il file nella cartella Downloads, senza file .crdownload, e ha eseguito il [verificatore locale](verify-localstorage-backup.cjs). Lettura del file con dimensione/stabilità/hash, schema/origine/data, coppie stringa/stringa univoche e ordinate, conteggi e unità UTF-16: **PASS**. Copia non sovrascrivente nella cartella seguente, rilettura byte per byte e confronto dello stesso SHA256: **PASS**.
+
+```text
+C:\Users\mrhz\AppData\Local\TMAR-GIS\Backups\P0-20261120T022103176Z-HTTP-localStorage
+```
+
+La cartella conserva il JSON e `verification.json`; la ricevuta ha SHA256 `2307c79a3e81b32f88fa36e38014df5306cd2dcf24e23b3fc966bf11b07fa6e7`. [Metadati verificati](http-localstorage-verification.json), acquisizione 02:21:03.176 UTC, verifica 02:25:39.619 UTC del 20 novembre. Il payload resta sul PC; qui sono pubblicati soltanto metadati ed esiti.
+
+Dal file verificato: `coordconv_v2` contiene 30.908 unità UTF-16 e JSON con radice oggetto valida; 1 traccia salvata, 200 waypoint, 0 poligoni e impostazioni presenti. La chiave UI `coordconv_ui_v1` è inclusa; la chiave legacy `coordconv_v1` non è presente nel set acquisito. Nessuna ricostruzione o scrittura delle sorgenti; originale nella cartella Downloads conservato.
+
+[Verifiche del verificatore](verify-localstorage-backup-validation.json): sorgente sintetica preservata, hash errato respinto prima della copia, destinazione esistente divergente preservata, rilettura della copia esatta e nessun valore privato nello stdout. Finding di review corretto prima dell’esecuzione reale: una ricevuta preesistente viene accettata soltanto se coincide integralmente con quella ricostruita dai risultati correnti, con il solo timestamp ISO validato preservato; proprietà extra o copertura alterata causano STOP. Test mirato PASS e revisione statica finale PASS.
+
+**Questo PASS qualifica esclusivamente LOCALSTORAGE_ONLY dell’origine HTTP.** Non attesta un backup completo dell’origine, tile/IndexedDB, memoria non persistita dell’app, dati HTTPS o confronto tra origini. La doppia lettura dello snippet non viene presentata come transazione atomica su tutti i contenitori.
+
+## Lettura e preparazione precedenti all’export — 20 novembre 2026
 
 La copia manuale di `082968.ldb` tramite Esplora file ha restituito anch’essa accesso negato, documentato dallo screenshot operatore. La prova fisica è conclusa; nessuna modifica dei permessi, elevazione o chiusura del browser. Causa del diniego non determinata.
 
@@ -74,7 +92,7 @@ Questa mappa è una proprietà del codice, **non** un'enumerazione dei dati effe
 
 ## Gate successivo e limiti
 
-La lettura manuale HTTP è ora disponibile. Prossimo passo: eseguire lo snippet di export Local Storage nella stessa scheda e verificare il file effettivamente scritto sul PC per dimensione, SHA256, schema/origine, coppie stringa/stringa univoche e numero di chiavi. Verificare anche l’eventuale copia nella cartella di backup. L’esito potrà qualificare soltanto LOCALSTORAGE_ONLY; IndexedDB/binari, eventuali altri contenitori, acquisizione HTTPS e confronto restano gate distinti. Enumerare senza mutazioni e distinguere record identici, unici, divergenti o non interpretabili. Solo metadati e risultati aggregati nei rapporti condivisi; payload personali conservati localmente.
+Local Storage HTTP e copia locale sono verificati nel loro preciso perimetro. Prossimo passo: enumerare il catalogo IndexedDB HTTP con indexedDB.databases(), senza aprire o creare database; assenza API, errore e timeout restano distinti da un catalogo valido vuoto. Poi acquisire/verificare i contenuti e i contenitori residui pertinenti, lo storage HTTPS e il confronto tra origini. Non dedurre presenza o integrità delle tile dal solo nome del database. Solo metadati e risultati aggregati nei rapporti condivisi; payload personali conservati localmente. Nessun inventario dei contenitori residui è ancora attestato.
 
 **Migrazione e pulizia restano bloccate.** Non inferire che HTTP sia vuoto o duplicato. Nessun dato del sito, collegamento browser, servizio HTTP o backup è stato cancellato. P3/Build317 resta CLOSED con il PASS operatore già ricevuto; runtime invariato, nessun deploy o nuova QA. DTM5/10m HOLD, mobile PAUSA, P4 SOLO FUTURO.
 
