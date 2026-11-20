@@ -1,9 +1,9 @@
-# P0 — Local Storage HTTP verificato; catalogo IDB acquisito, export pronto
+# P0 — Local Storage e IndexedDB HTTP verificati; inventario HTTPS in attesa
 
 Data registrazione: 19/11/2026 20:38:41 Europe/Rome.
-Aggiornamento: 20/11/2026 05:21 Europe/Rome; catalogo IDB riferito dall’operatore e comando di export preparato/verificato su fixture; nessun nuovo payload personale acquisito.
+Aggiornamento: 20/11/2026; ricevuta IndexedDB reale verificata alle 12:39 Europe/Rome, preparazione HTTPS e risposta neutra attestata da GET nativo. Payload personali conservati sul PC.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0. Tipo: audit non distruttivo, nessun bundle runtime.
-**Esito corrente: HTTP_LOCALSTORAGE_VERIFIED / IDB_EXPORT_READY / ORIGIN_BACKUP_PENDING. Local Storage HTTP già verificato. Catalogo IDB operatore: un database CoordConvMapTiles v1. Schema/contenuti reali IDB e relativo backup non ancora acquisiti; HTTPS, altri contenitori e confronto PENDING. P0 resta APERTO.**
+**Esito corrente: HTTP_LOCALSTORAGE_AND_IDB_VERIFIED / HTTPS_INVENTORY_PENDING / ORIGIN_BACKUP_PENDING. File e copie locali HTTP verificati nei due perimetri LOCALSTORAGE_ONLY e INDEXEDDB_TILES_ONLY. Non costituiscono uno snapshot atomico né un backup completo dell’origine. HTTPS, contenitori residui e confronto restano PENDING; P0 resta APERTO.**
 
 ## Mandato e fonte viva
 
@@ -11,7 +11,29 @@ L'operatore ha richiesto «continua» dopo la chiusura P3. origin/main verificat
 
 URL operativo da usare: https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd. L'origine HTTP tecnica rimane documentata per questo confronto e per l'infrastruttura.
 
-## Catalogo IndexedDB HTTP e comando pronto — 20 novembre 2026
+## IndexedDB HTTP verificato — 20 novembre 2026
+
+[Ricevuta reale](http-indexeddb-verification.json), già acquisita tramite TMAR: snapshot **11:34:39.385 UTC**, verifica **11:39:51.041 UTC** (12:39 Europe/Rome). CoordConvMapTiles v1, store tiles: **1.028 record**, **16.012.203 byte binari**; file JSON **21.511.025 byte**, SHA256 `a1f72fd84a9f7f49cb0e0e9cbc023e813841388192f5ccda56b2b34d81919056`. Dimensione/hash globale, schema, chiavi univoche, Base64 canonico, lunghezza/SHA256 di ogni binario e totali: PASS. Copia locale non sovrascrivente riletta byte per byte: PASS; nessuna nuova prova ripetuta per registrare questa ricevuta.
+
+Cartella: `C:\Users\mrhz\AppData\Local\TMAR-GIS\Backups\P0-20261120T113439385Z-HTTP-IndexedDB`. Ricevuta locale `verification.json`, SHA256 `e7be9711dd3d3d5d4c9357017486c8a57e31efdada6f47924403af378ffe2a11`. Sorgente e payload rimasti sul PC; qui soltanto metadati.
+
+**I due snapshot HTTP sono distinti:** Local Storage alle **02:21:03.176 UTC**, IndexedDB alle **11:34:39.385 UTC**. Non attestano atomicità fra contenitori né assenza di modifiche successive nel browser. Coperture limitate ai due export; `completeOriginBackup:false` e confronto HTTPS `NOT_PERFORMED`.
+
+## Preparazione HTTPS — esecuzione personale ancora NOT_PERFORMED
+
+[Export HTTPS](export-https-localstorage.console.js), SHA256 `0b22d441474a38fe23df61315ad737cf0e0239f161daa5bb04af9a44ed808910`; [verificatore HTTPS](verify-https-localstorage-backup.cjs), SHA256 `22f6a591933a9218ccdd83f59070cd9b9186c7a48b625da53b5f4d9a5360274a`. Guard esclusivo dell’origine HTTPS, schema V1 e copertura LOCALSTORAGE_ONLY invariati; tutte le coppie raw conservate anche con zero chiavi o chiave principale assente, con presenza di quest’ultima indicata separatamente.
+
+Verifiche sintetiche del solo delta: **3 gruppi exporter PASS** (HTTPS con chiavi, HTTPS vuoto/main assente, origine HTTP respinta) e **3 gruppi verifier PASS** (HTTPS con chiavi; vuoto/assenza distinti da zero record; configurazione/nome/payload HTTP respinti prima della copia), senza valori privati nell’output. Review statica indipendente dei soli delta HTTPS PASS. SHA qualificata invariata, sue prove non ripetute. [Metadati e risultati](inventory-metadata.json).
+
+Comando preparato e hash verificato nativamente: `C:\Users\mrhz\AppData\Local\TMAR-GIS\P0-Aiuto-20261120\P0-HTTPS-LocalStorage-Comando.txt`, **4.173 byte**, stesso SHA256 dell’export. Il file contiene soltanto codice: nessuna esecuzione nel browser o apertura di Notepad attestata in questo aggiornamento; download/backup HTTPS non acquisiti.
+
+### Accesso HTTPS: risposta nativa attestata, contesto personale da attestare
+
+GET mirato su `https://ionos-n8n-new.tailc01234.ts.net/gis/__tmar_p0_inventory__`: **HTTP404**, `application/json`, **45 byte**, nessun redirect, script/risorsa, Set-Cookie o Clear-Site-Data; SHA256 corpo `ff8de22dcfc848726255ab059ff25aeb8c957768999e90ebddb99360077b9261`, controllo **11:47:00.968 UTC**. Nessuna modifica server. Il primo risultato GET è stato perso per troncamento e non usato come evidenza; un solo recupero mirato ha salvato questi metadati. Il requestCount1 della ricevuta riguarda il recupero, non l’intera sequenza.
+
+Aprire l’indirizzo in **una nuova scheda dello stesso browser/profilo**: la risposta404 JSON è attesa. **Se compare l’applicazione GIS o un altro avviso, STOP.** La verifica nativa attesta la risposta del server; origine e contesto del browser personale restano da attestare tramite operatore/guard. Eventuali residui Service Worker non sono esclusi. Nessun contenuto HTTPS del profilo è stato acquisito.
+
+## Storico: catalogo IndexedDB HTTP e preparazione prima dell’esecuzione reale — 20 novembre 2026
 
 Output riferito dall’operatore, con acquisitoUTC 2026-11-20T03:22:30.769Z (04:22 Europe/Rome):
 
@@ -118,7 +140,7 @@ Questa mappa è una proprietà del codice, **non** un'enumerazione dei dati effe
 
 ## Gate successivo e limiti
 
-Local Storage HTTP già verificato, catalogo IDB attestato dall’operatore. Prossimo passo: eseguire il comando export IndexedDB nella stessa scheda HTTP; acquisire la sola ricevuta metadata o STOP. Poi TMAR verifica privatamente sul PC il file realmente scritto e la copia, inclusi gli hash di tutti i binari. Soltanto un esito reale positivo potrà qualificare INDEXEDDB_TILES_ONLY. Eventuali altri contenitori pertinenti, HTTPS e confronto restano da acquisire; nessuna migrazione/pulizia. Non ripetere il Local Storage già verificato. Solo metadati nei rapporti, payload personali sul PC.
+Local Storage e IndexedDB HTTP sono verificati nei rispettivi snapshot e perimetri. Prossimo passo: aprire la risposta neutra HTTPS nella nuova scheda dello stesso browser/profilo e attestare l’origine effettiva; STOP se compare GIS o un altro avviso. Eseguire poi l’export Local Storage HTTPS preparato e far verificare a TMAR il file realmente scritto e la copia. Zero chiavi o main assente restano casi espliciti, non prove di zero record nelle raccolte mancanti. Contenitori residui, IndexedDB HTTPS e confronto restano da acquisire; nessuna migrazione/pulizia. Non ripetere gli export HTTP già verificati senza un cambiamento concreto. Solo metadati nei rapporti, payload personali sul PC.
 
 **Migrazione e pulizia restano bloccate.** Non inferire che HTTP sia vuoto o duplicato. Nessun dato del sito, collegamento browser, servizio HTTP o backup è stato cancellato. P3/Build317 resta CLOSED con il PASS operatore già ricevuto; runtime invariato, nessun deploy o nuova QA. DTM5/10m HOLD, mobile PAUSA, P4 SOLO FUTURO.
 
