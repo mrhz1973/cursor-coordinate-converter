@@ -1,8 +1,9 @@
-# P0 — inventario preliminare HTTP/HTTPS, backup BLOCKED
+# P0 — HTTP Local Storage leggibile; backup completo e confronto in attesa
 
 Data registrazione: 19/11/2026 20:38:41 Europe/Rome.
+Aggiornamento: 20/11/2026 Europe/Rome; nuovo esito console riferito dall’operatore, senza payload personali.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0. Tipo: audit non distruttivo, nessun bundle runtime.
-**Esito: METADATA_ONLY / BLOCKED. Inventario logico non acquisito; backup non verificato; confronto HTTP/HTTPS non eseguito. P0 resta APERTO.**
+**Esito corrente: HTTP_LOCALSTORAGE_PARTIAL / BACKUP_PENDING. Acquisiti conteggi della sola chiave HTTP coordconv_v2 tramite console operatore. Backup completo non acquisito/verificato; confronto HTTP/HTTPS non eseguito. P0 resta APERTO.**
 
 ## Mandato e fonte viva
 
@@ -10,7 +11,23 @@ L'operatore ha richiesto «continua» dopo la chiusura P3. origin/main verificat
 
 URL operativo da usare: https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd. L'origine HTTP tecnica rimane documentata per questo confronto e per l'infrastruttura.
 
-## Inventario fisico effettivamente acquisito
+## Aggiornamento operativo — 20 novembre 2026
+
+La copia manuale di `082968.ldb` tramite Esplora file ha restituito anch’essa accesso negato, documentato dallo screenshot operatore. La prova fisica è conclusa; nessuna modifica dei permessi, elevazione o chiusura del browser. Causa del diniego non determinata.
+
+L’operatore ha poi verificato `location.origin` nella scheda GIS e ha eseguito una IIFE di sola lettura della chiave `coordconv_v2`, con guard sull’origine e distinzione fra chiave assente, lettura negata, JSON/radice invalidi e raccolte non-array. Output ricevuto:
+
+```json
+{"origine":"http://100.99.54.93:8000","esito":"LETTURA_OK","caratteri":30908,"tracceSalvate":1,"waypoint":200,"poligoni":0,"impostazioni":"PRESENTI"}
+```
+
+`caratteri` indica unità UTF-16 del valore grezzo, non byte. I conteggi riguardano soltanto lo stato persistito in questa chiave: **1 traccia salvata, 200 waypoint, 0 poligoni e oggetto impostazioni presente**. Non sono un inventario dello stato ancora in memoria, delle altre chiavi o della cache; non dimostrano unicità o duplicazione rispetto a HTTPS. La lettura è attestata dall’operatore, non da una sessione Browser automatizzata; il collegamento al profilo fisico Default non è stato verificato programmaticamente in questa fase.
+
+Preparato [export Local Storage HTTP](export-localstorage.console.js): tutte le coppie stringa/stringa dell’origine esatta, valori grezzi preservati, doppia lettura coincidente, UTF-8 e SHA256 sugli stessi byte del Blob, nome file univoco. Nessuna scrittura nello storage, richiesta di rete o uso della clipboard. Output limitato a metadati e `DOWNLOAD_AVVIATO`; nessun PASS di salvataggio dedotto. Copertura dichiarata `LOCALSTORAGE_ONLY`.
+
+[Verifica offline](export-localstorage-validation.json): revisione statica indipendente PASS; SHA256 confrontato con Node crypto su 19 lunghezze, inclusi confini di blocco e input da 1 MiB; roundtrip esatto di fixture sintetiche con Unicode, surrogate isolate, chiavi speciali e valori JSON non validi; 6 scenari fail-closed; zero tentativi di scrittura sorgente. Nessun dato personale usato nelle verifiche. **Snippet non ancora eseguito nel browser; nessun download acquisito o backup verificato in questo aggiornamento.**
+
+## Inventario fisico acquisito — 19 novembre 2026
 
 Sul PC **AsusDesktop**, il profilo **Microsoft Edge / Default** risulta `lastUsed=true` e `lastActive=true` nei metadati Local State. Sono presenti entrambe le directory IndexedDB delle origini richieste. Non è stato acquisito il contesto della scheda GIS attualmente aperta: questa evidenza identifica il profilo segnato attivo e gli archivi esistenti, non una nuova osservazione dell'applicazione in uso.
 
@@ -22,7 +39,7 @@ Sul PC **AsusDesktop**, il profilo **Microsoft Edge / Default** risulta `lastUse
 
 Sono presenti anche contenitori CacheStorage, Service Worker Database, WebStorage/QuotaManager e File System/Origins. Non è stata accertata la loro attribuzione alle due origini: non sono dichiarati vuoti o estranei. Dimensione diversa delle directory HTTP/HTTPS non dimostra dati GIS unici, duplicati o perduti.
 
-## Tentativo di backup e blocco verificato
+## Tentativo di backup fisico e blocco verificato — 19 novembre 2026
 
 Predisposta una copia locale con confronto del set file e degli SHA256 prima/copia/dopo, senza chiudere Edge o scrivere nelle sorgenti. Il tentativo si è fermato durante la lettura iniziale di `Local Storage/leveldb/082968.ldb`, **prima della fase di copia**:
 
@@ -57,7 +74,7 @@ Questa mappa è una proprietà del codice, **non** un'enumerazione dei dati effe
 
 ## Gate successivo e limiti
 
-Serve un accesso ordinario autorizzato al profilo Edge effettivamente usato, preferibilmente tramite il browser collegato con il proprio contesto disponibile. Alla ripresa: enumerare valori e database senza mutazioni, acquisire backup locale completo e verificarlo, quindi confrontare le due origini distinguendo record identici, unici, divergenti o non interpretabili. Solo metadati e risultati aggregati nei rapporti condivisi; payload personali conservati localmente.
+La lettura manuale HTTP è ora disponibile. Prossimo passo: eseguire lo snippet di export Local Storage nella stessa scheda e verificare il file effettivamente scritto sul PC per dimensione, SHA256, schema/origine, coppie stringa/stringa univoche e numero di chiavi. Verificare anche l’eventuale copia nella cartella di backup. L’esito potrà qualificare soltanto LOCALSTORAGE_ONLY; IndexedDB/binari, eventuali altri contenitori, acquisizione HTTPS e confronto restano gate distinti. Enumerare senza mutazioni e distinguere record identici, unici, divergenti o non interpretabili. Solo metadati e risultati aggregati nei rapporti condivisi; payload personali conservati localmente.
 
 **Migrazione e pulizia restano bloccate.** Non inferire che HTTP sia vuoto o duplicato. Nessun dato del sito, collegamento browser, servizio HTTP o backup è stato cancellato. P3/Build317 resta CLOSED con il PASS operatore già ricevuto; runtime invariato, nessun deploy o nuova QA. DTM5/10m HOLD, mobile PAUSA, P4 SOLO FUTURO.
 
