@@ -1,15 +1,41 @@
-# P0 — HTTP Local Storage copiato e verificato; origine completa e confronto in attesa
+# P0 — Local Storage HTTP verificato; catalogo IDB acquisito, export pronto
 
 Data registrazione: 19/11/2026 20:38:41 Europe/Rome.
-Aggiornamento: 20/11/2026 03:25:39 Europe/Rome; download e copia locale verificati tramite TMAR, senza trasferire payload personali.
+Aggiornamento: 20/11/2026 05:21 Europe/Rome; catalogo IDB riferito dall’operatore e comando di export preparato/verificato su fixture; nessun nuovo payload personale acquisito.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0. Tipo: audit non distruttivo, nessun bundle runtime.
-**Esito corrente: HTTP_LOCALSTORAGE_VERIFIED / ORIGIN_BACKUP_PENDING. Verificati il file e la copia locale di tutte le coppie Local Storage HTTP. Copertura LOCALSTORAGE_ONLY; IndexedDB/contenitori residui, HTTPS e confronto non acquisiti. P0 resta APERTO.**
+**Esito corrente: HTTP_LOCALSTORAGE_VERIFIED / IDB_EXPORT_READY / ORIGIN_BACKUP_PENDING. Local Storage HTTP già verificato. Catalogo IDB operatore: un database CoordConvMapTiles v1. Schema/contenuti reali IDB e relativo backup non ancora acquisiti; HTTPS, altri contenitori e confronto PENDING. P0 resta APERTO.**
 
 ## Mandato e fonte viva
 
 L'operatore ha richiesto «continua» dopo la chiusura P3. origin/main verificato a 6dbcd7732e1d88d3de733b7a6b9c53b007d46516; FRONTIER indica P0 come prossimo residuo distinto. README AI-BOOT e OM §4 erano già acquisiti nella stessa chat: refresh mirato, WU N/A. Il [backlog P0](../../backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) richiede inventario, backup verificato e confronto fra le due origini prima di qualsiasi pulizia; il servizio HTTP tecnico va conservato.
 
 URL operativo da usare: https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd. L'origine HTTP tecnica rimane documentata per questo confronto e per l'infrastruttura.
+
+## Catalogo IndexedDB HTTP e comando pronto — 20 novembre 2026
+
+Output riferito dall’operatore, con acquisitoUTC 2026-11-20T03:22:30.769Z (04:22 Europe/Rome):
+
+```json
+{"origine":"http://100.99.54.93:8000","copertura":"IDB_CATALOGO_ONLY","numeroDatabase":1,"databaseAtteso":"CoordConvMapTiles","attesoPresente":true,"attesoVersione":1,"altriDatabase":0,"apertureDatabase":0,"esito":"ELENCO_DATABASE_OK","acquisitoUTC":"2026-11-20T03:22:30.769Z"}
+```
+
+Attesta solo il catalogo in quel momento: **un solo database, CoordConvMapTiles versione1**. Nessuna apertura del DB o lettura delle tile in questa ricevuta; conteggio record, schema effettivo degli store e integrità non acquisiti. Le righe GET con URL redatti non sono una misura delle tile memorizzate.
+
+Per ridurre i passaggi manuali, [un solo comando](export-indexeddb.console.js) esegue il prossimo controllo di schema/conteggi e, se conforme, prepara l’export locale. Il guard aggiorna il catalogo prima dell’apertura, usa esclusivamente la versione1 ed abortisce sincronicamente ogni evento di upgrade/creazione; handler tardivi mantenuti per chiudere eventuali connessioni dopo timeout. Schema ammesso dal runtime qualificato: solo store tiles, keyPath null, autoIncrement false, nessun indice. Ogni valore deve contenere esattamente b:ArrayBuffer e ct:string; chiave stringa. Differenze causano STOP senza saltare o troncare record.
+
+Count e cursore sono nella stessa transazione readonly. L’export avviene soltanto dopo oncomplete, cursore esaurito e conteggi coincidenti, con connessione chiusa. File JSON con chiave/MIME originali, binario Base64, lunghezza e SHA256 di ogni ArrayBuffer; hash globale sugli stessi byte UTF-8 del Blob. Limiti dichiarati:150.000 record,64MiB binari,4MiB di byte UTF-16 per chiavi/MIME,60secondi; superamento=STOP, mai backup parziale presentato come completo. Copertura INDEXEDDB_TILES_ONLY. Questi limiti non sono una misura del database personale.
+
+Il [verificatore locale](verify-indexeddb-backup.cjs) controllerà dimensione/hash globale/schema, conteggi, unicità, Base64 canonico, lunghezza/SHA di ogni binario e totali; copia non sovrascrivente, rilettura e ricevuta con soli metadati. Codice e ricevute non promuovono la copertura a backup completo dell’origine.
+
+[Validazione](indexeddb-helper-validation.json): review statica indipendente dei due helper PASS;14 controlli sintetici del verificatore PASS. Nuovo Edge headless con profilo temporaneo separato, documento servito tramite intercettazione locale e zero richieste inoltrate:4 casi PASS (export reale di4 tile sintetiche/65.593 byte binari con verifica Node e sorgente invariata; schema inatteso; valore inatteso; cancellazione simulata fra catalogo e apertura con upgrade abortito e DB non ricreato). Nessun runtime GIS caricato o profilo personale usato. Funzione SHA256 già qualificata riutilizzata identica, senza ripetere le sue prove.
+
+**Esecuzione sul database personale e download IndexedDB: NOT_PERFORMED / NOT_STARTED.** Nessun conteggio tile reale, backup IDB o acquisizione HTTPS dedotti dalle fixture.
+
+Comando preparato sul PC come `C:\Users\mrhz\AppData\Local\TMAR-GIS\P0-Aiuto-20261120\P0-HTTP-IDB-Comando.txt`: 9.794 byte, SHA256 `11b29c29b073d3943a633848c98e7165278fb0e984399bc7311b61e7bd3f8826`, rilettura identica all’helper revisionato e provato. Il file contiene soltanto codice; la preparazione non esegue l’export e non legge dati personali.
+
+### Accesso operativo disponibile
+
+TMAR esegue file, processi, verifiche e copie locali;25 strumenti esposti, nessun comando dedicato a schede/UI. La connessione Browser personale resta indisponibile. Il controllo read-only ha osservato22 processi Edge e zero righe comando ispezionabili: non dimostra l’assenza di un endpoint debugging, che resta non determinato. Nessun riavvio, modifica delle protezioni o del profilo. I test headless usano una nuova istanza isolata e non costituiscono accesso alla scheda personale. Il solo avvio del comando nel contesto GIS corrente richiede quindi l’operatore; verifica del file successiva tramite TMAR.
 
 ## Backup Local Storage HTTP verificato — 20 novembre 2026, 03:25 Europe/Rome
 
@@ -92,7 +118,7 @@ Questa mappa è una proprietà del codice, **non** un'enumerazione dei dati effe
 
 ## Gate successivo e limiti
 
-Local Storage HTTP e copia locale sono verificati nel loro preciso perimetro. Prossimo passo: enumerare il catalogo IndexedDB HTTP con indexedDB.databases(), senza aprire o creare database; assenza API, errore e timeout restano distinti da un catalogo valido vuoto. Poi acquisire/verificare i contenuti e i contenitori residui pertinenti, lo storage HTTPS e il confronto tra origini. Non dedurre presenza o integrità delle tile dal solo nome del database. Solo metadati e risultati aggregati nei rapporti condivisi; payload personali conservati localmente. Nessun inventario dei contenitori residui è ancora attestato.
+Local Storage HTTP già verificato, catalogo IDB attestato dall’operatore. Prossimo passo: eseguire il comando export IndexedDB nella stessa scheda HTTP; acquisire la sola ricevuta metadata o STOP. Poi TMAR verifica privatamente sul PC il file realmente scritto e la copia, inclusi gli hash di tutti i binari. Soltanto un esito reale positivo potrà qualificare INDEXEDDB_TILES_ONLY. Eventuali altri contenitori pertinenti, HTTPS e confronto restano da acquisire; nessuna migrazione/pulizia. Non ripetere il Local Storage già verificato. Solo metadati nei rapporti, payload personali sul PC.
 
 **Migrazione e pulizia restano bloccate.** Non inferire che HTTP sia vuoto o duplicato. Nessun dato del sito, collegamento browser, servizio HTTP o backup è stato cancellato. P3/Build317 resta CLOSED con il PASS operatore già ricevuto; runtime invariato, nessun deploy o nuova QA. DTM5/10m HOLD, mobile PAUSA, P4 SOLO FUTURO.
 

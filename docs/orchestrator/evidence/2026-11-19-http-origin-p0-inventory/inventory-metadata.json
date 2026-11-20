@@ -3,7 +3,7 @@
   "recordedAtEuropeRome": "2026-11-19T20:38:41.993167+01:00",
   "remoteBaseAtEvidenceTime": "6dbcd7732e1d88d3de733b7a6b9c53b007d46516",
   "block": "GIS-HTTP-ORIGIN-INVENTORY-P0",
-  "status": "HTTP_LOCALSTORAGE_VERIFIED / ORIGIN_BACKUP_PENDING",
+  "status": "HTTP_LOCALSTORAGE_VERIFIED / IDB_EXPORT_READY / ORIGIN_BACKUP_PENDING",
   "scope": "Non-destructive inventory and verified backup prerequisite; no migration or cleanup",
   "device": "AsusDesktop",
   "browserProfile": {
@@ -88,7 +88,7 @@
     "permissionsChanged": false,
     "causeBeyondAccessDenied": "NOT_DETERMINED"
   },
-  "logicalInventory": "PARTIAL_FILE_VERIFIED_HTTP_LOCALSTORAGE",
+  "logicalInventory": "HTTP_LOCALSTORAGE_VERIFIED_AND_OPERATOR_REPORTED_IDB_CATALOG_ONLY",
   "httpHttpsLogicalComparison": "NOT_PERFORMED",
   "verifiedBackup": false,
   "copiedDataSources": 1,
@@ -100,8 +100,8 @@
     "runtimeChanges": 0,
     "geographicPayloadsPublished": false
   },
-  "nextGate": "Enumerate HTTP IndexedDB catalog without opening or creating databases; then acquire/verify remaining storage and HTTPS before logical comparison. No migration or cleanup.",
-  "updatedAtEuropeRome": "2026-11-20T03:25:39.619+01:00",
+  "nextGate": "Execute the reviewed HTTP IndexedDB export in the actual GIS console, then verify the downloaded file and local copy with TMAR. Guard current catalog/schema; readonly count/cursor; abort upgrade and close late connections. Other storage and HTTPS/comparison remain pending.",
+  "updatedAtEuropeRome": "2026-11-20T05:21:53.682826+01:00",
   "operatorManualEvidence": {
     "reportedDateEuropeRome": "2026-11-20",
     "remoteBaseAtEvidenceTime": "131861742ae0230d2e70cb1d059d091d4defde9a",
@@ -159,5 +159,71 @@
       "legacyKeyPresent": false
     },
     "sourceWrites": false
+  },
+  "httpIdbCatalogOperatorEvidence": {
+    "source": "OPERATOR_REPORTED_CONSOLE_OUTPUT",
+    "output": {
+      "origine": "http://100.99.54.93:8000",
+      "copertura": "IDB_CATALOGO_ONLY",
+      "numeroDatabase": 1,
+      "databaseAtteso": "CoordConvMapTiles",
+      "attesoPresente": true,
+      "attesoVersione": 1,
+      "altriDatabase": 0,
+      "apertureDatabase": 0,
+      "esito": "ELENCO_DATABASE_OK",
+      "acquisitoUTC": "2026-11-20T03:22:30.769Z"
+    },
+    "recordCount": null,
+    "storeSchemaVerified": false,
+    "recordContentsAcquired": false,
+    "backupVerified": false
+  },
+  "preparedIdbExport": {
+    "artifact": "export-indexeddb.console.js",
+    "verifier": "verify-indexeddb-backup.cjs",
+    "validation": "indexeddb-helper-validation.json",
+    "coverage": "INDEXEDDB_TILES_ONLY",
+    "expectedSchema": {
+      "database": "CoordConvMapTiles",
+      "version": 1,
+      "store": "tiles",
+      "keyPath": null,
+      "autoIncrement": false,
+      "indexes": []
+    },
+    "expectedRecordValue": "exact object {b:ArrayBuffer,ct:string}; keys string",
+    "limits": {
+      "records": 150000,
+      "binaryBytes": 67108864,
+      "keyAndMimeUtf16Bytes": 4194304,
+      "milliseconds": 60000
+    },
+    "executionOnPersonalDatabase": "NOT_PERFORMED",
+    "download": "NOT_STARTED",
+    "verifiedBackup": false,
+    "sourceWrites": false,
+    "networkCalls": false,
+    "unexpectedSchemaOrType": "STOP_NO_PARTIAL_EXPORT",
+    "operatorCommandFile": {
+      "path": "C:\\Users\\mrhz\\AppData\\Local\\TMAR-GIS\\P0-Aiuto-20261120\\P0-HTTP-IDB-Comando.txt",
+      "status": "SCRIPT_READY",
+      "bytes": 9794,
+      "sha256": "11b29c29b073d3943a633848c98e7165278fb0e984399bc7311b61e7bd3f8826",
+      "matchesReviewedArtifact": true,
+      "personalDataReadDuringPreparation": false
+    }
+  },
+  "automationAccessObservation": {
+    "recordedDateEuropeRome": "2026-11-20",
+    "connector": "TMAR Desktop Commander Win",
+    "exposedTools": 25,
+    "dedicatedBrowserOrUiTools": 0,
+    "edgeProcessesObserved": 22,
+    "processCommandLinesInspectable": 0,
+    "existingBrowserDebuggingAccess": "NOT_DETERMINED",
+    "personalBrowserConnection": "NOT_AVAILABLE_IN_SESSION",
+    "fileAndProcessOperations": "AVAILABLE",
+    "personalBrowserRestartOrSecurityChanges": false
   }
 }
