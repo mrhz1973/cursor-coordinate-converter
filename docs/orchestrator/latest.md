@@ -1,9 +1,9 @@
-# Orchestrator latest — P0 inventario preliminare BLOCKED
+# Orchestrator latest — P0 lettura HTTP acquisita, backup in attesa
 
-Data: 19/11/2026 20:41 Europe/Rome. FRONTIER è l'unica LIVE STATE.
+Data: 20/11/2026 03:09 Europe/Rome. FRONTIER è l’unica LIVE STATE.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0.
-GATE: METADATA_ONLY; Browser senza originating context e lettura Local Storage negata Win32 5. Backup INCOMPLETE, zero sorgenti copiate; confronto logico non eseguito.
-LIVE: Build317 invariata, P3 CLOSED; nessun nuovo candidato/deploy/QA.
-NEXT: accesso autorizzato al profilo Edge, poi inventario logico, backup verificato e confronto. Pulizia/migrazione bloccate; DTM HOLD, mobile PAUSA, P4 FUTURO.
-TASK: 3a9ef3caafad7984200f9b6142873b4aa59db746; current_report_container PENDING_SELF_REFERENCE, publication EXTERNAL_ONLY.
-[Rapporto P0](evidence/2026-11-19-http-origin-p0-inventory/REPORT.md) · [Inbox](inbox/2026-11-19_2041_p0-origin-inventory-blocked.md) · [Rapporto completo](../runtime/LAST_CURSOR_REPORT.md).
+GATE: HTTP_LOCALSTORAGE_PARTIAL / BACKUP_PENDING. Console operatore: coordconv_v2 HTTP leggibile, 30.908 unità UTF-16, 1 traccia salvata, 200 waypoint, 0 poligoni, impostazioni presenti. Nessun backup completo verificato o confronto HTTPS.
+LIVE: Build317 invariata, P3 CLOSED; nessun candidato, deploy o nuova QA runtime.
+NEXT: eseguire export HTTP LOCALSTORAGE_ONLY revisionato; verificare il file locale per bytes/SHA256/schema. Poi IDB e contenitori residui, HTTPS e confronto. Migrazione/pulizia bloccate; DTM HOLD, mobile PAUSA, P4 FUTURO.
+TASK: a703da6875d53decff2060c465109aec878c30f0; current_report_container PENDING_SELF_REFERENCE, publication EXTERNAL_ONLY.
+[Rapporto P0](evidence/2026-11-19-http-origin-p0-inventory/REPORT.md) · [Comando export](evidence/2026-11-19-http-origin-p0-inventory/export-localstorage.console.js) · [Inbox](inbox/2026-11-20_0309_p0-http-localstorage-read.md) · [Rapporto completo](../runtime/LAST_CURSOR_REPORT.md).
