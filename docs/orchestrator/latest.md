@@ -1,21 +1,22 @@
-# Handoff — P0 catalogo browser e decisione sul confine di fiducia
+# Handoff — P0 recupero qualificato sulle copie e portabilità GIS
 
-> Report del pass; FRONTIER rimane l’unica LIVE STATE. Esecutore effettivo: ChatGPT tramite TMAR Desktop Commander. Review delegate su codice/metadati; nessun pass Cursor eseguito e nessun dispatch di un nuovo task Cursor.
+> Report del pass; FRONTIER rimane l’unica LIVE STATE. Esecutore effettivo: ChatGPT tramite TMAR Desktop Commander. Implementazione e review delegate; nessun pass Cursor eseguito e nessun dispatch di un nuovo task Cursor.
 
-Redazione: 2026-11-21T22:42:44+01:00 (Europe/Rome). Prova Git acquisita dopo il push del task, prima di questo autosync.
+Redazione: 2026-11-21T23:32:27+01:00 (Europe/Rome). Prova Git acquisita dopo il push del task, prima di questo autosync.
 
 ## A. Header sintetico
 
 | Campo | Valore |
 | --- | --- |
 | **BLOCK** | GIS-HTTP-ORIGIN-INVENTORY-P0 |
-| **GATE** | WAIT_TRUST_BOUNDARY_DECISION; DRIVER_ISOLATION_NOT_QUALIFIED sottostante. |
-| **NEXT** | Decisione A/B descritta nel rapporto: A è la prosecuzione minima proposta sull’Edge e catalogo/versione osservati; B richiede ambiente separato da definire. Poi delta/review/pilot e gate prima delle copie. |
+| **GATE** | APPLICATION_SCOPE_DECISION_PENDING; COPY_RECOVERY_QUALIFIED. A acquisita e problema del driver risolto. |
+| **NEXT** | Definire l’applicazione selettiva all’archivio HTTPS: +1 traccia HTTP di 11 punti e +200 waypoint, preservando i dati HTTPS. Prima di eventuali scritture: attualità, backup aggiornato e collisioni. Nessun nuovo gate Edge. |
 | **Runtime LIVE** | Build317 secondo FRONTIER; P3 CLOSED già attestato. Nessun nuovo probe VPS o deploy in questo pass. |
-| **Candidate FULL SHA** | Nessun nuovo candidato runtime. Candidato dati 2cbf48cea7f6baef931018185f031d244f56ba9223924f0cda567c0c983bf865, PREPARED_NOT_APPLIED. |
+| **Candidate FULL SHA** | Nessun nuovo candidato runtime. Candidato dati 2cbf48cea7f6baef931018185f031d244f56ba9223924f0cda567c0c983bf865, qualificato sulle copie e NON APPLICATO. |
 | **Build / ID / blob** | Build317 / aff215323c97a309cbd5c6c7e0c694d35dd45ad0 / 4578788467822123ea7ad7e929d3bdf0e262b1a8. |
 | **Deployed state** | Invariato nel perimetro del pass. |
-| **Result Cursor** | N/A — pass eseguito da ChatGPT/TMAR; due osservazioni native complete, nessun PASS GIS/isolamento. |
+| **Result Cursor** | N/A — pass ChatGPT/TMAR. Un pilot sintetico, un roundtrip privato e una classificazione offline completati, exit0. |
+| **Product direction** | Portabilità Windows/macOS/browser desktop/mobile/iPad; lavoro mobile di compatibilità riaperto. Nessun PASS universale attribuito. |
 | **Working tree** | CLEAN al task pubblicato, prima del container autosync. |
 
 ### Identità SHA non autoreferenziali
@@ -23,184 +24,174 @@ Redazione: 2026-11-21T22:42:44+01:00 (Europe/Rome). Prova Git acquisita dopo il 
 | Nome | Valore |
 | --- | --- |
 | **RUNTIME_CANDIDATE_SHA** | N/A — nessuna modifica runtime. |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | 2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | d1dd339490a5c04067ccde7fa42d4f50a74bd488 |
 | **docs/report HEAD** | PENDING_SELF_REFERENCE |
-| **real_task_commit** | 2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d |
-| **previous_report_container** | 586a9bdc716055272d6dcac69c61bb07be643908 |
+| **real_task_commit** | d1dd339490a5c04067ccde7fa42d4f50a74bd488 |
+| **previous_report_container** | 0e65851ab15441e65bebfbf4244d2ef9aa7f25c4 |
 | **current_report_container** | PENDING_SELF_REFERENCE |
 | **final_remote_head_after_report_push** | EXTERNAL_ONLY |
 
-Evidence puntata: `docs/orchestrator/inbox/2026-11-21-2242-p0-driver-trust-boundary.md`. [Rapporto task](https://github.com/mrhz1973/cursor-coordinate-converter/blob/2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d/docs/orchestrator/evidence/2026-11-21-driver-isolation-qualification/REPORT.md) · [Ricevute aggregate](https://github.com/mrhz1973/cursor-coordinate-converter/blob/2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d/docs/orchestrator/evidence/2026-11-21-driver-isolation-qualification/evidence.json) · [FRONTIER al task](https://github.com/mrhz1973/cursor-coordinate-converter/blob/2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d/docs/FRONTIER.md).
+Evidence puntata: `docs/orchestrator/inbox/2026-11-21-2332-p0-recovery-copies-qualified.md`. [Rapporto task](https://github.com/mrhz1973/cursor-coordinate-converter/blob/d1dd339490a5c04067ccde7fa42d4f50a74bd488/docs/orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md) · [Ricevute e classificazione](https://github.com/mrhz1973/cursor-coordinate-converter/blob/d1dd339490a5c04067ccde7fa42d4f50a74bd488/docs/orchestrator/evidence/2026-11-21-edge-owned-roundtrip/evidence.json) · [FRONTIER al task](https://github.com/mrhz1973/cursor-coordinate-converter/blob/d1dd339490a5c04067ccde7fa42d4f50a74bd488/docs/FRONTIER.md).
 
 ## B. RIEPILOGO COMPLETO
 
-1. **Mandato e ripresa.** «Vai» applicato al TASK DELTA pubblicato; base main verificata 586a9bdc716055272d6dcac69c61bb07be643908. Alla domanda sulla versione è stato confermato Build317. Il pass riguarda P0 e lo strumento di prova, senza nuova Build318.
-2. **Osservazione browser.** Una sola acquisizione nuova alle 21:17:53–21:17:55 UTC: dieci record dichiarati COMPONENT dal registro; sette target EXTENSION riconciliati univocamente in ciascuno snapshot prima/dopo. Raw softwarecatalog e target rimangono sul PC. Nessun GIS, runtime o seed caricato; browser proprio chiuso con exit0. Procedura osservativa exit0/REQUIRES_ASSESSMENT.
-3. **Metadati dei percorsi.** Una sola lettura offline alle 21:31:27–21:31:28 UTC, senza nuovo browser: dieci path lessicalmente nella versione157; due nodi disponibili, un antenato con Win32=2 e Node ENOENT/-4058, dieci discendenti NOT_ATTEMPTED. Nessuna inferenza di virtualità o associazione al bundle; il catalogo è rimasto invariato.
-4. **Verifiche e funzioni.** Due helper nuovi con sintassi e review statica indipendente, poi le due osservazioni effettive. Il primo usa la risorsa interna text/plain e produce aggregati; il secondo legge esclusivamente metadati dei percorsi confinati. Hash degli helper e delle ricevute vincolati; nessuna suite QA317/151 ripetuta, nessun pilot GIS o roundtrip privato eseguito.
-5. **File, regioni e invarianti.** Task di cinque file docs-only: FRONTIER, REPORT, evidence e due helper. Nessuna regione del monolite, i18n, framework o dipendenza runtime modificata. Nessun cambiamento a estensioni, policy, permessi, protezioni o profilo dell’operatore; nessun deploy.
-6. **Gate e decisione.** WAIT_TRUST_BOUNDARY_DECISION con DRIVER_ISOLATION_NOT_QUALIFIED. A propone il criterio operativo Edge posseduto più componenti del catalogo acquisito per la versione osservata, mantenendo i limiti NON_ATTESTATI e senza ammettere futuri componenti automaticamente. B richiede definire un ambiente separato; nessuna installazione o disabilitazione autorizzata. La scelta non è un PASS retroattivo delle proprietà mancanti.
-7. **Copie e backlog.** Il candidato resta PREPARED_NOT_APPLIED, non riletto o ricreato in questo pass. Dopo la scelta valgono delta, review, pilot e gate tecnici: le prove sulle copie già autorizzate non richiedono ulteriori conferme dopo i PASS previsti. Applicazione agli origin/migrazione/pulizia escluse. Residui ACCESS_DENIED non ritentati; backup completo origine non attestato. Mobile PAUSA, DTM5/10m HOLD, P4 FUTURO.
-8. **Pubblicazione.** Task 2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d pubblicato e verificato CLEAN; autosync corrente esattamente sui tre file indicati. SHA e PASS remoto del container corrente EXTERNAL_ONLY; nessun terzo commit/finalize.
+# P0 — roundtrip su Edge posseduto e requisito di portabilità
 
-### File modificati nel task
+Base operativa: `0e65851ab15441e65bebfbf4244d2ef9aa7f25c4`. **Copie qualificate per il recupero selettivo (`COPIES_QUALIFIED_FOR_SELECTIVE_RECOVERY`)**: driver completato, tutte le 6 tracce e i 200 waypoint del candidato conservati strutturalmente in ogni fase e differenze residue interamente spiegate. Il candidato resta **PREPARED_NOT_APPLIED**. Il prossimo gate riguarda l’eventuale applicazione agli origin, fuori dallo scope della scelta A.
 
-- `docs/FRONTIER.md`
-- `docs/orchestrator/evidence/2026-11-21-driver-isolation-qualification/REPORT.md`
-- `docs/orchestrator/evidence/2026-11-21-driver-isolation-qualification/evidence.json`
-- `docs/orchestrator/evidence/2026-11-21-driver-isolation-qualification/extension-catalog-observer.cjs`
-- `docs/orchestrator/evidence/2026-11-21-driver-isolation-qualification/extension-path-metadata.cjs`
+## Decisione operatore acquisita
 
-### Diff stat del task
+**L’opzione A è accettata.** Il browser Edge posseduto e i componenti del catalogo già acquisito per la versione osservata rientrano nel perimetro operativo di fiducia descritto nel [rapporto precedente](https://github.com/mrhz1973/cursor-coordinate-converter/blob/d1dd339490a5c04067ccde7fa42d4f50a74bd488/docs/orchestrator/evidence/2026-11-21-driver-isolation-qualification/REPORT.md). La decisione supera l’attesa della scelta A/B; non costituisce un PASS retroattivo del driver e non trasforma in prove le informazioni tecniche rimaste non attestate.
 
-```text
- docs/FRONTIER.md                                   |  24 +-
- .../REPORT.md                                      |  76 +++
- .../evidence.json                                  | 595 +++++++++++++++++++++
- .../extension-catalog-observer.cjs                 | 457 ++++++++++++++++
- .../extension-path-metadata.cjs                    | 190 +++++++
- 5 files changed, 1335 insertions(+), 7 deletions(-)
-```
+Il nuovo strumento deve riconciliare il perimetro accettato e fermarsi in presenza di accessori o cambiamenti non qualificati. L’accettazione non si estende automaticamente a qualsiasi futura voce del catalogo. Non vengono richieste ulteriori approvazioni per i passaggi sulle copie già compresi nel mandato, una volta superati i gate tecnici previsti.
 
-### Rapporto integrale del pass
+## Prodotto e ambiente di prova
 
-### P0 — osservazioni del catalogo e decisione sul confine di fiducia
+**Il GIS deve funzionare su Windows, macOS, browser desktop e mobile, compreso iPad.** Edge è soltanto l’infrastruttura scelta per questo pass di verifica: non limita le piattaforme del prodotto.
 
-**21 novembre 2026; tutti gli orari sono UTC.** Base operativa GitHub: `586a9bdc716055272d6dcac69c61bb07be643908`. Fonti operative: [evidence.json](https://github.com/mrhz1973/cursor-coordinate-converter/blob/2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d/docs/orchestrator/evidence/2026-11-21-driver-isolation-qualification/evidence.json), ricevute native aggregate e riferimenti primari indicati sotto. Il mandato «vai» riguarda la qualificazione del driver sulle copie; non autorizza applicazione agli origin, migrazione o pulizia.
+Versione e catalogo Edge vincolati identificano questa prova riproducibile: non sono requisiti per usare il GIS e non istituiscono una richiesta di approvazione per ogni futuro computer o browser. La scelta A risolve il criterio operativo attuale; la compatibilità estesa del prodotto resta un requisito da verificare concretamente.
 
-#### 1. Stato corrente
+Il nuovo ordine dell’operatore supera la precedente pausa mobile. Il lavoro di compatibilità mobile è quindi riaperto, mentre gli esiti per ciascun sistema e browser restano da verificare. Questa decisione non crea una Build318 e non attesta compatibilità universale. Restano vincolanti HTML standalone, vanilla JS, assenza di GPS silenzioso, modalità offline/OPSEC strict e consenso esplicito per la rete.
 
-Restano **`DRIVER_ISOLATION_NOT_QUALIFIED`** e **`WAIT_TRUST_BOUNDARY_DECISION`**. Due nuove osservazioni native sono terminate con exit 0: una del catalogo nel browser posseduto, una offline sul catalogo acquisito. Il loro stato è `OBSERVATION_COMPLETED_REQUIRES_ASSESSMENT`, non PASS di isolamento.
+Un controllo statico mirato della copia Build317 già qualificata non ha rilevato vincoli espliciti Edge/Windows nei guard cercati. L’accesso diretto a `navigator.userAgent` serve alla diagnostica (righe 77685–77691); non sono emerse occorrenze di `navigator.platform`, `showOpenFilePicker` o `showSaveFilePicker`. I percorsi acquisiti usano input file, FileReader e download tramite Blob/object URL/attributo download (righe 14115–14125, 35824–35837, 32837–32844). Sono presenti regole CSS per viewport mobile e safe-area (12740–12746). Questo controllo limitato a 15 contesti non certifica tutti i browser, le API o i comportamenti mobili; non ha modificato il runtime né eseguito nuove prove. Un lieve troncamento dell’output ha coinvolto note storiche, escluse dalle evidenze utilizzate.
 
-Build317/P3 resta CLOSED. Non sono stati letti runtime GIS o dati GIS reali, trasmessi seed, modificati runtime, estensioni, policy o protezioni, effettuati deploy o ripetuti QA151. Il candidato SHA256 `2cbf48cea7f6baef931018185f031d244f56ba9223924f0cda567c0c983bf865` conserva lo stato **`PREPARED_NOT_APPLIED`**; non è stato ricreato o riesaminato in questo pass. Nuovo pilota sintetico e roundtrip privato: **`NOT_STARTED`**.
+## Lavoro autorizzato e sequenza
 
-Il precedente runner `e5996173…`, il suo STOP sintetico e la diagnostica `97908f68…` rimangono evidenze distinte nel [dossier precedente](https://github.com/mrhz1973/cursor-coordinate-converter/blob/2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d/docs/orchestrator/evidence/2026-11-21-selective-recovery-roundtrip/REPORT.md). I nuovi risultati non li trasformano retroattivamente in PASS.
+Il pass ha completato la qualificazione sulle copie necessaria al recupero selettivo, con runtime Build317 invariato. Il candidato esistente resta **PREPARED_NOT_APPLIED**: 6 tracce e 200 waypoint, ottenuti conservando le 5 tracce HTTPS e aggiungendo la traccia HTTP di 11 punti e i 200 waypoint HTTP.
 
-#### 2. Esecuzioni effettivamente acquisite
+La sequenza autorizzata è stata eseguita:
 
-Il prerequisito di sessione è attestato alle **20:58:42.2309395Z**: repository nativo pulito alla base indicata, Node `v26.8.1`, Edge `157.0.4341.60`. Oltre a tale prerequisito, sono state eseguite le due osservazioni seguenti dal root, unico esecutore nativo.
+1. Delta minimo dello strumento preparato e revisionato.
+2. Pilota sintetico completato con due bracci separati, baseline e candidato, e quattro fasi: caricamento iniziale, primo salvataggio, ricaricamento senza reiniezione, secondo salvataggio.
+3. Completamento del driver, cambiamenti della baseline e conservazione del candidato valutati separatamente.
+4. Stessa verifica completata sulle copie GIS già autorizzate, dopo i gate richiesti e senza un’ulteriore richiesta di «vai».
 
-| Osservazione | Intervallo UTC | Processo / esito |
-| --- | --- | --- |
-| Catalogo browser | 21:17:53.728–21:17:55.115 | PID 16892, exit 0 |
-| Metadati dei percorsi | 21:31:27.588–21:31:28.013 | PID 52688, exit 0 |
+Una differenza o un errore deve produrre un finding concreto; il completamento del processo da solo non dimostra conservazione dei dati. Origini e profili personali restano intatti: applicazione dei dati, migrazione e pulizia non rientrano in questo pass.
 
-Il primo strumento, SHA256 `501debbafec870f71c8444226a4d2106b99308c7f32ca90cf2d29082ec70776d`, 28500 byte, aveva review statica PASS. Ha effettuato **una sola navigazione** a `edge://extensions-internals/`, senza fallback, su profilo nuovo posseduto. File DevTools, argv del profilo e PID del browser sono stati verificati; nessun flag aggiuntivo rispetto alla diagnostica congelata e nessun flag di disabilitazione della sandbox.
+## Esito sintetico acquisito
 
-La chiusura del solo browser posseduto è osservata, exit 0; il profilo è conservato. Il proxy senza inoltro ha negato 1 richiesta HTTP e 7 CONNECT. I contatori Fetch della pagina pari a zero non significano assenza globale di tentativi di rete. I raw del catalogo e dei target restano privati sul PC.
+Il nuovo pilota sintetico è terminato con **exit 0**, PID 34308, il **21 novembre 2026 dalle 22:11:28.290 alle 22:11:32.415 UTC**. Entrambi i bracci hanno completato le quattro fasi, con seed verificato, ricaricamento senza reiniezione e input invariati. Non sono stati registrati errori JavaScript, target inattesi o dialoghi.
 
-#### 3. Catalogo corrente: fatti e portata
+Lo strumento eseguito, 39968 byte, ha SHA256 `85648ee540851ce587cc12f53b9c7f44aec1a58a2078ee1067db8d43ea6f381a` e review statica **PASS**. La ricevuta sintetica misura 18651 byte, SHA256 `0f1bfea51aebc28d48e25073058a7465353382d945b3c7fc3b1806748f3a66e4`.
 
-Il catalogo contiene **10 record**, 10 identificativi unici, zero record malformati o ID duplicati. Tutti riportano location `COMPONENT`; 8 tipi sono `TYPE_EXTENSION`, 2 restano **`UNINTERPRETED`**. Nessun tipo ulteriore è stato indovinato.
+Il completamento procedurale è attestato. La fixture presenta un cambiamento iniziale del main da **4 a 14 proprietà**, con `selectedRecordsPreservedAtEveryObservedPhase: false`. Dopo il primo salvataggio, tutti i confronti raw `save1 → reload` e `save1 → save2` risultano identici. Questo documenta stabilità successiva al primo salvataggio, **non un PASS globale di conservazione dei dati iniziali**.
 
-In ciascuno snapshot, prima e dopo la navigazione, risultano 3 `service_worker` e 4 `background_page` di classe `EXTENSION`. **Tutti e 7 hanno corrispondenza univoca nel catalogo**, senza mancanti o ambiguità. La pagina tecnica passa da `ABOUT_BLANK` a `EDGE_INTERNAL`. Le acquisizioni non sono atomiche; queste corrispondenze non ricostruiscono i target della diagnostica storica né la causa dei suoi eventi.
+## Esito sulle copie GIS reali
 
-I permessi attivi presentano **57 voci API e 5 voci explicit-host**: sono somme di voci osservate, non 57 capacità o 5 host distinti. Gli altri array attivi esaminati sono vuoti; anche i gruppi withheld e optional risultano vuoti. I contenitori tab-specific sono oggetti senza insiemi registrati. Questi metadati non costituiscono una dimostrazione di innocuità o di tutte le capacità effettive.
+Con lo stesso strumento è stato completato il roundtrip reale, **exit 0**, PID 11436, il **21 novembre 2026 dalle 22:13:29.493 alle 22:13:34.839 UTC**; il footer nativo è acquisito alle **22:13:45.8873832Z**. La ricevuta, copiata esattamente da quella nativa, misura 18662 byte e ha SHA256 `62ee2ca63078314e4e68df07228f49c034055b5ae1c2077b787734de0519d259`.
 
-Il raw acquisito misura **19594 byte**, SHA256 `00888441d1c8be3a355daf53f90afee144886bfb0388c9c6ed573ccf08b57f12`. La ricevuta del primo strumento misura 8837 byte, SHA256 `4c5e0670b41265f38d68964a3a7123850ef94f1f7e629452b5f617183abbc302`.
+Entrambi i bracci hanno completato le quattro fasi. Seed verificato, sua rimozione e ricaricamento senza reiniezione risultano corretti; gli input sono rimasti invariati. Non sono stati registrati errori JavaScript, target inattesi o dialoghi.
 
-#### 4. Percorsi: il secondo lettore chiarisce il limite del primo
+**Tutte le 6 tracce e i 200 waypoint del candidato coincidono strutturalmente con gli originali in ciascuna fase osservata**, così come le 5 tracce della baseline. Il controllo `selectedRecordsPreservedAtEveryObservedPhase` è true. Dopo il primo salvataggio, i confronti raw verso ricaricamento e secondo salvataggio sono identici in entrambi i bracci.
 
-Il primo observer aveva classificato tutti i percorsi come `BROWSER_PATH_RESOLUTION_NOT_OBSERVED`, senza conservare il codice dell’errore. Il lettore successivo usa esclusivamente quel catalogo vincolato per dimensione/hash, rimasto invariato. La lettura riguarda solo metadati: nessun avvio di browser, lettura di contenuti sotto Edge, elenco di directory, consultazione di firme/policy o modifica degli accessi.
+Il confronto dell’intero main e quello della proiezione relativa non sono integralmente uguali: risultano differenze nelle impostazioni di entrambi i bracci e negli altri campi del main del candidato. La classificazione successiva, descritta sotto, ha spiegato tutte queste differenze usando gli snapshot esistenti, senza ripetere il roundtrip.
 
-I **10 percorsi distinti** ricadono lessicalmente sotto installazione e versione osservata 157. Sono stati pianificati **13 nodi**: 2 hanno metadati e risoluzione riusciti; 1 antenato risulta mancante, con HRESULT `-2147024894`, Win32 **2**, e `ENOENT`/errno **-4058** per lstat e realpath. I 10 discendenti vengono fermati dall’antenato: operazioni Node **`NOT_ATTEMPTED`**, non dieci errori ENOENT indipendenti.
+Il problema procedurale del driver Edge è superato per questa prova; il prodotto Build317 resta invariato.
 
-Non sono osservati reparse point o link nei nodi esaminati; questo dato non si estende ai discendenti non attraversati. La rilevazione non è atomica. **Virtualità dei percorsi non provata**; nessuna deduzione di compromissione o di assenza dei componenti.
+## Classificazione conclusiva delle differenze
 
-#### 5. Cosa consentono le fonti primarie
+Il classificatore `875a9205…`, 14550 byte, con review statica **PASS**, è stato eseguito una sola volta, PID 32972, **exit 0**. Il risultato è acquisito il **21 novembre 2026 alle 22:24:06.150 UTC**, con footer nativo alle **22:24:06.1839921Z**. La ricevuta misura 17121 byte, SHA256 `ca9ab7f4fcb247aff6c8495b74592a7fc8d4fb43eed1fcb63d1a9eb565eb2d7c`.
 
-La sorgente Chromium di `extensions-internals` restituisce un array JSON come `text/plain`, ricavato dal registro installato, con percorso, location, tipo e gruppi di permessi. Il registro upstream comprende anche stati diversi da enabled: supera il solo elenco dei target attivi, ma l’equivalenza completa con Edge157 non è attestata.
+L’esito `allObservedDriftExplained: true` si fonda su due cambiamenti circoscritti:
 
-`ComponentLoader` può leggere il manifest dal ResourceBundle, comporre la radice rispetto a `DIR_RESOURCES` e registrare manifest/radice come componente. Il resource manager risolve percorsi mediante tabelle compilate percorso→resource ID, senza realpath nel ramo acquisito. Il modello è compatibile con risorse incorporate e radici logiche; **non identifica un `.pak` o il pacchetto dei dieci record locali**. La firma del solo eseguibile non completerebbe il legame record→manifest/registrazione→mapping della build→contenitore.
+- In tutte e quattro le fasi, entrambi i bracci aggiungono **esattamente 18 preferenze delle tabelle**. Le **40 impostazioni preesistenti restano invariate**; le 58 risultanti sono identiche fra baseline e candidato.
+- Nel candidato viene ricostruito **un solo array `featureIds` di `gisLayers`**, coerente esattamente con i 200 ID canonici dei waypoint nello stesso ordine. Le altre proprietà dei layer e tutti gli altri campi del main restano preservati.
 
-Restano `NOT_OBSERVED`: enabled per record, incognito effettivo, policy applicate, manifest completo e firma del publisher. Restano `NOT_ATTESTED`: proprietà del pacchetto, completezza oltre la superficie presentata dal browser ed equivalenza upstream/Edge. `componentAdmission` resta **`NOT_GRANTED`**. Nessun componente è ammesso dalla sola etichetta, URL, browserContext o collocazione lessicale.
+Differenze sconosciute: **zero**. Input invariati; nessun nuovo avvio del browser o riesecuzione del runtime. È quindi attestato il **PASS di conservazione dei record** e sono qualificate le copie per il recupero selettivo. I flag originari `losslessStructuralPreservationAtEveryObservedPhase` e `relativeProjectionEqualAtEveryObservedPhase` restano false: registrano le differenze effettive nell’intero stato e non vengono forzati per rappresentare la qualificazione.
 
-#### 6. Decisione richiesta: due opzioni circoscritte
+## Stato dei passaggi
 
-**A — Accettare un confine operativo di fiducia.** Includere nel software fidato (TCB) l’Edge posseduto e i componenti del catalogo acquisito per la versione osservata, mantenendo espliciti i limiti sopra indicati. È una scelta di fiducia sul perimetro concreto, non una prova nuova di provenienza né una garanzia di isolamento dai componenti inclusi. Non ammette automaticamente future voci `COMPONENT`. Il successivo delta deve riconciliare il perimetro accettato e fermarsi sugli accessori non qualificati.
+| Passaggio | Stato corrente |
+| --- | --- |
+| Decisione A | ACCETTATA |
+| Requisito di portabilità e riapertura mobile | ACQUISITI; compatibilità specifica da verificare |
+| Delta dello strumento e review | REVIEW STATICA PASS sulla versione eseguita |
+| Pilota sintetico, due bracci e quattro fasi | COMPLETATO, exit 0 |
+| Valutazione dei confronti sintetici | Drift iniziale registrato; stabilità successiva attestata |
+| Roundtrip sulle copie GIS | COMPLETATO, exit 0, due bracci e quattro fasi |
+| Conservazione delle raccolte GIS reali | PASS strutturale: 6 tracce e 200 waypoint a ogni fase; anche le 5 tracce della baseline conservate |
+| Classificazione di impostazioni e altri campi del main | COMPLETATA: tutte le differenze spiegate, zero sconosciute |
+| Qualificazione delle copie per recupero selettivo | PASS; candidato PREPARED_NOT_APPLIED |
+| Applicazione agli origin personali | NON ESEGUITA; fuori scope |
 
-**B — Definire un ambiente separato.** Specificarne disponibilità, confini, protezioni e successiva qualificazione. Nessuna installazione o creazione di VM è autorizzata o eseguita da questo pass. Un ambiente separato non eredita un PASS del driver.
+## Prossimo gate effettivo
 
-Nessuna delle due opzioni è stata selezionata dalle ricevute. La scelta **non vale come PASS retroattivo** e non sostituisce i gate tecnici.
+Resta il **gate applicativo reale**: verificare attualità delle sorgenti e della destinazione, backup e collisioni prima di un’eventuale applicazione. La copertura del backup completo dell’origin è ancora parziale (`completeOriginBackup: false`). Questi aspetti non sono risolti dal roundtrip sulle copie.
 
-#### 7. Sequenza successiva, subordinata alla decisione
+Il candidato non è stato applicato. Le scritture sugli origin, la migrazione e la pulizia restano fuori dallo scope della scelta A. Nessun nuovo vincolo Edge o consenso per l’uso del GIS su futuri computer/browser deriva da questo gate; la compatibilità estesa resta il requisito di prodotto riaperto dall’operatore.
 
-Dopo la scelta occorrono il delta minimo del driver, review e pilota nativo esclusivamente sintetico, con HTML e fixture già vincolati, due bracci e quattro fasi previste. Restano richiesti binding, relazioni osservabili dei target, rispetto del confine dati accettato, rete negata, GPS denied, protezioni preservate e distinzione tra seed inviato, acknowledgement ed esecuzione verificata. Completamento procedurale, drift della baseline e conservazione del candidato restano separati.
+### Review e pubblicazione del pass
 
-**Dopo il PASS dei gate richiesti, le prove sulle copie già comprese nel mandato proseguono senza conferme aggiuntive.** Applicazione agli origin, migrazione e pulizia restano escluse. Nessun ulteriore run viene attestato da questo rapporto.
-
-#### 8. Riferimenti e finding di metodo
-
-Fonti consultate il **21 novembre 2026**; righe riferite al testo web acquisito. I riferimenti Chromium mobili non sono pin del binario Edge.
-
-- [Extensions internals](https://chromium.googlesource.com/chromium/src.git/+/92bf36029638ae236920177e722650bed2a40e84/chrome/browser/ui/webui/extensions/extensions_internals_source.cc), revisione `92bf360…`, righe 253–276, 299–365, 436–475.
-- [Extension registry](https://chromium.googlesource.com/chromium/src.git/+/HEAD/extensions/browser/extension_registry.cc), blob acquisito `4e61eadd070d68c5fe6fef3670d44a016214ba24`, righe 29–51.
-- [CDP Target](https://chromium.googlesource.com/chromium/src/+/a488704fa0d1134a929f07509e878fcd2880ff6a/third_party/blink/public/devtools_protocol/domains/Target.pdl), revisione `a488704…`, righe 19–39, 117–174, 219–253, 272–278.
-- [ComponentLoader](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/chrome/browser/extensions/component_loader.cc), righe 238–246, 348–397, 678–692.
-- [Component resource manager](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/chrome/browser/extensions/chrome_component_extension_resource_manager.cc), righe 130–150, 213–254.
-
-Un errore di quoting JS/PowerShell si è verificato **prima dell’esecuzione dello strumento**, senza azione nativa; è stato corretto usando `Environment.NewLine`. Il prerequisito resta datato 20:58 UTC. Nessuna di queste correzioni costituisce QA o qualificazione dell’isolamento.
-
-### STATO FRESCO DA CURSOR — etichetta del contratto, esecutore effettivo ChatGPT/TMAR
-
-```text
-origin/main HEAD al pre-container: 2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d
-working tree al pre-container: CLEAN
-ultimo blocco runtime PASS: GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A / Build317 / P3 CLOSED
-prossimo candidato runtime: nessuno
-candidato dati: PREPARED_NOT_APPLIED / 2cbf48cea7f6baef931018185f031d244f56ba9223924f0cda567c0c983bf865
-note operative: WAIT_TRUST_BOUNDARY_DECISION; DRIVER_ISOLATION_NOT_QUALIFIED; nessun pilot GIS o roundtrip privato nuovo
-```
+Review statica indipendente PASS per runner e classificatore; review interpretativa delle ricevute PASS entro il perimetro documentato. Review documentale finale idb_verify PASS sul REPORT 0b232812e42fa7f5e755e1632602b8969227889f39870b465b5bf991d8df45bd, su FRONTIER e sulle conclusioni delle evidenze. Nessuna nuova prova richiesta. Cinque file docs-only nel task; runtime invariato. Il publisher nativo ha verificato commit, tree, runtime blob, remote/tracking e working tree pulita prima di questa sincronizzazione.
 
 ## C. OUTPUT GIT — pre-container
 
-Output verbatim sul task pubblicato e pulito. Il blocco vuoto di `git status --porcelain=v1` attesta assenza di modifiche a quel punto.
-
-### `git log --oneline -5`
+### git log --oneline -5
 
 ```text
+d1dd339 docs(p0): qualify recovery copies and record portable GIS scope
+0e65851 docs(p0): autosync driver trust boundary handoff
 2ab7df4 docs(p0): record browser catalog and trust boundary decision
 586a9bd docs(p0): autosync selective recovery driver gate report
 c8bc308 docs(p0): preserve selective candidate and record isolated driver gate
-11eceea docs: autosync P0 current content and recovery gate
-b164e9f docs: reconcile P0 current storage and recovery gates
 ```
 
-### `git rev-parse HEAD`
+### git rev-parse HEAD
 
 ```text
-2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d
+d1dd339490a5c04067ccde7fa42d4f50a74bd488
 ```
 
-### `git rev-parse origin/main`
+### git rev-parse origin/main
 
 ```text
-2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d
+d1dd339490a5c04067ccde7fa42d4f50a74bd488
 ```
 
-### `git branch --show-current`
+### git branch --show-current
 
 ```text
 main
 ```
 
-### `git ls-remote origin refs/heads/main`
+### git ls-remote origin refs/heads/main
 
 ```text
-2ab7df4426f1b1cd7358193edca1c0a6d22a1f4d	refs/heads/main
+d1dd339490a5c04067ccde7fa42d4f50a74bd488	refs/heads/main
 ```
 
-### `git status --porcelain=v1`
+### git status --porcelain=v1
 
 ```text
 ```
 
-PASS remoto del container corrente: **EXTERNAL_ONLY**. Lo SHA finale e il controllo remoto saranno comunicati esternamente dopo il push, senza amend o backfill del proprio commit.
+### git show --format= --stat HEAD
+
+```text
+ docs/FRONTIER.md                                   |   32 +-
+ .../2026-11-21-edge-owned-roundtrip/REPORT.md      |   84 +
+ .../classify-roundtrip-drift.cjs                   |  184 ++
+ .../2026-11-21-edge-owned-roundtrip/evidence.json  | 2113 ++++++++++++++++++++
+ .../roundtrip-runner.cjs                           |  649 ++++++
+ 5 files changed, 3053 insertions(+), 9 deletions(-)
+```
+
+### git show --format= --name-only HEAD
+
+```text
+docs/FRONTIER.md
+docs/orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md
+docs/orchestrator/evidence/2026-11-21-edge-owned-roundtrip/classify-roundtrip-drift.cjs
+docs/orchestrator/evidence/2026-11-21-edge-owned-roundtrip/evidence.json
+docs/orchestrator/evidence/2026-11-21-edge-owned-roundtrip/roundtrip-runner.cjs
+```
 
 ## HISTORY
 
-Container precedente già pubblicato: 586a9bdc716055272d6dcac69c61bb07be643908, candidato preparato e primo gate driver fallito. Il container corrente resta PENDING_SELF_REFERENCE.
+Base di questo pass e precedente report-container: `0e65851ab15441e65bebfbf4244d2ef9aa7f25c4`. La decisione A dell’operatore e il nuovo requisito di portabilità superano l’attesa A/B e la pausa mobile riportate in quel container. Task reale pubblicato: `d1dd339490a5c04067ccde7fa42d4f50a74bd488`. Il precedente [report-container](https://github.com/mrhz1973/cursor-coordinate-converter/blob/0e65851ab15441e65bebfbf4244d2ef9aa7f25c4/docs/runtime/LAST_CURSOR_REPORT.md) resta consultabile come storico.
 
 ## LIMITI DEL REPORT
 
-Non sostituisce FRONTIER e non certifica un nuovo PASS operatore, l’isolamento applicativo, un deploy o il proprio HEAD finale. Exit0 delle due osservazioni e review statiche restano distinti dalla qualificazione GIS ancora aperta.
+Le conclusioni riguardano gli snapshot acquisiti e la selezione di recupero esaminata. Non attestano attualità dei browser originali, backup completo dell’origine, applicazione dei dati, identità raw dell’intero stato o compatibilità universale. Le impostazioni preesistenti e i record sono conservati; le differenze di preferenze tabellari e indice waypoint sono classificate, non eliminate dai confronti.
+
+Questo container non contiene il proprio SHA né la verifica remota successiva al proprio push. La prova finale resta EXTERNAL_ONLY nella chat e negli artefatti locali di verifica; nessun terzo commit di finalizzazione è previsto.
