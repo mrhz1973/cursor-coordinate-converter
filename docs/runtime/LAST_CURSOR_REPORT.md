@@ -1,83 +1,71 @@
-# P0 — TMAR ripristinato; sorgente IndexedDB HTTPS da localizzare
+# P0 — quattro backup verificati, confronto completo, residui parziali
 
+Data: 21/11/2026 04:26 Europe/Rome. FRONTIER è l’unica LIVE STATE.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0; audit non distruttivo, nessun bundle runtime.
-GATE: HTTPS_IDB_DOWNLOAD_DECLARED / SOURCE_FILE_NOT_LOCATED / ORIGIN_BACKUP_PENDING.
-NEXT: nel browser usato per l’export, individuare la voce del download con Ctrl+J e fornire percorso locale esatto oppure stato del download. Riprendere poi il verifier qualificato sulla sorgente individuata; chiarire disponibilità/percorso prima di un nuovo export.
-RUNTIME LIVE: Build317 source aff215323c97a309cbd5c6c7e0c694d35dd45ad0, blob 4578788467822123ea7ad7e929d3bdf0e262b1a8, SHA256 ed760bbd704db0e925f8af7f52a7880d9cffda4be2e2f0af9a2044c9cdf56fec; P3 CLOSED con PASS operatore acquisito.
+GATE: P0 APERTO / FOUR_SCOPED_BACKUPS_VERIFIED / COMPARISON_COMPLETE / RESIDUALS_PARTIAL / ORIGIN_BACKUP_PENDING.
+NEXT: Decisione sul trattamento dei dati HTTP distinti nelle copie confrontate; prima di qualsiasi azione sui dati verificare stato attuale e copertura residua. Migrazione e pulizia non autorizzate. Nessun ulteriore copia/incolla richiesto.
+RUNTIME LIVE: Build317 source aff215323c97a309cbd5c6c7e0c694d35dd45ad0, blob 4578788467822123ea7ad7e929d3bdf0e262b1a8, SHA256 ed760bbd704db0e925f8af7f52a7880d9cffda4be2e2f0af9a2044c9cdf56fec; P3 CLOSED con PASS operatore del 19/11 già acquisito.
 CANDIDATE: nessun nuovo candidato runtime.
-RESULT: TMAR risponde su ASUSDESKTOP. Verifica HTTPS IDB STOP a SOURCE_READ; nessuna verifica del file/copia attestata. Tre backup logici precedenti restano evidenze acquisite nei rispettivi perimetri.
-WORKING TREE: pulito sul commit task prima dell’autosync; pubblicazione finale EXTERNAL_ONLY.
-EVIDENCE: [Rapporto P0](../orchestrator/evidence/2026-11-19-http-origin-p0-inventory/REPORT.md), [ricevuta del blocco](../orchestrator/evidence/2026-11-19-http-origin-p0-inventory/https-indexeddb-verification-blocked.json), [metadati](../orchestrator/evidence/2026-11-19-http-origin-p0-inventory/inventory-metadata.json).
+RESULT: nuova copia IndexedDB HTTPS VERIFIED; quattro backup logici distinti confrontati sul PC, risultato COMPARED. Inventario residui acquisito per metadati con copertura PARTIAL. Payload personali rimasti sul PC.
+WORKING TREE: pulito sul commit task prima dell’autosync; verifica pubblicazione autosync EXTERNAL_ONLY.
+EVIDENCE: [Rapporto P0](../orchestrator/evidence/2026-11-19-http-origin-p0-inventory/REPORT.md), [ricevuta HTTPS IDB](../orchestrator/evidence/2026-11-19-http-origin-p0-inventory/https-indexeddb-verification.json), [confronto nativo](../orchestrator/evidence/2026-11-19-http-origin-p0-inventory/origin-comparison.json), [metadati e residui](../orchestrator/evidence/2026-11-19-http-origin-p0-inventory/inventory-metadata.json).
 
 ## Riepilogo completo
 
-1. **Mandato e refresh minimo.** L’operatore ha richiesto di riprovare con TMAR Desktop Commander. origin/main riconfermato 72e99cce935ce71d1a63d9f537281fffa86084fd; CORE BOOT/metodo già acquisiti, WU N/A. Nessuna nuova lettura estesa, sviluppo runtime o ripetizione delle prove consumate.
+1. **Mandato e fonte di verità.** L’operatore ha richiesto «usa il computer e fallo tu». origin/main riconfermato dbe1cfbe2e10398004b00dcabe9c5badd4c1d61a; CORE BOOT/metodo già acquisiti, WU N/A. Nessun nuovo boot esteso, sviluppo runtime o ripetizione delle QA consumate.
 
-2. **Evidenza browser acquisita, file non verificato.** Il 20/11/2026 alle 16:56:09.715 UTC l’helper HTTPS ha dichiarato DOWNLOAD_AVVIATO per TMAR-GIS-P0-HTTPS-IndexedDB-20261120T165609715Z.json: 315 tile, 7.984.081 byte binari, 10.695.152 byte file, SHA256 b9e23683f3b33683586843e72ac27d1c82638d2bf630971d1816a9927ae48211. Sono metadati riferiti dall’operatore, senza verifica del file o della copia. Lo storico comprende il precedente STOP nell’origine HTTP e l’interruzione TMAR Session terminated, con esecuzione/copia allora non determinate.
+2. **Download precedente chiarito e operazione diretta sul PC.** TMAR ha consentito l’uso di Edge tramite Windows UIAutomation e Win32, senza elevazione, modifica protezioni, riavvio o clipboard. La voce esatta del download 20261120T165609715Z risultava «Rimossi»; questo risolve il gate di disponibilità, senza attribuire un PASS retroattivo né una causa o un autore alla rimozione. Nuova scheda HTTPS neutra, console e stesso exporter qualificato. Inserimento finale confrontato integralmente prima di Enter; gli inserimenti non confermati non sono stati eseguiti. Il nuovo download era in attesa di «Salva»: conferma visiva eseguita, file definitivo presente e .crdownload assente. Chiuse soltanto le due schede neutre create per i controlli, conteggio 5→4→3; tre schede preesistenti preservate.
 
-3. **Ripristino e tentativo reale.** Il 21/11/2026 alle 02:28:21.0695286 UTC la sonda readonly TMAR ha risposto da ASUSDESKTOP. Verifier HTTPS qualificato, hash bc5d8a5fb2ed4e5076645af412aaa5ad34240e21bf9026c64f6daca50246a147, riutilizzato senza test aggiuntivi. Esito STOP / SOURCE_READ / LOCAL_OPERATION_FAILED. Questo non è un giudizio negativo sui contenuti e non attesta quanto della sorgente sia stato letto. Nessun payload GIS restituito, nessuna scrittura sorgente o copia verificata.
+3. **Nuovo backup HTTPS IndexedDB VERIFIED.** Snapshot 21/11/2026 02:53:25.362 UTC, verifica nativa 02:58:10.144 UTC con il verifier qualificato invariato. File TMAR-GIS-P0-HTTPS-IndexedDB-20261121T025325362Z.json, 10.695.152 byte, SHA256 18edc0d33596f52b0dcbccfe927c3323fbfc022c96446d9d2e7a123e7918ee7a. Schema, 315 record, 7.984.081 byte binari, hash di tutti i binari e copia riletta byte per byte PASS. Ricevuta SHA256 275f1ba91ceb0243452c8bcf3b6c8ccc3e839691c1649faeecf584253d31802c. Local Storage HTTP/HTTPS e IndexedDB HTTP precedenti mantenuti; quattro snapshot separati, non atomici.
 
-4. **Diagnostica circoscritta.** Cartella attesa e Windows Known Folder Download coincidono con C:/Users/mrhz/Downloads. Nessun nome col prefisso/timestamp atteso, comprese eventuali collisioni e suffissi .crdownload nominati; temporanei generici Unconfirmed non enumerati. Le Preferences dei profili Default individuati tramite metadati Edge/Chrome sono ACCESS_DENIED, quindi percorsi alternativi non acquisiti. File e verification.json nei soli due percorsi del backup previsto risultano ABSENT. Non dedurre cancellazione, assenza in altre posizioni o completamento del download. Nessuna scansione ampia, lettura cronologia, modifica permessi, riavvio browser o nuova esportazione.
+4. **Confronto locale completato.** Helper con hash 2b52af8981bcc76927a2129faea8daceeb539f38222930633afde94222a56f3a; quattro copie e relative ricevute vincolate agli hash canonici e rilette in sola lettura. Risultato COMPARED alle 03:10:33.587 UTC, controlli integrità/stabilità tutti true. Due chiavi Local Storage per origine, entrambe raw diverse; oggetti principali con 14 proprietà, 8 comuni identiche e 6 differenti. Tracce salvate 1 HTTP/5 HTTPS senza occorrenze strutturali esatte comuni; waypoint 200/0, aree nominate 1/0, cronologia 3/0. IndexedDB 1.028/315 record, unione 1.343 chiavi e zero chiavi comuni. Si tratta di confronto strutturale delle copie: identità funzionale, equivalenza geografica e contenuto browser corrente non attestati. Nessuna equivalenza dei binari dedotta tra chiavi tile diverse.
 
-5. **Documentazione e review.** Task 212f54954da84e3620395527d3dd9a8edec571ae, 4 file docs: FRONTIER, rapporto, metadati e ricevuta del gate. Corretta in review la formulazione sulla lettura: il solo STOP SOURCE_READ non dimostra zero byte letti; resta attestato che nessun payload è stato restituito. Review indipendente receipt/FRONTIER PASS; scope e diff check PASS, runtime blob invariato.
+5. **Residui e limiti.** Sonda di catalogo eseguita su pagine neutre alle 03:08 UTC HTTPS e 03:09:51 UTC HTTP. Entrambe: due chiavi LS e un DB atteso v1. HTTPS: Cache Storage zero, Service Worker zero e pagina non controllata; HTTP: API non disponibili, conteggi null. Session Storage zero limitato alle nuove schede; cookie visibili zero limitati al percorso, esclusi HttpOnly e altri percorsi. OPFS, filesystem legacy e WebSQL NOT_INSPECTED/null; disponibilità API non interpretata come presenza o assenza di dati. Cataloghi recenti non attestano immutabilità dei valori rispetto agli export. Backup completo origine ancora non attestato.
 
-6. **Pubblicazione e autosync.** Stesso commit importato e pubblicato dal Git Windows autorizzato con controllo del tree e push normale; HEAD locale/tracking/ls-remote concordi e working tree pulito. Nessun deploy, nuova QA runtime o force push. Autosync limitato a rolling report/latest/un inbox; current_report_container PENDING_SELF_REFERENCE e verifica finale EXTERNAL_ONLY, senza terzo finalize commit.
+6. **Qualificazione ed evidenza di esecuzione.** Solo verifiche nuove: comparator 3 gruppi sintetici/30 asserzioni PASS; sonda 4 gruppi PASS; nuovo ramo di generazione sonda 5 asserzioni PASS. Review indipendenti di helper, delta di integrazione, ricevute/confronto e documentazione PASS; nessun test precedente ripetuto. Il comparator ha emesso il risultato completo dopo tutti i controlli e la chiusura degli input. Il trasporto non ha attestato l’exit code Node; nessun Node osservato tra i figli, solo wrapper PowerShell rimasto attivo e chiuso con guard dopo il risultato, causa non determinata. Nessuna riesecuzione del confronto. Finding di metodo sui payload documentali troppo ampi registrati, con recuperi ristretti e senza dati GIS pubblicati.
 
-7. **Gate effettivo e limiti.** Serve soltanto il percorso locale esatto o lo stato della voce nella lista download del browser dell’operatore. Una sorgente disponibile permetterà di riprendere la verifica qualificata senza riesportare; un eventuale download non completato sarà trattato secondo l’esito reale. Tre precedenti acquisizioni restano distinte e non atomiche; backup origine completo e confronto contenuti non attestati. Contenitori residui e confronto seguono questo gate. Nessuna migrazione/pulizia; P1/P2/P3 CLOSED, DTM5/10m HOLD, mobile PAUSA, P4 FUTURO.
+7. **Commit e pubblicazione.** Task 95f95871c5490a403e7be6b442fb9332b618f396, esattamente sei file docs: FRONTIER, REPORT, metadata, ricevuta HTTPS IDB, helper di confronto e risultato. Runtime blob invariato, scope e diff check PASS. Primo avvio del wrapper di trasporto node -e fermato da errore di quoting prima dell’esecuzione del publisher; ripresa mediante file wrapper con bytes/hash controllati. Stesso commit/tree pubblicato dal Git Windows autorizzato con push normale; HEAD locale, tracking e ls-remote concordi, working tree pulito. Nessun deploy, force push o nuova QA runtime.
+
+8. **Gate effettivo.** Decisione sul trattamento dei dati HTTP distinti nelle copie confrontate; prima di qualsiasi azione sui dati verificare stato attuale e copertura residua. Migrazione e pulizia non autorizzate. Nessun ulteriore copia/incolla richiesto. HTTP conserva dati da valutare e preservare; nessuna deduplicazione o migrazione è autorizzata dai soli conteggi o dall’overlap strutturale. P1/P2/P3 CLOSED, Build317 invariata, DTM5/10m HOLD, mobile PAUSA, P4 FUTURO. Autosync limitato a rolling report/latest/un inbox, senza terzo finalize commit.
 
 ## Autosync e identità F3
 
-real_task_commit: 212f54954da84e3620395527d3dd9a8edec571ae
+real_task_commit: 95f95871c5490a403e7be6b442fb9332b618f396
 RUNTIME_CANDIDATE_SHA: N/A (nessun nuovo candidato)
 RUNTIME_LIVE_SOURCE: aff215323c97a309cbd5c6c7e0c694d35dd45ad0
-REMOTE_HEAD_AT_EVIDENCE_TIME: 212f54954da84e3620395527d3dd9a8edec571ae
+REMOTE_HEAD_AT_EVIDENCE_TIME: 95f95871c5490a403e7be6b442fb9332b618f396
 current_report_container: PENDING_SELF_REFERENCE
 Autosync publication verification: EXTERNAL_ONLY
-Autosync files: docs/runtime/LAST_CURSOR_REPORT.md; docs/orchestrator/latest.md; docs/orchestrator/inbox/2026-11-21_0336_p0-https-idb-source-blocked.md.
+Autosync files: docs/runtime/LAST_CURSOR_REPORT.md; docs/orchestrator/latest.md; docs/orchestrator/inbox/2026-11-21_0426_p0-four-backups-comparison.md.
 
 ## Diff task pubblicato
 
 ```text
-212f549 docs(gis): record HTTPS source lookup gate after TMAR recovery
- docs/FRONTIER.md                                   | 18 +++--
- .../2026-11-19-http-origin-p0-inventory/REPORT.md  | 22 ++++--
- .../https-indexeddb-verification-blocked.json      | 78 +++++++++++++++++++
- .../inventory-metadata.json                        | 89 ++++++++++++++++++++--
- 4 files changed, 186 insertions(+), 21 deletions(-)
+ docs/FRONTIER.md                                   |  22 +-
+ .../2026-11-19-http-origin-p0-inventory/REPORT.md  |  72 ++-
+ .../compare-origin-backups.cjs                     | 553 ++++++++++++++++++
+ .../https-indexeddb-verification.json              |  37 ++
+ .../inventory-metadata.json                        | 645 ++++++++++++++++++++-
+ .../origin-comparison.json                         | 362 ++++++++++++
+ 6 files changed, 1655 insertions(+), 36 deletions(-)
 ```
 
 ## Output Git verbatim pre-container
 
 ```text
 $ git log --oneline -5
+95f9587 docs: verify HTTPS backup and compare P0 origin snapshots
+dbe1cfb docs(gis): autosync HTTPS source lookup gate
 212f549 docs(gis): record HTTPS source lookup gate after TMAR recovery
 72e99cc docs(gis): autosync verified HTTPS localStorage and IndexedDB gate
 c1a5dcf docs(gis): verify HTTPS localStorage backup and prepare IndexedDB gate
-708ef47 docs(gis): autosync verified HTTP IndexedDB and HTTPS gate
-338ab66 docs(gis): verify HTTP IndexedDB backup and prepare HTTPS inventory
-
 $ git rev-parse HEAD
-212f54954da84e3620395527d3dd9a8edec571ae
-
+95f95871c5490a403e7be6b442fb9332b618f396
 $ git rev-parse origin/main
-212f54954da84e3620395527d3dd9a8edec571ae
-
+95f95871c5490a403e7be6b442fb9332b618f396
 $ git branch --show-current
 main
-
 $ git ls-remote origin refs/heads/main
-212f54954da84e3620395527d3dd9a8edec571ae	refs/heads/main
-
-$ git status --short
-
+95f95871c5490a403e7be6b442fb9332b618f396	refs/heads/main
+$ git status --porcelain=v1
 ```
-
-## Stato fresco pre-container
-
-Data: 21/11/2026 03:36 Europe/Rome.
-origin/main HEAD: 212f54954da84e3620395527d3dd9a8edec571ae
-working tree: pulito prima di questo autosync.
-ultimo blocco PASS operatore: GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A / Build317 CLOSED.
-blocco corrente: GIS-HTTP-ORIGIN-INVENTORY-P0 / HTTPS_IDB_DOWNLOAD_DECLARED / SOURCE_FILE_NOT_LOCATED / ORIGIN_BACKUP_PENDING.
-prossimo candidato runtime: nessuno.
-pubblicazione finale contenitore: EXTERNAL_ONLY.

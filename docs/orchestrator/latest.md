@@ -1,10 +1,10 @@
-# Orchestrator latest — TMAR operativo, sorgente HTTPS da localizzare
+# Orchestrator latest — quattro backup e confronto acquisiti
 
-Data: 21/11/2026 03:36 Europe/Rome. FRONTIER è l’unica LIVE STATE.
+Data: 21/11/2026 04:26 Europe/Rome. FRONTIER è l’unica LIVE STATE.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0.
-GATE: HTTPS_IDB_DOWNLOAD_DECLARED / SOURCE_FILE_NOT_LOCATED / ORIGIN_BACKUP_PENDING.
-RESULT: TMAR ripristinato su ASUSDESKTOP; verifier HTTPS IDB STOP a SOURCE_READ. Nessun file col timestamp atteso in Download né file/receipt nelle due posizioni backup previste. Preferenze browser per percorsi alternativi ACCESS_DENIED. Presenza altrove e completamento download non attestati. Tre verifiche precedenti preservate.
+GATE: P0 APERTO / FOUR_SCOPED_BACKUPS_VERIFIED / COMPARISON_COMPLETE / RESIDUALS_PARTIAL / ORIGIN_BACKUP_PENDING.
+RESULT: backup HTTPS IDB del 21/11 verificato (315 record); quattro copie e ricevute confrontate localmente. Local Storage diverso, tracce 1/5 senza record strutturalmente identici, waypoint 200/0; IndexedDB 1.028/315 chiavi disgiunte. Residui HTTPS Cache/SW zero, HTTP API non disponibili; copertura origine parziale.
 LIVE: Build317 invariata, P3 CLOSED; nessun candidato, deploy o nuova QA runtime.
-NEXT: Ctrl+J nel browser usato per l’export; fornire percorso locale esatto o stato della voce. Poi riprendere il verifier qualificato. Chiarire la disponibilità prima di un nuovo export. Contenitori residui e confronto pendenti; nessuna migrazione/pulizia. DTM HOLD, mobile PAUSA, P4 FUTURO.
-TASK: 212f54954da84e3620395527d3dd9a8edec571ae; current_report_container PENDING_SELF_REFERENCE, publication EXTERNAL_ONLY.
-[Rapporto P0](evidence/2026-11-19-http-origin-p0-inventory/REPORT.md) · [Ricevuta del blocco](evidence/2026-11-19-http-origin-p0-inventory/https-indexeddb-verification-blocked.json) · [Inbox](inbox/2026-11-21_0336_p0-https-idb-source-blocked.md) · [Rapporto completo](../runtime/LAST_CURSOR_REPORT.md).
+NEXT: Decisione sul trattamento dei dati HTTP distinti nelle copie confrontate; prima di qualsiasi azione sui dati verificare stato attuale e copertura residua. Migrazione e pulizia non autorizzate. Nessun ulteriore copia/incolla richiesto. DTM HOLD, mobile PAUSA, P4 FUTURO.
+TASK: 95f95871c5490a403e7be6b442fb9332b618f396; current_report_container PENDING_SELF_REFERENCE, publication EXTERNAL_ONLY.
+[Rapporto P0](evidence/2026-11-19-http-origin-p0-inventory/REPORT.md) · [Ricevuta HTTPS IDB](evidence/2026-11-19-http-origin-p0-inventory/https-indexeddb-verification.json) · [Confronto](evidence/2026-11-19-http-origin-p0-inventory/origin-comparison.json) · [Inbox](inbox/2026-11-21_0426_p0-four-backups-comparison.md) · [Rapporto completo](../runtime/LAST_CURSOR_REPORT.md).
