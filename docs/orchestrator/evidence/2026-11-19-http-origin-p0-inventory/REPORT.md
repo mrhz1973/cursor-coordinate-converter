@@ -1,9 +1,9 @@
-# P0 — download IndexedDB HTTPS dichiarato; sorgente da individuare
+# P0 — quattro backup e confronto completati; residui parziali
 
 Data registrazione: 19/11/2026 20:38:41 Europe/Rome.
-Aggiornamento: 21/11/2026; connessione TMAR su ASUSDESKTOP ripristinata, verifica IndexedDB HTTPS fermata alla lettura della sorgente e file non individuato nel perimetro controllato. I tre export logici precedenti restano verificati nei rispettivi snapshot. Payload personali conservati sul PC.
+Aggiornamento: 21/11/2026 04:18 Europe/Rome; quattro backup logici verificati, confronto nativo completato alle 03:10:33.587 UTC e inventario residui di soli metadati PARTIAL. Gate corrente di decisione sui dati HTTP, con verifica di attualità e copertura residua prima di qualsiasi intervento. Payload personali conservati sul PC.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0. Tipo: audit non distruttivo, nessun bundle runtime.
-**Esito corrente: HTTPS_IDB_DOWNLOAD_DECLARED / SOURCE_FILE_NOT_LOCATED / ORIGIN_BACKUP_PENDING. La ricevuta browser dichiara il download IndexedDB HTTPS; file e copia NON VERIFICATI. Restano acquisiti i tre backup logici precedenti: Local Storage HTTP, IndexedDB tiles HTTP e Local Storage HTTPS, nei rispettivi snapshot distinti e perimetri. Nessun backup completo delle origini attestato; P0 resta APERTO.**
+**Esito corrente: FOUR_SCOPED_BACKUPS_VERIFIED / COMPARISON_COMPLETE / RESIDUALS_PARTIAL / ORIGIN_BACKUP_PENDING. Quattro backup logici verificati e confronto delle copie completato; acquisizioni distinte e non atomiche, `completeOriginBackup:false`. Il confronto è strutturale e limitato agli export: identità funzionale e stato attuale dei contenuti browser NON attestati. P0 resta APERTO; migrazione e pulizia non autorizzate.**
 
 ## Mandato e fonte viva
 
@@ -11,7 +11,53 @@ L'operatore ha richiesto «continua» dopo la chiusura P3. origin/main verificat
 
 URL operativo da usare: https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd. L'origine HTTP tecnica rimane documentata per questo confronto e per l'infrastruttura.
 
-## IndexedDB HTTPS — download dichiarato, file sorgente non individuato
+## Confronto delle quattro copie — 21 novembre 2026, 03:10:33.587 UTC
+
+[Evidenza persistente](origin-comparison.json), esito **COMPARED**. Tutti i controlli input sono `true`: hash degli export e delle ricevute, contratti/schema, univocità delle chiavi, Base64 canonico, hash dei binari e stabilità degli input durante lettura/confronto. L’[helper qualificato](compare-origin-backups.cjs), SHA256 `2b52af8981bcc76927a2129faea8daceeb539f38222930633afde94222a56f3a`, ha confrontato soltanto le quattro copie locali già verificate. Payload privati rimasti sul PC; nessuna scrittura nelle sorgenti, migrazione o pulizia.
+
+| Elemento nei backup | HTTP | HTTPS | Esito / perimetro |
+| --- | ---: | ---: | --- |
+| Chiavi Local Storage | 2 | 2 | Stesse due chiavi; entrambi i valori raw diversi. |
+| Proprietà principali `coordconv_v2` | 14 | 14 | 8 strutturalmente identiche, 6 diverse. |
+| `savedTracks` | 1 | 5 | Nessuna occorrenza strutturale esatta comune (`commonExact:0`). |
+| `mapWaypoints` | 200 | 0 | Confronto strutturale; nessun confronto geografico fra collezioni. |
+| `namedAreas` | 1 | 0 | Conteggi nei rispettivi snapshot. |
+| `history` | 3 | 0 | Conteggi nei rispettivi snapshot. |
+| Proprietà `settings` | 58 | 40 | Strutture differenti; nessuna equivalenza funzionale dedotta. |
+| Record IndexedDB tiles | 1.028 | 315 | Unione di 1.343 chiavi; nessuna chiave comune. |
+
+La sovrapposizione delle raccolte usa **occorrenze strutturali (multiset)**, conservando i duplicati: non è un’analisi dell’identità funzionale dei record. Non confronta la stessa geometria fra raccolte diverse e non deduce equivalenza dei tile quando le chiavi differiscono. Le differenze osservate riguardano i quattro snapshot; il catalogo browser successivo non prova che i valori attuali siano immutati. Il confronto **non autorizza migrazione o deduplicazione**.
+
+L’output nativo completo è stato acquisito dopo tutti i controlli; il processo Node risultava terminato. Il wrapper PowerShell proprio era rimasto attivo ed è stato chiuso dopo guard. **ExitCode Node NON attestato dal trasporto**; causa della persistenza del wrapper `NOT_DETERMINED`. Dopo l’emissione del risultato il comparatore non svolge altre operazioni sui file. Nessuna ripetizione del confronto; questa limitazione di trasporto è distinta dall’esito completo acquisito.
+
+## Contenitori residui — inventario parziale del 21 novembre 2026
+
+Sonda di soli metadati: HTTPS **03:08:00.274–03:08:00.288 UTC**, HTTP **03:09:51.405–03:09:51.408 UTC**. [Metadati integrali](inventory-metadata.json), proprietà `residuals`, incluso il preflight HTTP della pagina neutra. Sonda SHA256 `d5cad4a47f45ced825f92e9654fbe77a9eca02a0754855dbe77e458728e379d2`, review e **4 fixture PASS** come registrato in `origin-comparison.json` → `helperQualification`; nessuna precedente suite ripetuta.
+
+| Contenitore / contesto | HTTPS | HTTP | Limite dell’evidenza |
+| --- | --- | --- | --- |
+| Local Storage | 2 chiavi | 2 chiavi | Solo catalogo, nessuna nuova verifica dei valori. |
+| IndexedDB | 1 database atteso v1 | 1 database atteso v1 | Zero aperture database, nessun nuovo conteggio/lettura dei record. |
+| CacheStorage | 0 cache | `UNAVAILABLE`, `count:null` | API HTTP non disponibile; non equivale a zero dati. |
+| Service Worker | 0 registrazioni, pagina non controllata | `UNAVAILABLE`, conteggio/controllo `null` | Contesto HTTP non sicuro. |
+| Session Storage | 0 nella nuova scheda | 0 nella nuova scheda | Solo le due nuove sessioni di scheda; sessioni preesistenti non inventariate. |
+| Cookie visibili | 0 | 0 | Solo cookie visibili al documento sul relativo percorso; HttpOnly e altri percorsi esclusi. |
+
+**OPFS, filesystem legacy e WebSQL: `NOT_INSPECTED`, conteggi `null`** in entrambe le origini. La presenza o assenza delle API non prova presenza o assenza di dati. Nessuna apertura delle relative radici/database; zero chiamate di mutazione storage e zero richieste di rete esplicite dalla sonda. Copertura `METADATA_CATALOG_ONLY`, inventario **PARTIAL**, nessuno snapshot atomico o backup completo dell’origine attestato.
+
+Terminata l’acquisizione, root ha chiuso soltanto le due nuove schede neutre tramite guard sull’indirizzo: conteggio schede **5 → 4 → 3**, nessuna scheda neutra residua e tre schede preesistenti ancora aperte. Nessuna terminazione o riavvio del browser.
+
+## IndexedDB HTTPS verificato — nuovo snapshot del 21 novembre 2026
+
+[Ricevuta reale HTTPS](https-indexeddb-verification.json): snapshot **02:53:25.362 UTC**, verifica nativa **02:58:10.144 UTC**. File `TMAR-GIS-P0-HTTPS-IndexedDB-20261121T025325362Z.json`, **10.695.152 byte**, SHA256 `18edc0d33596f52b0dcbccfe927c3323fbfc022c96446d9d2e7a123e7918ee7a`. CoordConvMapTiles v1, store tiles: **315 record**, **7.984.081 byte binari**. Verificatore qualificato, processo **35224**: dimensione/stabilità/hash globale, schema, chiavi univoche, Base64 canonico, lunghezze/SHA256 dei binari e totali **PASS**; copia locale non sovrascrivente e rilettura byte per byte **PASS**.
+
+Cartella: `C:\Users\mrhz\AppData\Local\TMAR-GIS\Backups\P0-20261121T025325362Z-HTTPS-IndexedDB`. Ricevuta locale `verification.json`, SHA256 `275f1ba91ceb0243452c8bcf3b6c8ccc3e839691c1649faeecf584253d31802c`. Copertura `INDEXEDDB_TILES_ONLY`, `completeOriginBackup:false`; nella ricevuta all’atto della verifica il confronto era `NOT_PERFORMED`, poi acquisito alle 03:10:33.587 UTC come descritto sopra. Questo PASS riguarda il **nuovo snapshot**, non verifica retroattivamente il file dichiarato il 20/11.
+
+Il vecchio download esatto `20261120T165609715Z` è stato individuato nella UI Edge con stato **«Rimossi»**. TMAR ha operato Edge tramite Windows UIAutomation/Win32, senza elevazione, riavvio o clipboard. Nuova scheda sulla pagina neutra HTTPS, senza caricare il runtime GIS; exporter qualificato e hash invariati, contenuto console confrontato integralmente prima di Enter mediante wrapper base64 UTF-8. Il nuovo download restava alla domanda **«Come intendi usare…?»**: conferma visiva di **Salva**, file definitivo presente e relativo `.crdownload` assente prima della verifica. Lo stato UI del vecchio elemento non identifica causa o autore di una rimozione.
+
+## Storico: IndexedDB HTTPS dichiarato il 20/11, sorgente allora non individuata
+
+Il seguente blocco descrive il gate precedente; è superato dalla verifica del nuovo export sopra. Le evidenze dei tentativi precedenti sono conservate senza attribuire loro un PASS.
 
 [Evidenza del gate](https-indexeddb-verification-blocked.json). Ricevuta browser riferita dall’operatore il **20/11/2026**, snapshot **16:56:09.715 UTC**: origine HTTPS attesa, `DOWNLOAD_AVVIATO`, file `TMAR-GIS-P0-HTTPS-IndexedDB-20261120T165609715Z.json`, **315 tile**, **7.984.081 byte binari**, **10.695.152 byte file**, SHA256 dichiarato `b9e23683f3b33683586843e72ac27d1c82638d2bf630971d1816a9927ae48211`. Questi sono metadati dichiarati dal browser; **il file e la copia non sono verificati**.
 
@@ -19,7 +65,7 @@ Il **21/11/2026 alle 02:28:21.0695286 UTC** il probe di connessione TMAR su ASUS
 
 La ricerca nella cartella attesa `C:\Users\mrhz\Downloads` e nella cartella Download di Windows Known Folder, coincidente con lo stesso percorso, ha restituito **zero riscontri** per il prefisso `TMAR-GIS-P0-HTTPS-IndexedDB-20261120T165609715Z*`, incluse collisioni e suffissi `.crdownload` con quel nome. **Temporanei con nomi generici, come `Unconfirmed…`, non sono stati enumerati**: non è escluso un download in corso o salvato altrove. I percorsi alternativi configurati non sono stati acquisiti: lettura Preferences di Edge Default e Chrome Default `ACCESS_DENIED`. Anche il file e `verification.json` nei due percorsi esatti della cartella di backup prevista `P0-20261120T165609715Z-HTTPS-IndexedDB` risultano `ABSENT`; il controllo non riguarda altre posizioni. Nessuna modifica dei permessi e nessun payload GIS restituito.
 
-**Storico preservato:** un precedente avvio nell’origine HTTP aveva prodotto `STOP_ORIGINE_INATTESA`, senza apertura IndexedDB o download da parte dell’helper. La successiva interruzione TMAR aveva lasciato esecuzione nativa e copia non determinate; il blocco di connessione è ora superato dal probe del 21/11. Rimane il gate di reperimento/completamento del file, senza dedurne cancellazione o assenza globale.
+**Storico preservato:** un precedente avvio nell’origine HTTP aveva prodotto `STOP_ORIGINE_INATTESA`, senza apertura IndexedDB o download da parte dell’helper. La successiva interruzione TMAR aveva lasciato esecuzione nativa e copia non determinate; il blocco di connessione era stato superato dal probe del 21/11. In quel passaggio rimaneva il gate di reperimento/completamento del file, senza dedurne cancellazione o assenza globale; la successiva osservazione UI e il nuovo export verificato sono registrati sopra.
 
 ## Local Storage HTTPS verificato — 20 novembre 2026
 
@@ -29,14 +75,14 @@ Cartella: `C:\Users\mrhz\AppData\Local\TMAR-GIS\Backups\P0-20261120T120248832Z-H
 
 Guard dell’origine HTTPS superato e screenshot della pagina404 acquisito come **evidenza dell’operatore**. L’identità del profilo usato non è stata verificata programmaticamente. Il PASS della copia riguarda esclusivamente `LOCALSTORAGE_ONLY`; `completeOriginBackup:false`.
 
-### Confronto limitato ai conteggi di due snapshot distinti
+### Storico: confronto dei soli conteggi del 20 novembre 2026
 
 | Origine / snapshot UTC del 20/11/2026 | Tracce salvate | Waypoint | Poligoni | Impostazioni |
 | --- | ---: | ---: | ---: | --- |
 | HTTP / 02:21:03.176 | 1 | 200 | 0 | Presenti |
 | HTTPS / 12:02:48.832 | 5 | 0 | 0 | Presenti |
 
-Il confronto riguarda soltanto i conteggi attestati dalle due ricevute. **Confronto di identità e contenuti: NON ESEGUITO.** I conteggi non determinano quali dati siano unici, condivisi, duplicati o da migrare. Non attestano equivalenza delle impostazioni né lo stato attuale del browser dopo gli snapshot.
+In quel passaggio il confronto riguardava soltanto i conteggi attestati dalle due ricevute: **identità e contenuti non erano ancora confrontati**. I conteggi da soli non determinavano dati unici, condivisi, duplicati o da migrare. Il confronto strutturale successivo del 21/11 è registrato sopra; identità funzionale e stato attuale del browser restano non attestati.
 
 ## Storico: qualificazione degli helper IndexedDB HTTPS
 
@@ -52,7 +98,7 @@ Comando preparato e hash verificato nativamente: `C:\Users\mrhz\AppData\Local\TM
 
 Cartella: `C:\Users\mrhz\AppData\Local\TMAR-GIS\Backups\P0-20261120T113439385Z-HTTP-IndexedDB`. Ricevuta locale `verification.json`, SHA256 `e7be9711dd3d3d5d4c9357017486c8a57e31efdada6f47924403af378ffe2a11`. Sorgente e payload rimasti sul PC; qui soltanto metadati.
 
-**I due snapshot HTTP sono distinti:** Local Storage alle **02:21:03.176 UTC**, IndexedDB alle **11:34:39.385 UTC**. Si aggiunge Local Storage HTTPS alle **12:02:48.832 UTC**: **tre acquisizioni distinte e non atomiche**. Non attestano atomicità fra contenitori/origini né assenza di modifiche successive nel browser. Coperture limitate ai tre export logici; `completeOriginBackup:false` e confronto di identità/contenuti HTTP/HTTPS `NOT_PERFORMED`.
+**I quattro snapshot sono distinti:** Local Storage HTTP il **20/11 alle 02:21:03.176 UTC**, IndexedDB HTTP il **20/11 alle 11:34:39.385 UTC**, Local Storage HTTPS il **20/11 alle 12:02:48.832 UTC**, IndexedDB HTTPS il **21/11 alle 02:53:25.362 UTC**. Non attestano atomicità fra contenitori/origini né assenza di modifiche successive nel browser. Coperture limitate ai quattro export logici; `completeOriginBackup:false`. Il confronto successivo riguarda le copie acquisite, non verifica l’attualità dei contenuti browser.
 
 ## Storico: preparazione Local Storage HTTPS prima dell’esecuzione
 
@@ -66,7 +112,7 @@ Comando preparato e hash verificato nativamente: `C:\Users\mrhz\AppData\Local\TM
 
 GET mirato su `https://ionos-n8n-new.tailc01234.ts.net/gis/__tmar_p0_inventory__`: **HTTP404**, `application/json`, **45 byte**, nessun redirect, script/risorsa, Set-Cookie o Clear-Site-Data; SHA256 corpo `ff8de22dcfc848726255ab059ff25aeb8c957768999e90ebddb99360077b9261`, controllo **11:47:00.968 UTC**. Nessuna modifica server. Il primo risultato GET è stato perso per troncamento e non usato come evidenza; un solo recupero mirato ha salvato questi metadati. Il requestCount1 della ricevuta riguarda il recupero, non l’intera sequenza.
 
-L’istruzione operativa era aprire l’indirizzo in una nuova scheda dello stesso browser/profilo, con STOP se comparivano GIS o un altro avviso. Successivamente l’operatore ha fornito lo screenshot della pagina404 e ha eseguito l’export con guard HTTPS superato. Questa evidenza del contesto personale è distinta dal GET nativo; **l’identità del profilo non è verificata programmaticamente**. Eventuali residui Service Worker non sono esclusi. Il contenuto Local Storage HTTPS acquisito resta sul PC; IndexedDB HTTPS e altri contenitori non sono ancora acquisiti.
+L’istruzione operativa era aprire l’indirizzo in una nuova scheda dello stesso browser/profilo, con STOP se comparivano GIS o un altro avviso. Successivamente l’operatore ha fornito lo screenshot della pagina404 e ha eseguito l’export con guard HTTPS superato. Questa evidenza del contesto personale è distinta dal GET nativo; **l’identità del profilo non è verificata programmaticamente**. Eventuali residui Service Worker non sono esclusi. Il contenuto Local Storage HTTPS acquisito resta sul PC; al momento di questo passaggio del 20/11, IndexedDB HTTPS e altri contenitori non erano ancora acquisiti.
 
 ## Storico: catalogo IndexedDB HTTP e preparazione prima dell’esecuzione reale — 20 novembre 2026
 
@@ -92,7 +138,7 @@ Comando preparato sul PC come `C:\Users\mrhz\AppData\Local\TMAR-GIS\P0-Aiuto-202
 
 ### Accesso operativo disponibile
 
-TMAR esegue file, processi, verifiche e copie locali;25 strumenti esposti, nessun comando dedicato a schede/UI. La connessione Browser personale resta indisponibile. Il controllo read-only ha osservato22 processi Edge e zero righe comando ispezionabili: non dimostra l’assenza di un endpoint debugging, che resta non determinato. Nessun riavvio, modifica delle protezioni o del profilo. I test headless usano una nuova istanza isolata e non costituiscono accesso alla scheda personale. Il solo avvio del comando nel contesto GIS corrente richiede quindi l’operatore; verifica del file successiva tramite TMAR.
+Nel pass del **20/11**, TMAR esponeva25 strumenti per file/processi e nessun comando dedicato a schede/UI; il connettore Browser personale era indisponibile. Il controllo read-only aveva osservato22 processi Edge e zero righe comando ispezionabili, senza determinare la disponibilità di debugging. In quel passaggio l’avvio nel browser era stato affidato all’operatore; i test headless isolati non davano accesso alla scheda personale. **Il 21/11 è stato dimostrato un ulteriore percorso tecnico:** TMAR ha operato la UI Edge tramite Windows UIAutomation/Win32 ed eseguito l’export qualificato nella nuova scheda neutra HTTPS, senza elevazione, riavvio o clipboard. L’assenza di uno strumento dedicato non costituisce quindi un limite generale all’avvio via automazione nativa; questa evidenza non modifica retroattivamente l’accesso disponibile nel pass precedente.
 
 ## Backup Local Storage HTTP verificato — 20 novembre 2026, 03:25 Europe/Rome
 
@@ -175,8 +221,12 @@ Questa mappa è una proprietà del codice, **non** un'enumerazione dei dati effe
 
 ## Gate successivo e limiti
 
-Local Storage HTTP/HTTPS e IndexedDB HTTP restano verificati nei rispettivi snapshot e perimetri. **NEXT: l’operatore individua il download esistente tramite Ctrl+J e comunica il percorso locale esatto oppure lo stato mostrato dal browser.** Solo dopo il chiarimento si riprende il verificatore HTTPS già qualificato sulla sorgente individuata; **nessun nuovo export finché il percorso e la disponibilità del file non sono chiariti**. Profilo non verificato programmaticamente; nessun backup completo dell’origine attestato. Restano i contenitori residui e il confronto di identità/contenuti; i conteggi disponibili da soli non autorizzano migrazione o pulizia. Non ripetere i tre export già verificati senza un cambiamento concreto. Solo metadati nei rapporti, payload personali sul PC.
+Local Storage e IndexedDB tiles HTTP/HTTPS sono verificati in **quattro snapshot distinti** e il confronto delle copie è **COMPLETE**; residui **PARTIAL**, backup completo dell’origine NON attestato. **NEXT: decisione sul trattamento dei dati HTTP distinti nelle copie confrontate**, previa verifica dello stato attuale e copertura dei contenitori residui prima di qualunque azione sui dati. Migrazione e pulizia non sono autorizzate e restano bloccate; identità funzionale e contenuti correnti non sono attestati dal confronto. Nessun ulteriore copia/incolla operativo richiesto in questo gate. Non ripetere i quattro export o il confronto senza un cambiamento concreto. Solo metadati nei rapporti, payload personali sul PC.
 
 **Migrazione e pulizia restano bloccate.** Non inferire che HTTP sia vuoto o duplicato. Nessun dato del sito, collegamento browser, servizio HTTP o backup è stato cancellato. P3/Build317 resta CLOSED con il PASS operatore già ricevuto; runtime invariato, nessun deploy o nuova QA. DTM5/10m HOLD, mobile PAUSA, P4 SOLO FUTURO.
 
 Finding di metodo nella ricognizione offline: una ricerca iniziale troppo ampia ha intercettato una riga cartografica embedded e prodotto troncamento; contenuto estraneo ignorato, successive ricerche limitate a simboli/range. Nessun dato personale era coinvolto.
+
+Finding di metodo del 21/11, ricerca documentale root: `rg` con pattern `P0|gate` su FRONTIER/REPORT era troppo ampio e ha prodotto output troncato. Il recupero successivo è stato ristretto alle sezioni e alle chiavi pertinenti.
+
+Finding di metodo nella review finale: una ricognizione delle sole chiavi metadata ha superato il budget di output; recupero ristretto al delta semantico, con strutture già revisionate collassate. Review finale PASS, senza lettura di payload privati né ripetizione dei test. Il flag storico `verifiedBackup: false` è esplicitamente circoscritto al backup completo origine mediante `verifiedBackupScope`; i quattro backup logici mantengono i propri esiti verificati.
