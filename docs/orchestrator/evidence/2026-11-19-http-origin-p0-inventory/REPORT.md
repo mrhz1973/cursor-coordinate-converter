@@ -1,15 +1,25 @@
-# P0 — Local Storage HTTP/HTTPS e IndexedDB HTTP verificati
+# P0 — download IndexedDB HTTPS dichiarato; sorgente da individuare
 
 Data registrazione: 19/11/2026 20:38:41 Europe/Rome.
-Aggiornamento: 20/11/2026; ricevuta Local Storage HTTPS reale verificata alle 13:04 Europe/Rome. Tre export logici verificati in acquisizioni distinte; helper IndexedDB HTTPS qualificati e pronti all’esecuzione. Payload personali conservati sul PC.
+Aggiornamento: 21/11/2026; connessione TMAR su ASUSDESKTOP ripristinata, verifica IndexedDB HTTPS fermata alla lettura della sorgente e file non individuato nel perimetro controllato. I tre export logici precedenti restano verificati nei rispettivi snapshot. Payload personali conservati sul PC.
 BLOCK: GIS-HTTP-ORIGIN-INVENTORY-P0. Tipo: audit non distruttivo, nessun bundle runtime.
-**Esito corrente: HTTP_LOCALSTORAGE_AND_IDB_VERIFIED / HTTPS_LOCALSTORAGE_VERIFIED / HTTPS_IDB_EXPORT_READY / ORIGIN_BACKUP_PENDING. File e copie locali verificati per Local Storage HTTP, IndexedDB tiles HTTP e Local Storage HTTPS, nei rispettivi perimetri. Le tre acquisizioni non costituiscono uno snapshot atomico né un backup completo delle origini. IndexedDB HTTPS, contenitori residui e confronto di identità/contenuti restano PENDING; P0 resta APERTO.**
+**Esito corrente: HTTPS_IDB_DOWNLOAD_DECLARED / SOURCE_FILE_NOT_LOCATED / ORIGIN_BACKUP_PENDING. La ricevuta browser dichiara il download IndexedDB HTTPS; file e copia NON VERIFICATI. Restano acquisiti i tre backup logici precedenti: Local Storage HTTP, IndexedDB tiles HTTP e Local Storage HTTPS, nei rispettivi snapshot distinti e perimetri. Nessun backup completo delle origini attestato; P0 resta APERTO.**
 
 ## Mandato e fonte viva
 
 L'operatore ha richiesto «continua» dopo la chiusura P3. origin/main verificato a 6dbcd7732e1d88d3de733b7a6b9c53b007d46516; FRONTIER indica P0 come prossimo residuo distinto. README AI-BOOT e OM §4 erano già acquisiti nella stessa chat: refresh mirato, WU N/A. Il [backlog P0](../../backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) richiede inventario, backup verificato e confronto fra le due origini prima di qualsiasi pulizia; il servizio HTTP tecnico va conservato.
 
 URL operativo da usare: https://ionos-n8n-new.tailc01234.ts.net/gis?v=ed760bbd. L'origine HTTP tecnica rimane documentata per questo confronto e per l'infrastruttura.
+
+## IndexedDB HTTPS — download dichiarato, file sorgente non individuato
+
+[Evidenza del gate](https-indexeddb-verification-blocked.json). Ricevuta browser riferita dall’operatore il **20/11/2026**, snapshot **16:56:09.715 UTC**: origine HTTPS attesa, `DOWNLOAD_AVVIATO`, file `TMAR-GIS-P0-HTTPS-IndexedDB-20261120T165609715Z.json`, **315 tile**, **7.984.081 byte binari**, **10.695.152 byte file**, SHA256 dichiarato `b9e23683f3b33683586843e72ac27d1c82638d2bf630971d1816a9927ae48211`. Questi sono metadati dichiarati dal browser; **il file e la copia non sono verificati**.
+
+Il **21/11/2026 alle 02:28:21.0695286 UTC** il probe di connessione TMAR su ASUSDESKTOP è PASS. Il verificatore HTTPS già qualificato si è fermato con **STOP / SOURCE_READ / LOCAL_OPERATION_FAILED**, senza ottenere una verifica attestata del payload GIS o della copia. Lo STOP non permette di attestare quanto della sorgente sia stato letto; nessun payload GIS è stato restituito dagli strumenti. Non è una verifica negativa dei contenuti.
+
+La ricerca nella cartella attesa `C:\Users\mrhz\Downloads` e nella cartella Download di Windows Known Folder, coincidente con lo stesso percorso, ha restituito **zero riscontri** per il prefisso `TMAR-GIS-P0-HTTPS-IndexedDB-20261120T165609715Z*`, incluse collisioni e suffissi `.crdownload` con quel nome. **Temporanei con nomi generici, come `Unconfirmed…`, non sono stati enumerati**: non è escluso un download in corso o salvato altrove. I percorsi alternativi configurati non sono stati acquisiti: lettura Preferences di Edge Default e Chrome Default `ACCESS_DENIED`. Anche il file e `verification.json` nei due percorsi esatti della cartella di backup prevista `P0-20261120T165609715Z-HTTPS-IndexedDB` risultano `ABSENT`; il controllo non riguarda altre posizioni. Nessuna modifica dei permessi e nessun payload GIS restituito.
+
+**Storico preservato:** un precedente avvio nell’origine HTTP aveva prodotto `STOP_ORIGINE_INATTESA`, senza apertura IndexedDB o download da parte dell’helper. La successiva interruzione TMAR aveva lasciato esecuzione nativa e copia non determinate; il blocco di connessione è ora superato dal probe del 21/11. Rimane il gate di reperimento/completamento del file, senza dedurne cancellazione o assenza globale.
 
 ## Local Storage HTTPS verificato — 20 novembre 2026
 
@@ -28,13 +38,13 @@ Guard dell’origine HTTPS superato e screenshot della pagina404 acquisito come 
 
 Il confronto riguarda soltanto i conteggi attestati dalle due ricevute. **Confronto di identità e contenuti: NON ESEGUITO.** I conteggi non determinano quali dati siano unici, condivisi, duplicati o da migrare. Non attestano equivalenza delle impostazioni né lo stato attuale del browser dopo gli snapshot.
 
-## IndexedDB HTTPS — helper qualificati, esecuzione personale NOT_PERFORMED
+## Storico: qualificazione degli helper IndexedDB HTTPS
 
 [Exporter HTTPS](export-https-indexeddb.console.js), SHA256 `1c2fb500af42b8f7dbff8c63715afb1518d95b455d03c771b6da47be51f2287d`; [verificatore HTTPS](verify-https-indexeddb-backup.cjs), SHA256 `bc5d8a5fb2ed4e5076645af412aaa5ad34240e21bf9026c64f6daca50246a147`. Qualificazione mirata del delta: **3 gruppi / 6 esecuzioni exporter PASS**, **3 gruppi verifier PASS**; review indipendente root dei soli diff e della compatibilità PASS. Le precedenti prove SHA, Edge e schema non sono state ripetute. [Metadati della qualificazione](inventory-metadata.json).
 
 Il comportamento qualificato distingue i casi: catalogo vuoto → `DATABASE_ABSENT`, copertura `IDB_CATALOGO_ONLY`, `attesoVersione:null`, `versioneRichiesta:1`, `apertureDatabase:0`, `file:null`, `completeOriginBackup:false`; unico database atteso alla versione1 → percorso di export qualificato; catalogo inatteso → STOP. Questi sono risultati della qualificazione dell’helper, **non un inventario reale di IndexedDB HTTPS**.
 
-Comando preparato e hash verificato nativamente: `C:\Users\mrhz\AppData\Local\TMAR-GIS\P0-Aiuto-20261120\P0-HTTPS-IDB-Comando.txt`, **10.202 byte**, stesso SHA256 dell’exporter. Esecuzione nel browser personale, download e verifica del backup IndexedDB HTTPS **NON ESEGUITI** in questo stato. Nessun PASS dei dati IndexedDB HTTPS è attribuito alla preparazione.
+Comando preparato e hash verificato nativamente: `C:\Users\mrhz\AppData\Local\TMAR-GIS\P0-Aiuto-20261120\P0-HTTPS-IDB-Comando.txt`, **10.202 byte**, stesso SHA256 dell’exporter. **Al momento della preparazione**, esecuzione nel browser personale, download e verifica del backup IndexedDB HTTPS non erano eseguiti. La successiva ricevuta browser e il blocco alla lettura della sorgente sono registrati nella sezione corrente sopra; nessun PASS dei dati IndexedDB HTTPS è attribuito alla qualificazione degli helper.
 
 ## IndexedDB HTTP verificato — 20 novembre 2026
 
@@ -165,7 +175,7 @@ Questa mappa è una proprietà del codice, **non** un'enumerazione dei dati effe
 
 ## Gate successivo e limiti
 
-Local Storage HTTP/HTTPS e IndexedDB HTTP sono verificati nei rispettivi snapshot e perimetri. Prossimo passo: eseguire l’helper IndexedDB HTTPS qualificato nel contesto HTTPS già attestato dall’operatore. Acquisire l’esito effettivo: se produce un file, verificarlo nativamente e verificarne la copia; se segnala database assente, registrare soltanto l’evidenza di catalogo, senza attribuirle un file di backup. Profilo non verificato programmaticamente; nessun backup completo dell’origine attestato. Restano i contenitori residui e il confronto di identità/contenuti; i conteggi disponibili da soli non autorizzano migrazione o pulizia. Non ripetere i tre export già verificati senza un cambiamento concreto. Solo metadati nei rapporti, payload personali sul PC.
+Local Storage HTTP/HTTPS e IndexedDB HTTP restano verificati nei rispettivi snapshot e perimetri. **NEXT: l’operatore individua il download esistente tramite Ctrl+J e comunica il percorso locale esatto oppure lo stato mostrato dal browser.** Solo dopo il chiarimento si riprende il verificatore HTTPS già qualificato sulla sorgente individuata; **nessun nuovo export finché il percorso e la disponibilità del file non sono chiariti**. Profilo non verificato programmaticamente; nessun backup completo dell’origine attestato. Restano i contenitori residui e il confronto di identità/contenuti; i conteggi disponibili da soli non autorizzano migrazione o pulizia. Non ripetere i tre export già verificati senza un cambiamento concreto. Solo metadati nei rapporti, payload personali sul PC.
 
 **Migrazione e pulizia restano bloccate.** Non inferire che HTTP sia vuoto o duplicato. Nessun dato del sito, collegamento browser, servizio HTTP o backup è stato cancellato. P3/Build317 resta CLOSED con il PASS operatore già ricevuto; runtime invariato, nessun deploy o nuova QA. DTM5/10m HOLD, mobile PAUSA, P4 SOLO FUTURO.
 
