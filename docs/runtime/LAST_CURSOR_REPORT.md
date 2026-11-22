@@ -1,127 +1,108 @@
-# Handoff — Build319 LIVE tecnica PASS, QA operatore PENDING
+# Handoff — Build319 QA operatore PASS, blocco CLOSED
 
-> Report del pass. `docs/FRONTIER.md` è l’unica LIVE STATE; questo documento registra evidenze e limiti acquisiti.
+> Report del pass. `docs/FRONTIER.md` è l’unica LIVE STATE; questo documento registra la chiusura e le relative evidenze.
 
-Redazione: **2026-11-22T03:41:16+01:00 · Europe/Rome**. Evidenza Git pre-container: **2026-11-22T03:40:29+01:00 · Europe/Rome**.
+Redazione: **2026-11-22T13:53:03+01:00 · Europe/Rome**. Evidenza Git pre-container: **2026-11-22T13:51:06+01:00 · Europe/Rome**.
 
 ## A. Header sintetico
 
 | Campo | Valore |
 | --- | --- |
 | BLOCK | MAP-RIGHT-TOOLBAR-TOOLTIPS-A |
-| TIER | ROUTINE · CLOSURE STANDARD_RUNTIME_BUNDLE |
-| GATE | DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS / QA_FINALE_CHATGPT_PENDING |
-| NEXT | Breve QA operatore dei tooltip; dopo PASS, chiusura secondo metodo e prosecuzione del backlog operativo. |
-| Owner authorization | Direttiva «segui il backlog» e scope GIS desktop/mobile/iPad già autorizzato. |
-| Runtime LIVE | Build319, source `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c`; GitHub/VPS/file/HTTP/HTTPS concordi. |
-| Candidate FULL SHA | `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c` |
+| TIER | Chiusura DOCS-ONLY del bundle ROUTINE / STANDARD_RUNTIME_BUNDLE |
+| GATE | CLOSED / DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS / QA_OPERATORE_PASS |
+| NEXT | Prosecuzione del backlog operativo già autorizzata; audit mirato del prossimo intervento eseguibile. Nessun candidato320 ancora aperto. |
+| Owner authorization | `QA MAP-RIGHT-TOOLBAR-TOOLTIPS-A PASS operatore`; direttiva «segui il backlog» vigente. |
+| Runtime LIVE | Build319 source `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c`; prove GitHub/VPS/HTTP/HTTPS del rilascio riusate. |
+| Candidate FULL SHA | `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c` — nessun nuovo candidato runtime in questa chiusura. |
 | Build / ID / blob | 319 / MAP-RIGHT-TOOLBAR-TOOLTIPS-A / `d953ae6416b6b6e3b0405acc5b59400e93166703` |
 | Runtime SHA256 / byte | `5bd0375bdc851de12763b648eefb736db2c6a8e076ba8cbb4cbc3052d4600d18` / 11.299.241; CR192/CRLF0 |
-| Deployed state | DEPLOY_TECHNICAL_PASS; GIS-only; servizio active; backup verificato e smoke HTTP/HTTPS200. |
-| Automated QA | Candidato 196/196 su quattro suite complete più prova Tab/scroll; LIVE HTTPS reale 112/112, documenti verificati 3/3. |
-| Human QA | PENDING; nessun PASS operatore319, CLOSED319 o FINITO attribuito. |
-| Result Cursor | N/A — pass eseguito da ChatGPT con strumenti autorizzati; Cursor non utilizzato. |
-| Browser della prova | Edge157.0.4341.60, profili esclusivi e viewport/touch emulati; dispositivi fisici non attestati. |
-| Working tree | CLEAN a `8a6a0fe08b58d3467d2e7006a77874cf03c9070e` prima del presente container. |
-| P0 | APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED; recupero non applicato in questo pass. |
+| Deployed state | DEPLOY_TECHNICAL_PASS acquisito nel rilascio319; nessun nuovo deploy. |
+| Automated QA | Candidato196/196 e LIVE112/112, documenti HTTPS reali3/3 PASS: evidenze precedenti riusate, nessuna nuova prova. |
+| Human QA | PASS operatore acquisito22/11/2026; dispositivo, browser e ora del test non specificati. |
+| Result Cursor | N/A — pass documentale eseguito da ChatGPT con strumenti autorizzati; Cursor non utilizzato. |
+| Working tree | CLEAN a `17fae34d76022e9964bc8215dd865ba30cc7946f` prima del presente container. |
+| Coda Regola H | Documenti operativi pubblicati; autosync separato, push e prova finale esterna a completamento della coda autorizzata. |
+| P0 | APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED; nessuna applicazione del recupero. |
 
 ### Identità SHA non autoreferenziali
 
 | Identificatore | Valore |
 | --- | --- |
 | RUNTIME_CANDIDATE_SHA | `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c` |
-| REMOTE_HEAD_AT_EVIDENCE_TIME | `8a6a0fe08b58d3467d2e7006a77874cf03c9070e` |
+| REMOTE_HEAD_AT_EVIDENCE_TIME | `17fae34d76022e9964bc8215dd865ba30cc7946f` |
 | docs/report HEAD | PENDING_SELF_REFERENCE |
-| real_task_commit | `8a6a0fe08b58d3467d2e7006a77874cf03c9070e` |
-| previous_report_container | `9be94ca54580a4b6cb1ca65239b7d982ce64d38a` |
+| real_task_commit | `17fae34d76022e9964bc8215dd865ba30cc7946f` |
+| previous_report_container | `b9678d62a3e6c1bd51fc6f9c4d2927a4480ac970` |
 | current_report_container | PENDING_SELF_REFERENCE |
 | final_remote_head_after_report_push | EXTERNAL_ONLY |
 
-Il task comprende il commit runtime `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c` e il commit documentale operativo `8a6a0fe08b58d3467d2e7006a77874cf03c9070e`, entrambi pubblicati e verificati. Il presente autosync è un container separato; la verifica remota successiva al suo push rimane esterna, senza commit aggiuntivo autoreferenziale. Il gate operatore319 resta aperto.
+Il task documentale operativo `17fae34d76022e9964bc8215dd865ba30cc7946f` è già pubblicato e verificato. Il presente autosync è un container separato; la verifica successiva al suo push rimane esterna, senza commit autoreferenziale. L’esecuzione finale della coda viene attestata soltanto dopo concordanza remota, workspace pulito e monolite invariato.
 
-Evidence puntata: inbox `docs/orchestrator/inbox/2026-11-22-0341-toolbar-tooltips-319-live.md`; [rapporto operativo](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8a6a0fe08b58d3467d2e7006a77874cf03c9070e/docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/REPORT.md), [ricevute strutturate](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8a6a0fe08b58d3467d2e7006a77874cf03c9070e/docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/evidence.json), [FRONTIER al task commit](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8a6a0fe08b58d3467d2e7006a77874cf03c9070e/docs/FRONTIER.md) e [voce del backlog](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8a6a0fe08b58d3467d2e7006a77874cf03c9070e/docs/work-units/WU-0005-0009-roadmap.md#map-right-toolbar-tooltips-a).
+Evidence: inbox `docs/orchestrator/inbox/2026-11-22-1353-qa319-operator-pass-closure.md`; [ricevuta di chiusura](https://github.com/mrhz1973/cursor-coordinate-converter/blob/17fae34d76022e9964bc8215dd865ba30cc7946f/docs/orchestrator/evidence/2026-11-22-qa319-closure/REPORT.md), [attestazione strutturata](https://github.com/mrhz1973/cursor-coordinate-converter/blob/17fae34d76022e9964bc8215dd865ba30cc7946f/docs/orchestrator/evidence/2026-11-22-qa319-closure/evidence.json), [FRONTIER al task commit](https://github.com/mrhz1973/cursor-coordinate-converter/blob/17fae34d76022e9964bc8215dd865ba30cc7946f/docs/FRONTIER.md) e [voce tooltip chiusa](https://github.com/mrhz1973/cursor-coordinate-converter/blob/17fae34d76022e9964bc8215dd865ba30cc7946f/docs/work-units/WU-0005-0009-roadmap.md#map-right-toolbar-tooltips-a).
 
 ## B. RIEPILOGO COMPLETO
 
-### Build319 — tooltip della toolbar mappa GIS
+### Build319 — ricevuta QA operatore e chiusura del blocco
 
-**22 novembre 2026 · MAP-RIGHT-TOOLBAR-TOOLTIPS-A · ROUTINE.**
+**Attestazione acquisita il 22 novembre 2026.** Blocco **MAP-RIGHT-TOOLBAR-TOOLTIPS-A**.
 
-**DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS / QA_FINALE_CHATGPT_PENDING.** Nessun PASS operatore319, CLOSED o FINITO attribuito. [Evidenze e ricevute](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8a6a0fe08b58d3467d2e7006a77874cf03c9070e/docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/evidence.json).
+Attestazione esatta ricevuta dall’operatore:
 
-La direttiva «segui il backlog» porta alla voce operativa già specificata in [WU-0005-0009-roadmap](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8a6a0fe08b58d3467d2e7006a77874cf03c9070e/docs/work-units/WU-0005-0009-roadmap.md#map-right-toolbar-tooltips-a), dopo la chiusura dei lavori eseguibili della lista del 16 novembre. T1.1 non aperto; Oggetti GIS resta FROZEN/MAINTENANCE ONLY. P0 rimane secondario, aperto, autorizzato e non applicato.
+> QA MAP-RIGHT-TOOLBAR-TOOLTIPS-A PASS operatore
 
-#### Identità e modifica
+**Conclusione: CLOSED per PASS operatore.** Dispositivo, browser e ora di esecuzione del collaudo umano non sono stati specificati. La ricevuta conserva questo limite senza attribuire una qualifica universale o a dispositivi identificati.
+
+#### Evidenze riusate
+
+Restano acquisite le prove del [rapporto Build319](https://github.com/mrhz1973/cursor-coordinate-converter/blob/17fae34d76022e9964bc8215dd865ba30cc7946f/docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/REPORT.md) e delle [evidenze tecniche](https://github.com/mrhz1973/cursor-coordinate-converter/blob/17fae34d76022e9964bc8215dd865ba30cc7946f/docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/evidence.json), già pubblicate al commit `b9678d62a3e6c1bd51fc6f9c4d2927a4480ac970`: candidato **196/196 PASS**, LIVE HTTPS reale **112/112 PASS**, documenti verificati **3/3** e deploy tecnico PASS.
+
+La chiusura documentale riusa tali ricevute: nessun nuovo test runtime o deploy. Le prove automatizzate restano riferite a Edge157.0.4341.60 con viewport/touch emulati. Il limite TLS1.3 `secure` con issuer ESET SSL Filter CA rimane documentato; questa attestazione non trasforma il risultato in una prova di TLS diretta non intercettata.
+
+#### Runtime invariato
 
 | Identità | Valore |
 | --- | --- |
+| Build | 319 |
 | Source commit | `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c` |
 | Blob | `d953ae6416b6b6e3b0405acc5b59400e93166703` |
 | SHA256 | `5bd0375bdc851de12763b648eefb736db2c6a8e076ba8cbb4cbc3052d4600d18` |
-| File | 11.299.241 byte; CR192, CRLF0 |
+| Dimensione | 11.299.241 byte; CR192, CRLF0 |
 
-I tooltip della toolbar destra GIS sono immediati su hover e focus da tastiera, fuori dallo scroller e contenuti nella porzione visibile del viewport. Il focus resiste allo scroll automatico delle righe annidate; Escape e touch chiudono senza riaperture residue. Hover sui pulsanti disabilitati conservato senza renderli focalizzabili. Traccia usa il nome tradotto; gli altri testi, incluso GPS, restano quelli di `data-tip`, inseriti tramite `textContent`. Il contenuto del menu basemap è escluso dal nuovo comportamento. Nessuna modifica agli handler delle azioni, al GPS, allo storage o alla rete.
+Il runtime e l’archivio dell’operatore restano fuori dal delta di chiusura. [Ricevuta strutturata](https://github.com/mrhz1973/cursor-coordinate-converter/blob/17fae34d76022e9964bc8215dd865ba30cc7946f/docs/orchestrator/evidence/2026-11-22-qa319-closure/evidence.json).
 
-Review statica e controllo sintattico PASS sul runtime identificato.
+#### Metodo e prosecuzione
 
-#### Iterazioni e qualifica candidata
+Chiusura secondo **OM §4 Regola H**: questo bundle documentale è seguito dall’autosync separato e dalla verifica finale esterna di HEAD, tracking, ref remoto, worktree e immutabilità del runtime. La presente ricevuta non anticipa l’esecuzione di quei passaggi.
 
-- **R1 STOP del collaudo:** riferimenti DOM diventati disconnessi dopo reset; nessun risultato QA del prodotto.
-- **R2 FAIL reale, 178/180:** due controlli a 320 px perdevano il tooltip durante lo scroll automatico pur mantenendo il focus. Corretto il solo helper di presentazione.
-- **R3 FAIL dell’oracle:** il driver trattava wrapper `display:contents` come rettangoli di clipping nulli. R4 corregge una sola riga del driver; il runtime R3/R4 resta identico.
-- **R4 finale: 196/196 PASS**, 03:28:45–03:29:14 Europe/Rome (UTC+01:00). Quattro suite complete: 1440×900, 1024×768, 390×844, 320×568; supplemento 1440×568 per Tab/scroll. Coperti Tab naturale verso controlli ritagliati, focus dopo scroll reale, controllo interamente ritagliato, chiusura dell’hover e mancata riapertura dopo Escape. [Driver candidato](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8a6a0fe08b58d3467d2e7006a77874cf03c9070e/docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/candidate-tooltip-qa.cjs).
+La direttiva **«segui il backlog»** resta attiva: dopo la pubblicazione della chiusura si prosegue dal [backlog operativo](https://github.com/mrhz1973/cursor-coordinate-converter/blob/17fae34d76022e9964bc8215dd865ba30cc7946f/docs/work-units/WU-0005-0009-roadmap.md), con letture mirate al prossimo requisito e senza richiedere un nuovo obiettivo generico. Nessun candidato successivo è ancora aperto al momento di questa ricevuta.
 
-#### Pubblicazione, deploy e LIVE
-
-Runtime pubblicato e verificato alle 03:30:44 Europe/Rome; deploy GIS-only PASS alle 03:31:22 Europe/Rome (UTC+01:00). Servizio attivo, clone pulito, backup `/var/backups/goi-gis-runtime/prebuild319-v1omhzk6`. HTTP e HTTPS: **200**, nessun redirect, Content-Length **11299241**, build e SHA256 concordi.
-
-**LIVE HTTPS reale: 112/112 PASS**, 03:32:07–03:32:27 Europe/Rome (UTC+01:00): 1440×900 **56/56**, 390×844 **28/28**, 320×568 **28/28**. Documenti reali acquisiti via HTTPS e verificati **3/3** prima dell’esecuzione; nessuna risposta HTML sintetica. Le altre richieste sono negate nel perimetro di prova. I probe estesi candidati non sono stati ripetuti. [Driver LIVE](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8a6a0fe08b58d3467d2e7006a77874cf03c9070e/docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/live-tooltip-qa.cjs).
-
-Nelle prove: zero errori console/runtime, chiamate GPS e click sulle azioni della toolbar; profilo operatore e dati privati non usati, archivio dell’operatore non modificato. Input invariati e chiusura dei browser propri osservata.
-
-#### Limiti e NEXT
-
-Prove su **Edge157.0.4341.60**, profili esclusivi e viewport/touch emulati; nessun PASS universale, Safari/Firefox o dispositivo fisico identificato. Il perimetro è quello dei browser propri e componenti qualificati, non AppContainer né qualifica del recupero P0.
-
-TLS1.3 `secure` con issuer **ESET SSL Filter CA** in tutti i tre casi LIVE; flag di bypass certificati e override host assenti. Nessuna attestazione di TLS diretta non intercettata.
-
-Aprire [Build319 HTTPS](https://ionos-n8n-new.tailc01234.ts.net/gis?v=5bd0375b) per la breve QA operatore dei tooltip. Dopo il PASS: chiusura secondo metodo e prosecuzione del backlog operativo. Ultimo blocco chiuso: Build318. DTM5/10m HOLD; P4 FUTURO.
-
-### Ricevute di identità e pubblicazione
-
-| Evidenza | Identità verificata |
-| --- | --- |
-| Trasformazione finale | 6 sostituzioni byte guardate da318; manifest SHA256 `f6a55989c2abfb32847ed8374226e8815d1888423ca50786f83d4178a44ab586`, 27.388 byte; copia318 sorgente invariata. |
-| Qualifica candidata finale | Receipt SHA256 `e0a5d26d8838c4feef6cfb2a0bbcc31cca72396ed197ffc7fa8e1205020ff273`, 26.840 byte; 196/196 PASS. |
-| Automated Browser QA LIVE | Receipt SHA256 `cf3f607699b1a932a8cedca1db05750c05965503a300bc877d181147b461bd7b`, 20.235 byte; 112/112 PASS. |
-| Pubblicazione runtime | `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c`; native publisher PUBLISHED_VERIFIED, HEAD/tracking/remote concordi e clone CLEAN. |
-| Pubblicazione documentale operativa | `8a6a0fe08b58d3467d2e7006a77874cf03c9070e`; HEAD/tracking/ls-remote concordi, status vuoto, sei soli file documentali/evidence. |
-| QA operatore | PENDING; attestazione attesa: `QA MAP-RIGHT-TOOLBAR-TOOLTIPS-A PASS operatore`. |
+P0 resta **aperto, autorizzato e non applicato**. DTM5/10m HOLD; P4 FUTURO; Oggetti GIS FROZEN/MAINTENANCE ONLY.
 
 ## C. OUTPUT GIT — pre-container
 
-Output acquisiti dopo il push del commit documentale operativo e prima della creazione di questo autosync. HEAD, tracking e ref remoto sono stati confrontati sui risultati riportati; l’output status è realmente vuoto.
+Otto output acquisiti dopo il push del task documentale e prima di questo autosync. HEAD, tracking e ref remoto concordano; status realmente vuoto.
 
 ### `git log --oneline -5`
 
 ```text
+17fae34 docs(gis): close Build319 after operator QA PASS
+b9678d6 docs(autosync): record Build319 live tooltip release and QA gate
 8a6a0fe docs(gis): record Build319 tooltip release and pending operator QA
 b858b4e fix(gis): keep map toolbar tooltips visible (Build319)
 9be94ca docs(autosync): record Build318 operator PASS and closure
-4cb6ce1 docs(gis): close Build318 after operator QA PASS
-98b527d docs(autosync): record Build318 live release and final QA gate
 ```
 
 ### `git rev-parse HEAD`
 
 ```text
-8a6a0fe08b58d3467d2e7006a77874cf03c9070e
+17fae34d76022e9964bc8215dd865ba30cc7946f
 ```
 
 ### `git rev-parse origin/main`
 
 ```text
-8a6a0fe08b58d3467d2e7006a77874cf03c9070e
+17fae34d76022e9964bc8215dd865ba30cc7946f
 ```
 
 ### `git branch --show-current`
@@ -133,7 +114,7 @@ main
 ### `git ls-remote origin refs/heads/main`
 
 ```text
-8a6a0fe08b58d3467d2e7006a77874cf03c9070e	refs/heads/main
+17fae34d76022e9964bc8215dd865ba30cc7946f	refs/heads/main
 ```
 
 ### `git status --porcelain=v1`
@@ -144,30 +125,28 @@ main
 ### `git show --format= --stat HEAD`
 
 ```text
- docs/FRONTIER.md                                   |   26 +-
- .../2026-11-22-toolbar-tooltips-319/REPORT.md      |   43 +
- .../candidate-tooltip-qa.cjs                       |  774 ++++
- .../2026-11-22-toolbar-tooltips-319/evidence.json  | 4371 ++++++++++++++++++++
- .../live-tooltip-qa.cjs                            |  840 ++++
- docs/work-units/WU-0005-0009-roadmap.md            |    6 +-
- 6 files changed, 6048 insertions(+), 12 deletions(-)
+ docs/FRONTIER.md                                   | 26 +++++---
+ .../evidence/2026-11-22-qa319-closure/REPORT.md    | 35 +++++++++++
+ .../2026-11-22-qa319-closure/evidence.json         | 73 ++++++++++++++++++++++
+ docs/work-units/WU-0005-0009-roadmap.md            |  8 ++-
+ 4 files changed, 129 insertions(+), 13 deletions(-)
 ```
 
 ### `git show --format= --name-only HEAD`
 
 ```text
 docs/FRONTIER.md
-docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/REPORT.md
-docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/candidate-tooltip-qa.cjs
-docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/evidence.json
-docs/orchestrator/evidence/2026-11-22-toolbar-tooltips-319/live-tooltip-qa.cjs
+docs/orchestrator/evidence/2026-11-22-qa319-closure/REPORT.md
+docs/orchestrator/evidence/2026-11-22-qa319-closure/evidence.json
 docs/work-units/WU-0005-0009-roadmap.md
 ```
 
 ## HISTORY
 
-Il precedente report container `9be94ca54580a4b6cb1ca65239b7d982ce64d38a` documentava la chiusura318. Questo pass riguarda il successivo blocco tooltip319, con QA operatore ancora pendente. Le iterazioni R1/R2/R3 restano storico identificato dalle rispettive ricevute; la qualifica corrente è R4 sul runtime `5bd0375bdc851de12763b648eefb736db2c6a8e076ba8cbb4cbc3052d4600d18`.
+Il container precedente `b9678d62a3e6c1bd51fc6f9c4d2927a4480ac970` documentava il rilascio319 con QA operatore pendente. Il messaggio esplicito ricevuto ora chiude quel gate; le evidenze tecniche originali conservano il loro significato storico e non sono riscritte come se il PASS umano fosse già disponibile al deploy.
 
 ## LIMITI DEL REPORT
 
-Gli esiti tecnici sono vincolati al runtime e ai casi documentati. Il controllo finale umano resta pendente. Il ref dopo il push di questo container viene verificato esternamente: nessun commit ulteriore per incorporare lo SHA del container nel proprio contenuto. Nessuna dichiarazione di FINITO del blocco319.
+La QA operatore non identifica dispositivo, browser o ora del test. Restano i limiti di copertura delle prove automatizzate e TLS già documentati. La chiusura è docs-only: nessun nuovo runtime, test, deploy o intervento sui dati operatore. P0 aperto/autorizzato/non applicato, DTM5/10m HOLD e P4 FUTURO.
+
+Il ref finale e l’esecuzione completata della coda Regola H vengono verificati esternamente dopo il push; nessun commit aggiuntivo per incorporare nel report il proprio SHA.
