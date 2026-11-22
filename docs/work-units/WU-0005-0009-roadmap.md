@@ -776,7 +776,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | --- | --- | --- |
 | **MAP-TARGET-SCALE-A** | Visualizzazione mappa a scala nominale richiesta 1:N | **BACKLOG / NOT OPENED** |
 | **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **BACKLOG / NOT OPENED** |
-| **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **BACKLOG / NOT OPENED** |
+| **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **CLOSED / QA_OPERATORE_PASS** · LIVE **320** · 22/11/2026 · [ricevuta](../orchestrator/evidence/2026-11-22-qa320-closure/REPORT.md) |
 | **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **CLOSED / PASS** LIVE **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · finito Regola H |
 | **GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1)** | Accesso **Oggetti GIS** solo da Impostazioni; FIX1 ripristina geometria toolbar mappa | **CLOSED / PASS** LIVE **247** tip `ac4789e` · blob `6e10d568…` · QA operatore PASS · finito Regola H — modulo **FROZEN / MAINTENANCE-ONLY** |
 | **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **CLOSED / QA_OPERATORE_PASS** · LIVE **319** · 22/11/2026 |
@@ -842,15 +842,15 @@ Audit futuro deve distinguere almeno: XYZ/TMS raster; WMS; overlay vettoriali; D
 
 #### MAP-PAN-TILE-OVERSCAN-A
 
-Stato: Build320 LIVE — DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_BLOCKED_HTTPS_ADMISSION / QA_OPERATORE_PENDING. DELICATO, CLOSURE STANDARD_RUNTIME_BUNDLE; FINITO non innescato. [Dossier ed evidenze](../orchestrator/evidence/2026-11-22-pan-tile-overscan-320/REPORT.md).
+Stato: **Build320 LIVE — CLOSED / QA_OPERATORE_PASS** (DELICATO / STANDARD_RUNTIME_BUNDLE, Regola H, runtime invariato). [Ricevuta QA320](../orchestrator/evidence/2026-11-22-qa320-closure/REPORT.md) e [dossier rilascio](../orchestrator/evidence/2026-11-22-pan-tile-overscan-320/REPORT.md).
 
 Requisito: durante il pan non mostrare area nera/vuota ai bordi se la zona interessata è già disponibile nella cache/offline.
 
 Implementazione: preparazione cache-only e decodifica delle tile adiacenti, copertura aggiornata durante il gesto, presentazione geografica coerente e trasferimento dei nodi già pronti al commit. Risorse limitate e cleanup esplicito; budget/timeout distinti da tile assente. Il bypass al pan ordinario resta fuori dalla qualificazione di continuità da cache.
 
-Acceptance primaria: se tutte le tile necessarie al nuovo viewport sono già disponibili offline/cache, il pan non deve mostrare bordi neri transitori. Se le tile **non** esistono offline/cache, il requisito **non** impone di inventare dati cartografici. GO candidato aggregato e REVIEW GPT-SOSTITUTIVA PASS nel perimetro documentato; QA browser LIVE bloccata all’accesso HTTPS prima della UI, nessun controllo prodotto LIVE eseguito.
+Acceptance primaria: se tutte le tile necessarie al nuovo viewport sono già disponibili offline/cache, il pan non deve mostrare bordi neri transitori. Se le tile **non** esistono offline/cache, il requisito **non** impone di inventare dati cartografici. GO candidato aggregato e REVIEW GPT-SOSTITUTIVA PASS; QA browser LIVE aggregata Edge158 desktop1440 R6 35/35 + phone390 R7 35/35 PASS, con STOP iniziale conservato; QA operatore PASS. Non attestati device fisici o tutti i browser.
 
-NEXT: risolvere e qualificare l’accesso HTTPS del browser QA mantenendo invariati boundary A e protezioni TLS, quindi eseguire la QA prodotto LIVE. La QA operatore resta PENDING e segue soltanto un esito PASS della QA browser; il blocco non è CLOSED.
+Chiusura: attestazione `QA MAP-PAN-TILE-OVERSCAN-A PASS operatore` acquisita 22/11/2026. [Ricevuta](../orchestrator/evidence/2026-11-22-qa320-closure/REPORT.md). Runtime invariato, nessun test o deploy nuovo. NEXT: prosecuzione del backlog autorizzato; P0 secondario non applicato.
 
 
 #### MAP-RIGHT-TOOLBAR-TOOLTIPS-A
