@@ -842,11 +842,16 @@ Audit futuro deve distinguere almeno: XYZ/TMS raster; WMS; overlay vettoriali; D
 
 #### MAP-PAN-TILE-OVERSCAN-A
 
+Stato: Build320 LIVE — DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_BLOCKED_HTTPS_ADMISSION / QA_OPERATORE_PENDING. DELICATO, CLOSURE STANDARD_RUNTIME_BUNDLE; FINITO non innescato. [Dossier ed evidenze](../orchestrator/evidence/2026-11-22-pan-tile-overscan-320/REPORT.md).
+
 Requisito: durante il pan non mostrare area nera/vuota ai bordi se la zona interessata è già disponibile nella cache/offline.
 
-Strategie da valutare: tile overscan oltre viewport; preload della corona di tile adiacenti dalla cache; retention del frame/tile precedente finché il nuovo set è pronto; scheduling render/cache più anticipato; background neutro come fallback per tile realmente assenti.
+Implementazione: preparazione cache-only e decodifica delle tile adiacenti, copertura aggiornata durante il gesto, presentazione geografica coerente e trasferimento dei nodi già pronti al commit. Risorse limitate e cleanup esplicito; budget/timeout distinti da tile assente. Il bypass al pan ordinario resta fuori dalla qualificazione di continuità da cache.
 
-Acceptance futura primaria: se tutte le tile necessarie al nuovo viewport sono già disponibili offline/cache, il pan non deve mostrare bordi neri transitori. Se le tile **non** esistono offline/cache, il requisito **non** impone di inventare dati cartografici.
+Acceptance primaria: se tutte le tile necessarie al nuovo viewport sono già disponibili offline/cache, il pan non deve mostrare bordi neri transitori. Se le tile **non** esistono offline/cache, il requisito **non** impone di inventare dati cartografici. GO candidato aggregato e REVIEW GPT-SOSTITUTIVA PASS nel perimetro documentato; QA browser LIVE bloccata all’accesso HTTPS prima della UI, nessun controllo prodotto LIVE eseguito.
+
+NEXT: risolvere e qualificare l’accesso HTTPS del browser QA mantenendo invariati boundary A e protezioni TLS, quindi eseguire la QA prodotto LIVE. La QA operatore resta PENDING e segue soltanto un esito PASS della QA browser; il blocco non è CLOSED.
+
 
 #### MAP-RIGHT-TOOLBAR-TOOLTIPS-A
 
