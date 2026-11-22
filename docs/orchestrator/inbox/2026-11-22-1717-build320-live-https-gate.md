@@ -1,0 +1,212 @@
+# Handoff — Build320 LIVE, gate browser HTTPS bloccato
+
+> Report del pass. `docs/FRONTIER.md` è l’unica LIVE STATE; questo documento registra sviluppo, rilascio e arresto al gate effettivo.
+
+Redazione: **2026-11-22T17:17:57+01:00 · Europe/Rome**. Evidenza Git pre-container: **2026-11-22T17:16:11+01:00 · Europe/Rome**.
+
+## A. Header sintetico
+
+| Campo | Valore |
+| --- | --- |
+| BLOCK | MAP-PAN-TILE-OVERSCAN-A |
+| TIER | DELICATO / STANDARD_RUNTIME_BUNDLE; presente container DOCS-ONLY |
+| GATE | DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_BLOCKED_HTTPS_ADMISSION / QA_OPERATORE_PENDING |
+| NEXT | Qualificare l’accesso HTTPS del browser QA mantenendo invariati boundary A e TLS, poi eseguire QA prodotto LIVE; QA operatore soltanto dopo ABQA PASS. |
+| Owner authorization | Direttiva «segui il backlog» vigente; il PASS operatore MAP-RIGHT-TOOLBAR-TOOLTIPS-A ha chiuso Build319 ed è distinto da Build320. |
+| Runtime LIVE | Build320 source `ca3a38d1c7703c5bf93724cd5df608af2914751d`; GitHub/VPS/HTTP/HTTPS e GET binario completo dal client concordi. |
+| Candidate FULL SHA | `ca3a38d1c7703c5bf93724cd5df608af2914751d` — stesso runtime ora LIVE. |
+| Build / ID / blob | 320 / MAP-PAN-TILE-OVERSCAN-A / `7e6af6b480fb634928ee9a5fc6b73d1be5440cdd` |
+| Runtime SHA256 / byte | `b3fcec1135b77bd0dec21351fb87b894c5f5828bce455995b8fa03aaf744f689` / 11.334.841; CR192/CRLF0 |
+| Deployed state | DEPLOY_TECHNICAL_PASS del22/11/2026,15:53 UTC; servizio goi-gis-app attivo, worktree VPS pulito, backup verificato. |
+| Automated QA | Candidato qualificato tramite evidenze originarie e chiusure distinte, supplemento49/49 PASS; QA browser LIVE ferma prima del prodotto, zero scenari LIVE eseguiti. |
+| Published review | REVIEW GPT-SOSTITUTIVA PASS su raw@FULL_SHA; review AI esterna post-hoc PENDING quando disponibile. |
+| Human QA | Build320 PENDING e non richiesta prima della risoluzione del gate browser; Build319 PASS già registrato. |
+| Result Cursor | N/A — pass eseguito da ChatGPT con strumenti autorizzati; Cursor non utilizzato. |
+| Working tree | CLEAN a `8106e6832ca6f7014ff1c6167e0bc1ff3b21de68` prima del presente container. |
+| Coda Regola H | FINITO NON INNESCATO: QA browser bloccata e QA operatore320 pendente. Autosync dello stato effettivo, senza chiusura del bundle. |
+| P0 | APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED; nessun intervento sugli archivi operatore. |
+
+### Identità SHA non autoreferenziali
+
+| Identificatore | Valore |
+| --- | --- |
+| RUNTIME_CANDIDATE_SHA | `ca3a38d1c7703c5bf93724cd5df608af2914751d` |
+| REMOTE_HEAD_AT_EVIDENCE_TIME | `8106e6832ca6f7014ff1c6167e0bc1ff3b21de68` |
+| docs/report HEAD | PENDING_SELF_REFERENCE |
+| real_task_commit | `8106e6832ca6f7014ff1c6167e0bc1ff3b21de68` |
+| previous_report_container | `b8d0313803d618cf08cc92264f5789af57f7f1c5` |
+| current_report_container | PENDING_SELF_REFERENCE |
+| final_remote_head_after_report_push | EXTERNAL_ONLY |
+
+Il commit operativo documentale `8106e6832ca6f7014ff1c6167e0bc1ff3b21de68` è pubblicato e verificato. Questo container separato mantiene identiche le tre copie del report; il suo ref finale è verificato esternamente, senza commit autoreferenziale. Nessuna verifica finale del container trasforma il gate browser fallito in PASS o innesca FINITO.
+
+Evidence: inbox `docs/orchestrator/inbox/2026-11-22-1717-build320-live-https-gate.md`; [dossier Build320](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8106e6832ca6f7014ff1c6167e0bc1ff3b21de68/docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/REPORT.md), [evidenze strutturate](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8106e6832ca6f7014ff1c6167e0bc1ff3b21de68/docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/evidence.json), [review pubblicata](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8106e6832ca6f7014ff1c6167e0bc1ff3b21de68/docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/REVIEW.md), [stato del gate](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8106e6832ca6f7014ff1c6167e0bc1ff3b21de68/docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/GATE.md), [QA candidata](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8106e6832ca6f7014ff1c6167e0bc1ff3b21de68/docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/QA-CANDIDATE.md), [FRONTIER al task commit](https://github.com/mrhz1973/cursor-coordinate-converter/blob/8106e6832ca6f7014ff1c6167e0bc1ff3b21de68/docs/FRONTIER.md).
+
+## B. RIEPILOGO COMPLETO
+
+### Build320 — pan da cache LIVE; gate browser HTTPS bloccato
+
+**Stato verificato il 22 novembre 2026.** `MAP-PAN-TILE-OVERSCAN-A`, DELICATO, `CLOSURE: STANDARD_RUNTIME_BUNDLE`.
+
+La Build320 è pubblicata e distribuita. **Deploy tecnico PASS**, candidato qualificato e **REVIEW GPT-SOSTITUTIVA PASS**. La **QA automatica browser LIVE è bloccata durante l’ammissione del documento HTTPS**, prima di eseguire il GIS o gli scenari prodotto. **QA operatore PENDING; FINITO non innescato.** Build319 resta l’ultimo blocco chiuso.
+
+[Apri Build320 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=b3fcec11) · [Commit sorgente](https://github.com/mrhz1973/cursor-coordinate-converter/commit/ca3a38d1c7703c5bf93724cd5df608af2914751d) · [Evidenze strutturate](evidence.json) · [Review del gate finale](GATE.md).
+
+#### Identità e concordanza delle fonti
+
+| Oggetto | Evidenza |
+|---|---|
+| Source commit pubblicato | `ca3a38d1c7703c5bf93724cd5df608af2914751d` |
+| Runtime Git blob | `7e6af6b480fb634928ee9a5fc6b73d1be5440cdd` |
+| SHA256 runtime | `b3fcec1135b77bd0dec21351fb87b894c5f5828bce455995b8fa03aaf744f689` |
+| Dimensione | 11.334.841 byte; CR192, CRLF0 |
+| Base Git implementativa | `b8d0313803d618cf08cc92264f5789af57f7f1c5` |
+| Base runtime Build319 | SHA256 `5bd0375bdc851de12763b648eefb736db2c6a8e076ba8cbb4cbc3052d4600d18`, 11.299.241 byte |
+| Pubblicazione | Push normale, remoto/tracking/commit concordanti, checkout posseduto pulito; solo runtime nel commit codice |
+| Raw GitHub al FULL_SHA | Download diretto verificato il 22/11 alle 15:42:05 UTC; identità byte/SHA coincidente |
+| VPS | Commit/blob/file concordanti; servizio `goi-gis-app` active e worktree pulito dopo deploy |
+| Readback HTTP e HTTPS dal VPS | 200, corpo completo e SHA identico, alle 15:53:00 UTC |
+| Readback HTTPS binario dal client Windows | 200, Content-Length 11.334.841, stream completo e SHA identico, alle 16:01:58 UTC |
+
+Il GET binario dal client è una prova di distribuzione del file. **Non sostituisce una QA del prodotto eseguita nel browser LIVE.** I valori completi delle ricevute, gli orari e i pin degli artefatti sono in [evidence.json](evidence.json).
+
+#### Problema affrontato e modifica
+
+La baseline Build319 riproduceva bordi vuoti durante il trascinamento anche su un’area con tile già presenti nella cache. Il candidato prepara le tile adiacenti mediante il getter esistente, ne attende la decodifica e mantiene una scena geografica coerente durante il gesto. Al rilascio trasferisce i nodi già pronti alla scena canonica, senza una seconda lettura o una nuova assegnazione della sorgente immagine per le tile trasferite.
+
+La gestione comprende un nuovo gesto durante un commit pendente, annullamento, cambio strumento e transizione pinch→pan. Un gesto accettato produce un solo aggiornamento canonico; letture tardive non devono produrre commit dopo annullamento o cessione dello strumento. Budget e timeout hanno feedback esplicito e cleanup. I limiti sono 4 job, 256 record, 512 slot/URL, 32 MiB Blob e 128 MiB stimati per immagini decodificate. Il bypass verso il pan ordinario resta fuori dalla qualificazione di continuità da cache.
+
+Il runtime rimane un singolo HTML standalone con JS vanilla. Non sono introdotti endpoint, richieste esterne, campi persistiti o migrazioni dello schema. Il getter IDB e i percorsi di archivio/sanitizer/import/export rimangono invariati. `state.mapWaypoints[]`, OPSEC strict, offline e opt-in restano vincolanti; nessun GPS silenzioso. Gli archivi dell’operatore non sono stati caricati o modificati dai test.
+
+#### Qualificazione candidata e review pubblicata
+
+La qualificazione usa evidenze sullo stesso SHA, con ricevute originali e chiusure supplementari separate. **Non viene ricostruito un punteggio unico sommando prove ripetute.**
+
+| Ambito | Risultato originale conservato | Esito della qualificazione |
+|---|---:|---|
+| CORE desktop1440/phone390 | 68/70 FAIL | Due problemi di associazione PNG/contesto chiusi con verbale supplementare e controllo negativo |
+| Desktop esteso1440 | 93/97 FAIL | Quattro rilievi di misura chiusi con prove specifiche; nessuna riscrittura della ricevuta |
+| Preflight1024 esteso | STOP | Densità preventiva qualificata con soglie, maschere e tolleranza invariate |
+| Remaining R3 desktop1024 | 32/35 FAIL | Due endpoint successivamente verificati con quattro bordi osservabili |
+| Remaining R3 tablet768 | 40/40 PASS | Consumato, non ripetuto |
+| Remaining R3 phone390 | 18/32 FAIL | Precondizioni pending e protocollo touch corretti e poi esercitati positivamente |
+| Remaining R3 phone320 | 35/35 PASS | Consumato, non ripetuto |
+| Supplemento mirato | **49/49 PASS** | Desktop17/17; phone32/32. Entrambi i browser posseduti chiusi |
+
+I due endpoint desktop hanno rispettivamente 36 e 44 campioni sul bordo inferiore, con zero mismatch nei quattro still release/settle. Tutte e tre le condizioni pending sono state osservate prima della seconda azione: salvataggi 1/0/0 e nessun commit tardivo. Il passaggio touch termina realmente ID2 prima dei cinque move del soloID1; zoom 5 e centro finale coincidono con l’expected indipendente. Il pinch comprende 29 frame qualificati, 11 oltre l’area iniziale; i frame non associati restano esclusi.
+
+Dettagli, controllo negativo e limiti delle misure: [QA-CANDIDATE.md](QA-CANDIDATE.md). GO aggregato: SHA256 `4714e0403ad4a0d87c3b2d4d0ed34bd9e1a0318d01782bebac11c26c4f2c220f`.
+
+La [REVIEW GPT-SOSTITUTIVA](REVIEW.md) è eseguita sul diff completo del commit pubblicato e sul sorgente equivalente al raw@FULL_SHA:20 hunk, 810 aggiunte, 61 rimozioni. Rete/tile/offline e differimento della persistenza camera sono applicabili e verificati. Roundtrip archivi e lifecycle modale sono N/A motivati per assenza di delta nei rispettivi percorsi; nessun test non eseguito viene dichiarato PASS. **Review AI esterna post-hoc PENDING quando disponibile.** Il verbale non viene attribuito a un’altra AI.
+
+#### Deploy eseguito
+
+Il deploy è limitato al repository/runtime GIS e al servizio `goi-gis-app`. Prima del cambio sono stati verificati il vecchio HEAD/runtime e la pulizia del checkout, quindi il commit e il blob attesi in FETCH_HEAD, prima del fast-forward. Backup del runtime319 creato e riletto in:
+
+`/var/backups/goi-gis-runtime/prebuild320-96vrjw00`
+
+Dopo il fast-forward al FULL_SHA e il riavvio del solo servizio GIS, il controllo ha attestato `DEPLOY_TECHNICAL_PASS`: file/blob/SHA, worktree pulito, servizio active e readback HTTP/HTTPS200 con corpo completo. Il readback HTTP è riuscito al secondo tentativo previsto dal controllo; la ricevuta non conserva la causa del primo tentativo. HTTPS è riuscito al primo tentativo. Nessun intervento P0 o modifica di altri servizi.
+
+#### Gate LIVE: arresto prima dell’applicazione
+
+Il primo avvio del driver si è fermato **prima del browser** perché il percorso della copia raw GitHub non rientrava nei percorsi di riferimento ammessi. È stata modificata soltanto la configurazione `runtimePath`, scegliendo la copia già qualificata e consentita. Entrambe le copie sono state rilette e hanno la stessa identità. Il vincolo sui percorsi non è stato ampliato.
+
+Il successivo avvio del browser LIVE si è fermato con `LIVE_RESPONSE_STATUS`: una richiesta main, zero documenti validati, nessuna fixture o azione prodotto. Un diagnostico separato ha conservato le stesse condizioni di ammissione, TLS e singolo CONNECT, aggiungendo osservazioni limitate prima dell’assert. Ha registrato:
+
+- richiesta GET Document esattamente canonica, frame e networkId posseduti coincidenti;
+- `responseStatusCode: null`, `responseErrorReason: "Failed"`, nessun Content-Type o Location osservato;
+- `net::ERR_ABORTED` soltanto **dopo fatal STOP e durante la chiusura**;
+- chiusura del browser posseduto osservata; nessuno scenario prodotto LIVE eseguito.
+
+**Causa NON ATTRIBUITA.** Questi dati non dimostrano un HTTP403, un difetto del runtime o un problema di certificato. L’errore durante shutdown non viene usato come spiegazione originaria. Il GETHTTPS binario completo dal medesimo client conferma separatamente la distribuzione della Build320; il precedente output del cmdlet Web, incompleto e non qualificato, non prova una versione vecchia.
+
+Non sono stati disabilitati controlli dei certificati, sandbox o vincoli di rete; nessun replay viene presentato come prova LIVE. La suite prevista di 70 controlli **non ha superato l’ammissione del documento e non è PASS**. Si applica lo STOP al gate fallito, conservando il deploy già attestato.
+
+#### Stato operativo e NEXT
+
+`BUILD320_LIVE / DEPLOY_TECHNICAL_PASS / QA_CANDIDATO_QUALIFICATA / AUTOMATED_BROWSER_QA_BLOCKED_HTTPS_ADMISSION / QA_OPERATORE_PENDING`.
+
+NEXT: risolvere e qualificare l’accesso HTTPS del browser QA nel confine autorizzato, quindi completare la QA prodotto LIVE. Soltanto dopo ABQA PASS segue il collaudo operatore di `MAP-PAN-TILE-OVERSCAN-A`. **Non è attualmente richiesta una riga PASS manuale per superare il blocco. FINITO non è stato innescato.**
+
+Build319 resta ultimo blocco chiuso. P0 rimane aperto, autorizzato e non applicato; DTM 5–10m HOLD; P4 FUTURO. Le prove sono su profili posseduti e viewport emulati, senza attestare dispositivi fisici o tutti i browser. La documentazione distingue stato corrente, evidenza verificata, risultati storici e causa ancora ignota.
+
+## C. OUTPUT GIT — pre-container
+
+Otto output reali acquisiti dopo il push del task documentale. HEAD, tracking e ref remoto concordano; status effettivamente vuoto.
+
+### `git log --oneline -5`
+
+```text
+8106e68 docs: reconcile Build320 live and blocked HTTPS browser QA
+ca3a38d Build320: keep cached map tiles visible while panning
+b8d0313 docs(autosync): record Build319 operator PASS and closure
+17fae34 docs(gis): close Build319 after operator QA PASS
+b9678d6 docs(autosync): record Build319 live tooltip release and QA gate
+```
+
+### `git rev-parse HEAD`
+
+```text
+8106e6832ca6f7014ff1c6167e0bc1ff3b21de68
+```
+
+### `git rev-parse origin/main`
+
+```text
+8106e6832ca6f7014ff1c6167e0bc1ff3b21de68
+```
+
+### `git branch --show-current`
+
+```text
+main
+```
+
+### `git ls-remote origin refs/heads/main`
+
+```text
+8106e6832ca6f7014ff1c6167e0bc1ff3b21de68	refs/heads/main
+```
+
+### `git status --porcelain=v1`
+
+```text
+
+```
+
+### `git show --stat --oneline HEAD`
+
+```text
+8106e68 docs: reconcile Build320 live and blocked HTTPS browser QA
+ docs/FRONTIER.md                                   |   30 +-
+ .../2026-11-22-pan-tile-overscan-320/GATE.md       |   38 +
+ .../QA-CANDIDATE.md                                |   85 +
+ .../2026-11-22-pan-tile-overscan-320/REPORT.md     |   85 +
+ .../2026-11-22-pan-tile-overscan-320/REVIEW.md     |   78 +
+ .../2026-11-22-pan-tile-overscan-320/evidence.json | 2182 ++++++++++++++++++++
+ docs/work-units/WU-0005-0009-roadmap.md            |    9 +-
+ 7 files changed, 2495 insertions(+), 12 deletions(-)
+```
+
+### `git show --name-only --oneline HEAD`
+
+```text
+8106e68 docs: reconcile Build320 live and blocked HTTPS browser QA
+docs/FRONTIER.md
+docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/GATE.md
+docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/QA-CANDIDATE.md
+docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/REPORT.md
+docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/REVIEW.md
+docs/orchestrator/evidence/2026-11-22-pan-tile-overscan-320/evidence.json
+docs/work-units/WU-0005-0009-roadmap.md
+```
+
+## HISTORY
+
+Il container precedente b8d0313803d618cf08cc92264f5789af57f7f1c5 chiudeva Build319 dopo il PASS operatore. La prosecuzione del backlog ha prodotto il source Build320 ca3a38d1c7703c5bf93724cd5df608af2914751d e il successivo task documentale8106e6832ca6f7014ff1c6167e0bc1ff3b21de68. Build319 resta ultimo blocco chiuso; i risultati storici del candidato320 non sono riscritti come PASS originali.
+
+## LIMITI DEL REPORT
+
+L’ammissione del browser automatico ha responseStatusCode null e responseErrorReason Failed. La causa non è attribuita; ERR_ABORTED è osservato soltanto dopo fatal stop/durante shutdown. Nessuna conclusione HTTP403, TLS o difetto runtime viene ricavata da quei dati. Il readback binario200 del client è una verifica distinta, non una QA browser. Nessuna attestazione universale o su dispositivi fisici; nessun PASS operatore320. Nessuna variazione di boundary A, certificati o sandbox.
+
+P0 aperto/autorizzato/non applicato, DTM5–10m HOLD, P4 FUTURO. Il ref finale di questo container viene verificato esternamente dopo il push; FINITO rimane non innescato. Non è aggiunto un commit per incorporare il proprio SHA.
