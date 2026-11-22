@@ -3237,6 +3237,44 @@ dialog.polygon-vertex-coord-dialog .poly-vertex-coord-actions{
   max-width:60%; pointer-events:none;
 }
 .tile-map .tile-bottom-left > *{pointer-events:auto}
+
+/* MAP-TARGET-SCALE-A: inline nominal-scale selector; no modal, no layout change to the scale bar. */
+.tile-map .gis-target-scale-open{
+  flex:0 0 auto; min-width:32px; min-height:27px; padding:3px 5px;
+  border:1px solid rgba(255,255,255,.7); border-radius:5px;
+  background:rgba(12,25,39,.9); color:#fff; font-weight:600; font-size:11px; line-height:1.2; font-family:inherit;
+  cursor:pointer; white-space:nowrap;
+}
+.tile-map .gis-target-scale-open:hover,
+.tile-map .gis-target-scale-open:focus-visible{ outline:2px solid #74d9ff; outline-offset:1px; }
+.tile-map .gis-target-scale-panel{
+  position:absolute; left:0; bottom:calc(100% + 8px);
+  width:min(302px, calc(100vw - 60px)); max-width:calc(100vw - 60px);
+  padding:10px; box-sizing:border-box; z-index:12;
+  display:flex; flex-direction:column; gap:8px;
+  border:1px solid rgba(182,205,232,.75); border-radius:8px;
+  color:#f8fafc; background:#142436;
+  box-shadow:0 5px 20px rgba(0,0,0,.55); pointer-events:auto;
+}
+.tile-map .tile-bottom-left.gis-target-scale-active{ z-index:300; }
+.tile-map .gis-target-scale-panel[hidden]{ display:none!important; }
+.tile-map .gis-target-scale-panel label{ font-size:13px; font-weight:700; }
+.tile-map .gis-target-scale-controls{ display:flex; gap:6px; align-items:center; }
+.tile-map .gis-target-scale-controls input{
+  width:92px; min-width:0; flex:1 1 92px; padding:7px;
+  font:inherit; font-size:14px; color:#0c1727; background:#fff;
+  border:1px solid #a5b4c7; border-radius:4px;
+}
+.tile-map .gis-target-scale-controls button{
+  flex:0 0 auto; padding:6px 8px; min-height:32px; color:#fff;
+  background:#254d70; border:1px solid #8daac7; border-radius:4px;
+  cursor:pointer; font-weight:600; font-size:12px; line-height:1.2; font-family:inherit;
+}
+.tile-map .gis-target-scale-controls button:focus-visible,
+.tile-map .gis-target-scale-controls input:focus-visible{ outline:2px solid #74d9ff; outline-offset:2px; }
+.tile-map .gis-target-scale-note{ margin:0; font-size:11px; line-height:1.3; opacity:.85; }
+.tile-map .gis-target-scale-feedback{ margin:0; min-height:1em; font-size:12px; line-height:1.35; font-weight:600; }
+
 .tile-map .tile-bl-row{
   display:flex; align-items:flex-end; gap:6px; flex-wrap:wrap;
   max-width:100%; pointer-events:none;
@@ -18899,6 +18937,14 @@ const I18N = {
     "map.hudExpand":"Mostra scala e coordinate",
     "map.scaleCollapse":"Minimizza scala",
     "map.scaleExpand":"Mostra scala",
+    "map.targetScaleOpen":"Imposta scala nominale",
+    "map.targetScaleLabel":"Scala nominale 1:",
+    "map.targetScaleApply":"Applica",
+    "map.targetScaleClose":"Chiudi",
+    "map.targetScaleHint":"Scala nominale: 0,28 mm/pixel convenzionali, zoom interi; non è una scala fisica calibrata.",
+    "map.targetScaleInvalid":"Inserisci un denominatore valido tra 100 e 100.000.000 (es. 25.000).",
+    "map.targetScaleResult":"Richiesta 1:{0}; ottenuta circa 1:{1} (zoom {2}, scarto {3}%).",
+    "map.targetScaleBound":"Limite del livello zoom per questo layer.",
     "map.readoutCollapse":"Minimizza coordinate",
     "map.readoutExpand":"Mostra coordinate",
     "map.tileLoadFail":"Impossibile caricare i tile online — visualizzazione offline attiva",
@@ -21469,6 +21515,14 @@ const I18N = {
     "map.hudExpand":"Show scale and coordinates",
     "map.scaleCollapse":"Minimize scale",
     "map.scaleExpand":"Show scale",
+    "map.targetScaleOpen":"Set nominal map scale",
+    "map.targetScaleLabel":"Nominal scale 1:",
+    "map.targetScaleApply":"Apply",
+    "map.targetScaleClose":"Close",
+    "map.targetScaleHint":"Nominal scale: conventional 0.28 mm/pixel and integer zoom levels, not a calibrated physical screen scale.",
+    "map.targetScaleInvalid":"Enter a valid denominator from 100 to 100,000,000 (e.g. 25000).",
+    "map.targetScaleResult":"Requested 1:{0}; nearest about 1:{1} (zoom {2}, deviation {3}%).",
+    "map.targetScaleBound":"Clamped by this layer's zoom range.",
     "map.readoutCollapse":"Minimize coordinates",
     "map.readoutExpand":"Show coordinates",
     "map.tileLoadFail":"Online tiles unreachable — offline view active",
@@ -23698,6 +23752,14 @@ const I18N = {
     "map.hudExpand":"Afficher échelle et coordonnées",
     "map.scaleCollapse":"Réduire l’échelle",
     "map.scaleExpand":"Afficher l’échelle",
+    "map.targetScaleOpen":"Régler l’échelle nominale",
+    "map.targetScaleLabel":"Échelle nominale 1 :",
+    "map.targetScaleApply":"Appliquer",
+    "map.targetScaleClose":"Fermer",
+    "map.targetScaleHint":"Échelle nominale : 0,28 mm/pixel conventionnels et niveaux de zoom entiers, sans calibrage physique de l’écran.",
+    "map.targetScaleInvalid":"Saisir un dénominateur de 100 à 100 000 000 (ex. 25000).",
+    "map.targetScaleResult":"Demandé 1:{0} ; obtenu environ 1:{1} (zoom {2}, écart {3} %).",
+    "map.targetScaleBound":"Limite du zoom disponible pour cette couche.",
     "map.readoutCollapse":"Réduire les coordonnées",
     "map.readoutExpand":"Afficher les coordonnées",
     "map.tileLoadFail":"Tuiles en ligne inaccessibles — vue hors ligne active",
@@ -26659,10 +26721,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-PAN-TILE-OVERSCAN-A";
-const APP_BUILD_DETAIL = "Pan GIS: preparazione locale delle tile in cache e continuità del frame cartografico.";
+const APP_BUILD_ID = "MAP-TARGET-SCALE-A";
+const APP_BUILD_DETAIL = "Scala nominale 1:N: scelta dello zoom più vicino e riscontro della scala effettiva.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 320;
+const APP_BUILD_NUM = 321;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -56553,6 +56615,101 @@ function buildScaleBar(zoom, lat, size, mapW){
  * resolution) so repeated conversions near the same spot don't re-hit the
  * API. Cleared on page reload, which is fine — elevations are stable.
  */
+
+/* MAP-TARGET-SCALE-A: match the existing 0.28 mm nominal-pixel convention.
+ * Fractional zoom is a separate backlog item. No physical-display DPI is inferred.
+ */
+function gisTargetScaleChoose(raw, lat, maxZoom){
+  let s = String(raw == null ? "" : raw).trim().replace(/^1\s*[:/]\s*/, "").trim();
+  if (s.length > 24) return null;
+  if (/^\d{1,3}(?:[.,\u00a0\u202f ]\d{3})+$/.test(s)) s = s.replace(/[.,\s\u00a0\u202f]/g, "");
+  if (!/^\d+$/.test(s)) return null;
+  const requested = Number(s);
+  if (!Number.isSafeInteger(requested) || requested < 100 || requested > 100000000 ||
+      !Number.isFinite(lat)) return null;
+  const max = (Number.isFinite(maxZoom) && maxZoom >= 2) ? Math.floor(maxZoom) : 19;
+  const centerLat = Math.max(-85.05, Math.min(85.05, lat));
+  const atZeroZoom = 156543.03392 * Math.cos(centerLat * DEG) / 0.00028;
+  const idealZoom = Math.log2(atZeroZoom / requested);
+  if (!Number.isFinite(idealZoom)) return null;
+  const zoom = Math.max(2, Math.min(max, Math.round(idealZoom)));
+  const actual = atZeroZoom / Math.pow(2, zoom);
+  return { requested, zoom, actual, clamped:idealZoom < 2 || idealZoom > max,
+    deviationPercent:Math.abs(actual / requested - 1) * 100 };
+}
+function gisTargetScaleBind(root, markerLat, markerLon){
+  const openBtn = root.querySelector('[data-role="gis-target-scale-open"]');
+  const panel = root.querySelector('[data-role="gis-target-scale-panel"]');
+  if (!openBtn || !panel) return;
+  const form = panel.querySelector('[data-role="gis-target-scale-form"]');
+  const input = panel.querySelector('[data-role="gis-target-scale-input"]');
+  const feedback = panel.querySelector('[data-role="gis-target-scale-feedback"]');
+  const closeBtn = panel.querySelector('[data-role="gis-target-scale-close"]');
+  if (!form || !input || !feedback || !closeBtn) return;
+  // The scale controls are map chrome, never input for the underlying pan gesture.
+  for (const el of [openBtn, panel]){
+    for (const eventName of ["pointerdown", "mousedown", "touchstart", "wheel"])
+      el.addEventListener(eventName, ev => ev.stopPropagation(), { passive:true });
+  }
+  const show = () => {
+    panel.hidden = false;
+    openBtn.closest(".tile-bottom-left")?.classList.add("gis-target-scale-active");
+    openBtn.setAttribute("aria-expanded", "true");
+    const center = state.viewCenter || { lat:markerLat };
+    const ratio = computeMapScaleModel(state.mapZoom || 11, center.lat, state.mapSize || "full", 320).mpp / 0.00028;
+    input.value = String(Math.max(100, Math.round(ratio)));
+    feedback.textContent = "";
+    input.focus();
+  };
+  const hide = () => {
+    panel.hidden = true;
+    openBtn.closest(".tile-bottom-left")?.classList.remove("gis-target-scale-active");
+    openBtn.setAttribute("aria-expanded", "false");
+    openBtn.focus();
+  };
+  openBtn.addEventListener("click", ev => {
+    ev.preventDefault(); ev.stopPropagation();
+    if (panel.hidden) show(); else hide();
+  });
+  closeBtn.addEventListener("click", ev => { ev.preventDefault(); ev.stopPropagation(); hide(); });
+  panel.addEventListener("keydown", ev => {
+    if (ev.key === "Escape"){ ev.preventDefault(); ev.stopPropagation(); hide(); }
+  });
+  form.addEventListener("submit", ev => {
+    ev.preventDefault(); ev.stopPropagation();
+    const center = state.viewCenter && Number.isFinite(state.viewCenter.lat) &&
+      Number.isFinite(state.viewCenter.lon) ? state.viewCenter : {lat:markerLat,lon:markerLon};
+    const layer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
+    const result = gisTargetScaleChoose(input.value, center.lat, layer.maxZoom);
+    if (!result){
+      feedback.textContent = t("map.targetScaleInvalid");
+      input.focus();
+      return;
+    }
+    const locale = state.lang === "fr" ? "fr-FR" : state.lang === "en" ? "en-US" : "it-IT";
+    const num = value => Math.round(value).toLocaleString(locale);
+    const pct = Number(result.deviationPercent.toFixed(1)).toLocaleString(locale);
+    let message = t("map.targetScaleResult")
+      .replace("{0}", num(result.requested)).replace("{1}", num(result.actual))
+      .replace("{2}", String(result.zoom)).replace("{3}", pct);
+    if (result.clamped) message += " " + t("map.targetScaleBound");
+    state.mapZoom = result.zoom;
+    saveStore();
+    renderTileMap(markerLat, markerLon, result.zoom);
+    // renderTileMap rebuilds the children; show the measured result on the new panel.
+    const next = root.querySelector('[data-role="gis-target-scale-panel"]');
+    const trigger = root.querySelector('[data-role="gis-target-scale-open"]');
+    if (!next || !trigger) return;
+    next.hidden = false;
+    trigger.closest(".tile-bottom-left")?.classList.add("gis-target-scale-active");
+    trigger.setAttribute("aria-expanded", "true");
+    const nextInput = next.querySelector('[data-role="gis-target-scale-input"]');
+    if (nextInput) nextInput.value = String(result.requested);
+    const nextFeedback = next.querySelector('[data-role="gis-target-scale-feedback"]');
+    if (nextFeedback){ nextFeedback.textContent = message; nextFeedback.focus(); }
+  });
+}
+
 const elevCache = new Map();
 
 // Imagery (Esri World Imagery) acquisition date cache.
@@ -73615,7 +73772,19 @@ function renderTileMap(lat, lon, zoom){
     const label = esc(t(collapsed ? "map.scaleExpand" : "map.scaleCollapse"));
     html += `<div class="tile-bottom-left"><div class="tile-bl-row">`;
     html += buildScaleBar(zoom, vLat, size, W);
+    html += `<button type="button" class="gis-target-scale-open" data-role="gis-target-scale-open" title="${esc(t("map.targetScaleOpen"))}" aria-label="${esc(t("map.targetScaleOpen"))}" aria-controls="gis-target-scale-panel" aria-expanded="false">1:N</button>`;
     html += `<button type="button" class="gis-mobile-hud-toggle" data-role="mobile-scale-toggle" aria-label="${label}" title="${label}" aria-controls="gis-mobile-scale-content" aria-expanded="${collapsed ? "false" : "true"}">${collapsed ? "▴" : "▾"}</button>`;
+    html += `</div>`;
+    html += `<div id="gis-target-scale-panel" class="gis-target-scale-panel" data-role="gis-target-scale-panel" hidden>`;
+    html += `<form data-role="gis-target-scale-form">`;
+    html += `<label for="gis-target-scale-input">${esc(t("map.targetScaleLabel"))}</label>`;
+    html += `<div class="gis-target-scale-controls">`;
+    html += `<input id="gis-target-scale-input" data-role="gis-target-scale-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="24" aria-describedby="gis-target-scale-hint" value="25000">`;
+    html += `<button type="submit">${esc(t("map.targetScaleApply"))}</button>`;
+    html += `<button type="button" data-role="gis-target-scale-close" aria-label="${esc(t("map.targetScaleClose"))}" title="${esc(t("map.targetScaleClose"))}">×</button>`;
+    html += `</div></form>`;
+    html += `<p class="gis-target-scale-note" id="gis-target-scale-hint">${esc(t("map.targetScaleHint"))}</p>`;
+    html += `<p class="gis-target-scale-feedback" data-role="gis-target-scale-feedback" tabindex="-1" role="status" aria-live="polite"></p>`;
     html += `</div></div>`;
   }
 
@@ -73670,6 +73839,7 @@ function renderTileMap(lat, lon, zoom){
     }
   } catch(_){}
   root.innerHTML = html;
+  gisTargetScaleBind(root, lat, lon);
   // Reuse the actual layer attribution, including any links, in the right-hand footer.
   try {
     const srcAttrib = root.querySelector(".tile-attrib");
