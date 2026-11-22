@@ -4968,6 +4968,39 @@ body.mm-enlarged .sig-badge{display:none}
   background:var(--gradient);
 }
 
+/* MAP-RIGHT-TOOLBAR-TOOLTIPS-A: the portal escapes the scrollable map toolbar. */
+html[data-gis-map-toolbar-tooltip-portal="1"] body.gis-mode #gisMapMount .tile-map .tile-ctrls button[data-tip]:not(.tlayer-menu *, [data-role="basemap-menu"] *):hover::after,
+html[data-gis-map-toolbar-tooltip-portal="1"] body.gis-mode #gisMapMount .tile-map .tile-ctrls button[data-tip]:not(.tlayer-menu *, [data-role="basemap-menu"] *):hover::before,
+html[data-gis-map-toolbar-tooltip-portal="1"] body.gis-mode #gisMapMount .tile-map .tile-ctrls button[data-tip]:not(.tlayer-menu *, [data-role="basemap-menu"] *):focus-visible::after,
+html[data-gis-map-toolbar-tooltip-portal="1"] body.gis-mode #gisMapMount .tile-map .tile-ctrls button[data-tip]:not(.tlayer-menu *, [data-role="basemap-menu"] *):focus-visible::before{
+  display:none!important;
+}
+.gis-map-toolbar-tip-portal{
+  position:fixed;
+  left:0;
+  top:0;
+  z-index:30000;
+  box-sizing:border-box;
+  width:max-content;
+  max-width:min(300px, calc(100vw - 16px));
+  padding:7px 10px;
+  border-radius:8px;
+  border:1px solid var(--border-strong);
+  background:var(--tooltip-bg);
+  color:var(--tooltip-fg);
+  box-shadow:0 10px 26px rgba(0,0,0,.35);
+  font-size:.8rem;
+  font-weight:500;
+  line-height:1.38;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  text-align:left;
+  pointer-events:none;
+  visibility:hidden;
+}
+.gis-map-toolbar-tip-portal.is-visible{visibility:visible;}
+.gis-map-toolbar-tip-portal[hidden]{display:none!important;}
+
 /* ================= TOOLTIPS ================= */
 [data-tip]{
   position:relative;
@@ -26606,10 +26639,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-RESPONSIVE-TOUCH-ACCESSIBILITY-A";
-const APP_BUILD_DETAIL = "Interfaccia touch: menu Esporta visibile e tab GIS con nomi accessibili.";
+const APP_BUILD_ID = "MAP-RIGHT-TOOLBAR-TOOLTIPS-A";
+const APP_BUILD_DETAIL = "Tooltip della toolbar mappa immediati e leggibili con mouse e tastiera.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 318;
+const APP_BUILD_NUM = 319;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -79051,6 +79084,216 @@ function applyLanguage(lang){
   saveStore();
 }
 
+/** MAP-RIGHT-TOOLBAR-TOOLTIPS-A: presentation only; canonical button actions and labels stay unchanged. */
+function ensureGisMapToolbarTooltipPortal(){
+  if (document._gisMapToolbarTooltipPortalInstalled) return;
+  const selector = "body.gis-mode #gisMapMount .tile-map .tile-ctrls button[data-tip]";
+  const excluded = '.tlayer-menu, [data-role="basemap-menu"]';
+  const portalId = "gisMapToolbarTooltipPortal";
+  let active = null;
+  let hovered = null;
+  let focused = null;
+  let observer = null;
+  let descriptionAdded = false;
+  let pointerFocusSuppressed = false;
+
+  function targetFrom(node){
+    const btn = node && node.closest ? node.closest(selector) : null;
+    return btn && !btn.closest(excluded) ? btn : null;
+  }
+  function anchorReady(btn){
+    if (!btn || !btn.isConnected || targetFrom(btn) !== btn) return false;
+    if (btn.getAttribute("data-role") === "basemap-menu-toggle" && btn.getAttribute("aria-expanded") === "true") return false;
+    const r = btn.getBoundingClientRect();
+    const cs = window.getComputedStyle(btn);
+    return r.width > 0 && r.height > 0 && cs.display !== "none" && cs.visibility !== "hidden";
+  }
+  function keyboardFocused(btn){
+    return !!(btn && !btn.disabled && document.activeElement === btn && btn.matches(":focus-visible"));
+  }
+  function portal(){
+    let el = document.getElementById(portalId);
+    if (!el){
+      el = document.createElement("div");
+      el.id = portalId;
+      el.className = "gis-map-toolbar-tip-portal";
+      el.setAttribute("role", "tooltip");
+      el.setAttribute("aria-hidden", "true");
+      el.hidden = true;
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function hide(){
+    if (observer){ observer.disconnect(); observer = null; }
+    if (active && descriptionAdded){
+      const ids = String(active.getAttribute("aria-describedby") || "").split(/\s+/).filter(id => id && id !== portalId);
+      if (ids.length) active.setAttribute("aria-describedby", ids.join(" "));
+      else active.removeAttribute("aria-describedby");
+    }
+    active = null;
+    descriptionAdded = false;
+    const el = document.getElementById(portalId);
+    if (el){
+      el.classList.remove("is-visible");
+      el.setAttribute("aria-hidden", "true");
+      el.hidden = true;
+    }
+  }
+  function dismiss(){
+    hovered = null;
+    focused = null;
+    hide();
+  }
+  function textFor(btn){
+    if (btn.getAttribute("data-role") === "track-map-toggle"){
+      const translated = typeof t === "function" ? String(t("tabs.track") || "").trim() : "";
+      if (translated && translated !== "tabs.track") return translated;
+      const caption = btn.querySelector(".gis-ctrl-caption");
+      const shortText = caption ? String(caption.textContent || "").trim() : "";
+      if (shortText) return shortText;
+    }
+    return String(btn.getAttribute("data-tip") || "");
+  }
+  function visibleAnchorRect(btn){
+    const r = btn.getBoundingClientRect();
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    let left = Math.max(0, r.left);
+    let right = Math.min(vw, r.right);
+    let top = Math.max(0, r.top);
+    let bottom = Math.min(vh, r.bottom);
+    const clips = /^(auto|scroll|hidden|clip|overlay)$/;
+    for (let parent = btn.parentElement; parent; parent = parent.parentElement){
+      const cs = window.getComputedStyle(parent);
+      if (cs.display !== "contents"){
+        const clipX = clips.test(cs.overflowX);
+        const clipY = clips.test(cs.overflowY);
+        if (clipX || clipY){
+          const pr = parent.getBoundingClientRect();
+          const sx = parent.offsetWidth ? pr.width / parent.offsetWidth : 1;
+          const sy = parent.offsetHeight ? pr.height / parent.offsetHeight : 1;
+          const x = pr.left + parent.clientLeft * sx;
+          const y = pr.top + parent.clientTop * sy;
+          if (clipX){ left = Math.max(left, x); right = Math.min(right, x + parent.clientWidth * sx); }
+          if (clipY){ top = Math.max(top, y); bottom = Math.min(bottom, y + parent.clientHeight * sy); }
+        }
+      }
+      if (right <= left || bottom <= top) return null;
+      // The desktop toolbar is viewport-fixed; map overflow above it does not clip its buttons.
+      if (cs.position === "fixed") break;
+    }
+    return right > left && bottom > top ? { left, right, top, bottom, width: right - left, height: bottom - top } : null;
+  }
+  function positionFor(btn, el){
+    const r = visibleAnchorRect(btn);
+    if (!r) return false;
+    const pad = 8;
+    const gap = 8;
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    if (r.right <= 0 || r.bottom <= 0 || r.left >= vw || r.top >= vh) return false;
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    let left = r.left - w - gap;
+    if (left < pad && r.right + gap + w <= vw - pad) left = r.right + gap;
+    left = Math.max(pad, Math.min(vw - w - pad, left));
+    const top = Math.max(pad, Math.min(vh - h - pad, r.top + (r.height - h) / 2));
+    el.style.transform = `translate3d(${Math.round(left)}px, ${Math.round(top)}px, 0)`;
+    return true;
+  }
+  function refresh(){
+    if (!anchorReady(active)){ dismiss(); return; }
+    if (focused && !keyboardFocused(focused)) focused = null;
+    if (active !== hovered && active !== focused){ hide(); return; }
+    const txt = textFor(active);
+    if (!txt.trim()){ dismiss(); return; }
+    const el = portal();
+    el.textContent = txt;
+    el.hidden = false;
+    if (!positionFor(active, el)){ hide(); return; }
+    el.setAttribute("aria-hidden", "false");
+    el.classList.add("is-visible");
+  }
+  function observeAnchor(){
+    if (typeof MutationObserver !== "function" || !active) return;
+    observer = new MutationObserver(refresh);
+    const mount = active.closest("#gisMapMount");
+    if (mount) observer.observe(mount, { childList: true, subtree: true });
+    observer.observe(active, {
+      attributes: true,
+      attributeFilter: ["data-tip", "aria-expanded", "class", "style", "hidden", "disabled"]
+    });
+  }
+  function show(btn){
+    if (!anchorReady(btn)) return;
+    if (active !== btn){
+      hide();
+      active = btn;
+      const ids = String(btn.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+      if (ids.indexOf(portalId) < 0){
+        ids.push(portalId);
+        btn.setAttribute("aria-describedby", ids.join(" "));
+        descriptionAdded = true;
+      }
+      observeAnchor();
+    }
+    refresh();
+  }
+
+  document.addEventListener("pointerover", (ev) => {
+    if (ev.pointerType === "touch") return;
+    const btn = targetFrom(ev.target);
+    if (!btn || (ev.relatedTarget && btn.contains(ev.relatedTarget))) return;
+    hovered = btn;
+    show(btn);
+  }, true);
+  document.addEventListener("pointerout", (ev) => {
+    const btn = targetFrom(ev.target);
+    if (!btn || (ev.relatedTarget && btn.contains(ev.relatedTarget))) return;
+    if (hovered === btn) hovered = null;
+    if (active === btn){
+      if (keyboardFocused(focused)) show(focused);
+      else hide();
+    }
+  }, true);
+  document.addEventListener("focusin", (ev) => {
+    const btn = targetFrom(ev.target);
+    if (pointerFocusSuppressed || !keyboardFocused(btn)) return;
+    focused = btn;
+    show(btn);
+  });
+  document.addEventListener("focusout", (ev) => {
+    const btn = targetFrom(ev.target);
+    if (focused === btn) focused = null;
+    if (active === btn){
+      if (anchorReady(hovered)) show(hovered);
+      else hide();
+    }
+  });
+  document.addEventListener("pointerdown", () => {
+    pointerFocusSuppressed = true;
+    dismiss();
+  }, true);
+  document.addEventListener("pointercancel", dismiss, true);
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape") dismiss();
+    else pointerFocusSuppressed = false;
+  }, true);
+  document.addEventListener("scroll", () => {
+    hovered = null;
+    // Native focus navigation can scroll a nested toolbar row after focusin.
+    // Keep that focus source, including while clipped; explicit dismissal clears it.
+    if (keyboardFocused(focused) && anchorReady(focused)) show(focused);
+    else dismiss();
+  }, { capture: true, passive: true });
+  window.addEventListener("resize", dismiss, { passive: true });
+  window.addEventListener("blur", dismiss);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) dismiss(); });
+  document._gisMapToolbarTooltipPortalInstalled = true;
+  document.documentElement.dataset.gisMapToolbarTooltipPortal = "1";
+}
+
 /** Idempotent: nudge centered [data-tip] tooltips horizontally so they stay inside the viewport (CSS var --tip-nudge). No app logic. */
 function installTipEdgeClampOnce(){
   if (document.documentElement.dataset.tipEdgeClamp === "1") return;
@@ -106921,6 +107164,7 @@ function init(){
   applyThemePreference(initTheme, { save: true });
   applyLanguage(initLang);
   installTipEdgeClampOnce();
+  ensureGisMapToolbarTooltipPortal();
   updateNetStatus();
   renderHistory();
   renderFavorites();
