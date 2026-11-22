@@ -1,17 +1,14 @@
 # TMAR GIS Tool — stato operativo corrente
 
-> Fonte canonica LIVE STATE: [`docs/FRONTIER.md`](../FRONTIER.md). Questo riepilogo è un puntatore, non una seconda fonte di verità.
+> Il documento canonico LIVE STATE è [`docs/FRONTIER.md`](../FRONTIER.md); questo file è un indice breve.
 
 | Campo | Stato |
 | --- | --- |
-| Ultimo blocco chiuso | **MAP-PAN-TILE-OVERSCAN-A — Build320**, `CLOSED / QA_OPERATORE_PASS` (22/11/2026) |
-| QA tecnica | DEPLOY_TECHNICAL_PASS; browser LIVE Edge158 aggregata **70/70 PASS** (R6 desktop35/35 + R7 phone35/35) |
-| QA operatore | Attestazione esatta `QA MAP-PAN-TILE-OVERSCAN-A PASS operatore` acquisita in chat |
-| Runtime LIVE | Build320 — source `ca3a38d1c7703c5bf93724cd5df608af2914751d`, SHA-256 `b3fcec1135b77bd0dec21351fb87b894c5f5828bce455995b8fa03aaf744f689` |
-| Candidato successivo | **Nessuno**; nessuna WU attiva |
-| NEXT | Riprendere il backlog MAP UX autorizzato con audit mirato; P0 secondario autorizzato ma non applicato |
-| Limiti | QA umana senza browser/dispositivo/ora esatti; dispositivo mobile fisico, Safari/Firefox non attestati. DTM5/10m HOLD, P4 FUTURO |
+| Runtime LIVE | **Build321 MAP-TARGET-SCALE-A** — source `64522d52d102cdd0bcd89f4b671b65dc0ba8e9b2`, SHA256 `96c2c34eec74f43a1dbc636620d6e54989529d53213e58f31edd2d56203dd971` |
+| Block/Gate | `MAP-TARGET-SCALE-A` ROUTINE, `DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS / QA_OPERATORE_PENDING` |
+| QA | Statici 77/77, candidato browser45/45, LIVE HTTPS browser45/45 Edge158, tre viewport emulati; STOP driver precedenti conservati |
+| Prossimo passo | ChatGPT emette QA umana breve di `1:N`; PASS solo con attestazione esatta dell’operatore |
+| Ultimo CLOSED | Build320 `MAP-PAN-TILE-OVERSCAN-A` (QA PASS operatore 22/11/2026) |
+| Residui | P0 archivio autorizzato e non applicato; DTM5/10m HOLD; P4 FUTURO; zoom frazionario BACKLOG |
 
-**Ricevute:** [chiusura Build320](evidence/2026-11-22-qa320-closure/REPORT.md) · [QA browser aggregata](evidence/2026-11-22-build320-live-qa-aggregation/REPORT.md) · [roadmap](../work-units/WU-0005-0009-roadmap.md).
-
-**Provenienza:** chiusura docs-only sul commit `17f17d036cf835393cae77fd32f8d5394e07a31b`, poi autosync separato. `coordinate_converter Claude.html` invariato; nessun nuovo test o deploy in chiusura.
+[Dossier Build321](evidence/2026-11-23-map-target-scale-321/REPORT.md) · [Build321 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=96c2c34e)

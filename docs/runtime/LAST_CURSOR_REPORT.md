@@ -1,3 +1,24 @@
+# Handoff operativo — Build321 LIVE, QA browser PASS, operatore PENDING
+
+> Aggiornamento del rilascio `MAP-TARGET-SCALE-A` (23/11/2026); `docs/FRONTIER.md` prevale come LIVE STATE. Cursor non utilizzato.
+
+| Campo | Stato |
+| --- | --- |
+| BLOCK | `MAP-TARGET-SCALE-A` — Build321 ROUTINE / STANDARD_RUNTIME_BUNDLE |
+| GATE | `DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS_45_OF_45 / QA_OPERATORE_PENDING` |
+| Runtime | source `64522d52d102cdd0bcd89f4b671b65dc0ba8e9b2`, SHA-256 `96c2c34eec74f43a1dbc636620d6e54989529d53213e58f31edd2d56203dd971`, 11.345.158 byte |
+| LIVE | [HTTPS Build321](https://ionos-n8n-new.tailc01234.ts.net/gis?v=96c2c34e) |
+| Evidenza | [Rilascio e QA browser](../orchestrator/evidence/2026-11-23-map-target-scale-321/REPORT.md) · [ricevuta](../orchestrator/evidence/2026-11-23-map-target-scale-321/evidence.json) |
+| NEXT | ChatGPT rilascia QA umana breve; soltanto l’attestazione `QA MAP-TARGET-SCALE-A PASS operatore` potrà avviare Regola H |
+| Coda | FINITO NON INNESCATO; Build320 resta ultimo CLOSED |
+| P0 | OPEN / APPLICATION_AUTHORIZED_NOT_EXECUTED |
+
+Il primo smoke immediato rifiutato e i due STOP del driver browser restano registrati; le verifiche successive su source/HTTP/HTTPS/SHA e l’ultima QA browser LIVE hanno PASS nel rispettivo perimetro. Nessuna modifica agli archivi dell’operatore.
+
+---
+
+## Storico — rapporto precedente (Build320 CLOSED)
+
 # Handoff operativo — Build320 CLOSED, QA operatore PASS
 
 > Report di autosync della chiusura, non nuova evidenza runtime. La fonte LIVE STATE è `docs/FRONTIER.md`. Cursor non utilizzato.
