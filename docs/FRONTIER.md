@@ -4,22 +4,28 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Build318 interfaccia touch/accessibilità LIVE, secondo la direttiva di procedere con la prossima versione. QA automatizzata PASS; residuo QA operatore pendente. P0 secondario, autorizzato e non eseguito; non blocca questo bundle. |
+| **WORKSTREAM ATTIVO** | Build318 interfaccia touch/accessibilità LIVE e CLOSED dopo QA operatore PASS. Nessun bundle runtime successivo aperto; prossimo obiettivo concreto da definire. P0 secondario, autorizzato e non eseguito. |
 | **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | GIS-RESPONSIVE-TOUCH-ACCESSIBILITY-A — ROUTINE, Build318 LIVE. |
-| **STATO BLOCCO** | DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS / QA_FINALE_CHATGPT_PENDING. Candidato 6/6 e LIVE HTTPS 3/3 PASS; nessun PASS operatore318 o FINITO attribuito. |
-| **GATE CORRENTE** | QA FINALE CHATGPT — PENDING. Resta la breve verifica umana del menu Esporta su schermo stretto; deploy e Automated Browser QA sono PASS. |
+| **BLOCCO ATTIVO** | Nessuno — GIS-RESPONSIVE-TOUCH-ACCESSIBILITY-A, ROUTINE, chiuso con Build318 LIVE. |
+| **STATO BLOCCO** | CLOSED / DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS / QA_OPERATORE_PASS. Attestazione operatore acquisita il 22/11/2026; prove tecniche precedenti riusate. |
+| **GATE CORRENTE** | QA finale Build318 PASS e blocco CLOSED. Il prossimo scope runtime non è ancora determinato nelle fonti vive; nessun nuovo candidato aperto. |
 | **RUNTIME LIVE** | Build318 source e1200bcd6316b896cb3e7302e38b9f430f751e8c, blob 7b0f93b6eaf1ae3ee2229f1042ae422f5d576a63, SHA256 5738bbb78def4fa27dbc5c72532706639f15f58c82aba451fa823ae197bd4c7c, 11.289.051 byte CR192/CRLF0; GitHub/VPS/file/HTTP/HTTPS concordi. |
-| **RUNTIME CANDIDATE** | Build318 verificata e distribuita; nessun candidato successivo aperto. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-SAVED-TRACK-PARTIAL-ALTITUDE-FILL-A — Build317, QA operatore PASS 19/11/2026; [ricevuta](orchestrator/evidence/2026-11-19-qa317-p3-closure/REPORT.md). |
-| **NEXT** | [Build318 e prove](orchestrator/evidence/2026-11-22-responsive-touch-318/REPORT.md): QA umana breve del menu Esporta su schermo stretto, verificando voci visibili e utilizzabili senza tagli. Il PASS operatore avvia la chiusura prevista dal metodo. |
+| **RUNTIME CANDIDATE** | Nessuno. Build318 verificata, distribuita e chiusa; nessun candidato successivo aperto. |
+| **ULTIMO BLOCCO CHIUSO** | GIS-RESPONSIVE-TOUCH-ACCESSIBILITY-A — Build318, QA operatore PASS 22/11/2026; [ricevuta](orchestrator/evidence/2026-11-22-qa318-closure/REPORT.md). |
+| **NEXT** | Definire il prossimo obiettivo concreto e il relativo scope: nessun ulteriore difetto, bundle o acceptance è già indicato dalle fonti vive. Il requisito desktop/mobile/iPad resta vigente. P0 potrà riprendere con contesto dell’archivio controllabile, backup corrente e inventario delle istanze scriventi, senza nuova autorizzazione; P4 resta FUTURO e DTM5/10m HOLD. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P0 secondario APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: copie qualificate, autorizzazione acquisita; controllo dell’archivio interno richiesto non disponibile, backup corrente atteso e inventario istanze scriventi incompleto. Caricamento operatore già confermato; archivio interno non identificato e backup completo origine non attestato. Compatibilità mobile/iPad riaperta; P4 SOLO FUTURO. |
 | **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 recupero qualificato sulle copie](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
-| **SVILUPPO TELEFONO** | Requisito desktop/mobile/iPad confermato. Build318: qualifica candidato 6/6 e LIVE HTTPS 3/3 PASS su Edge157, con viewport desktop e touch emulati. Nessun PASS universale, su dispositivi fisici, Safari o Firefox attribuito. |
+| **SVILUPPO TELEFONO** | Requisito desktop/mobile/iPad confermato. Build318: candidato 6/6 e LIVE HTTPS 3/3 PASS su Edge157 con viewport/touch emulati; QA operatore PASS 22/11/2026, dispositivo/browser non specificati. Nessun PASS universale, su dispositivi fisici identificati, Safari o Firefox attribuito. |
 | **ACCESSO / DEPLOY** | 22/11/2026: Build318 deploy GIS-only verificato, servizio attivo e worktree pulito. Backup /var/backups/goi-gis-runtime/prebuild318-p8w_gy_g; HTTP/HTTPS 200, Content-Length 11289051 e SHA256 concordi. Primo smoke loopback corretto sul bind tailnet senza secondo deploy. [Apri Build318](https://ionos-n8n-new.tailc01234.ts.net/gis?v=5738bbb7). |
-| **EVIDENCE** | [Release318 e limiti](orchestrator/evidence/2026-11-22-responsive-touch-318/REPORT.md) - [Evidenze318](orchestrator/evidence/2026-11-22-responsive-touch-318/evidence.json) - [P0 caricamento dichiarato e controllo non disponibile](orchestrator/evidence/2026-11-22-internal-browser-operator-access/REPORT.md) - [P0 copie qualificate](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md) - [QA P3 CLOSED](orchestrator/evidence/2026-11-19-qa317-p3-closure/REPORT.md). |
+| **EVIDENCE** | [Chiusura QA318](orchestrator/evidence/2026-11-22-qa318-closure/REPORT.md) - [Attestazione operatore](orchestrator/evidence/2026-11-22-qa318-closure/evidence.json) - [Release318 e limiti](orchestrator/evidence/2026-11-22-responsive-touch-318/REPORT.md) - [Evidenze tecniche318](orchestrator/evidence/2026-11-22-responsive-touch-318/evidence.json) - [P0 controllo non disponibile](orchestrator/evidence/2026-11-22-internal-browser-operator-access/REPORT.md) - [P0 copie qualificate](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md). |
+
+## Build318 — QA operatore PASS, blocco CLOSED (22 novembre 2026)
+
+Ricevuta l’attestazione esatta `QA GIS-RESPONSIVE-TOUCH-ACCESSIBILITY-A PASS operatore`. Il blocco è CLOSED; [ricevuta e limiti](orchestrator/evidence/2026-11-22-qa318-closure/REPORT.md), [evidenza strutturata](orchestrator/evidence/2026-11-22-qa318-closure/evidence.json). Dispositivo e browser del collaudo umano non specificati.
+
+Chiusura documentale secondo OM §4 Regola H: runtime Build318 invariato, nessun nuovo test o deploy. Restano acquisite le prove candidato 6/6 e LIVE HTTPS 3/3; nessuna estensione della qualifica agli ambienti non provati. Nessun successivo bundle runtime già determinato. P0 resta aperto e autorizzato/non applicato, P4 FUTURO, DTM5/10m HOLD.
 
 ## Build318 — touch/accessibilità LIVE, QA operatore pendente (22 novembre 2026)
 
