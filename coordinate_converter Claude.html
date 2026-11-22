@@ -2182,6 +2182,16 @@ html[data-theme="light"] .mini-map{background:#eef3f9}
 .tile-map .tile-layer{
   position:absolute; inset:0; will-change:transform;
 }
+.gis-pan-cache-plane{position:absolute;inset:0;pointer-events:none;overflow:visible;}
+.gis-pan-cache-slot{position:absolute;width:256px;height:256px;overflow:hidden;contain:layout style;pointer-events:none;}
+.gis-pan-cache-tile{position:absolute;left:0;top:0;width:256px;height:256px;pointer-events:none;image-rendering:auto;-webkit-user-drag:none;}
+.tile-map.coverage-on .gis-pan-cache-slot::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:rgba(34,197,94,.045);box-shadow:inset 0 0 0 1px rgba(34,197,94,.16);
+}
+html[data-theme="light"] .tile-map.coverage-on .gis-pan-cache-slot::after{
+  background:rgba(22,163,74,.055);box-shadow:inset 0 0 0 1px rgba(22,163,74,.22);
+}
 .tile-map .tile{
   position:absolute; width:256px; height:256px;
   pointer-events:none; image-rendering:auto; -webkit-user-drag:none;
@@ -3779,6 +3789,16 @@ body.gis-mode dialog.app-modal.gis-panel-floating .app-modal-body:not(#layersPan
   background:rgba(220,38,38,.9); color:#fff;
   font-size:.78rem; font-weight:600; text-align:center;
   box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+
+.gis-pan-notice{display:none;}
+body.gis-mode #gisMapMount #miniMap > .gis-pan-notice{
+  display:block;position:absolute;z-index:95;box-sizing:border-box;
+  padding:6px 10px;border-radius:6px;
+  background:rgba(146,64,14,.96);color:#fff;
+  font-size:.8rem;line-height:1.35;font-weight:600;text-align:center;
+  overflow-wrap:anywhere;box-shadow:0 1px 3px rgba(0,0,0,.3);
+  pointer-events:none;
 }
 
 /* Offline banner overlay on the SVG fallback map. */
@@ -26639,10 +26659,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-RIGHT-TOOLBAR-TOOLTIPS-A";
-const APP_BUILD_DETAIL = "Tooltip della toolbar mappa immediati e leggibili con mouse e tastiera.";
+const APP_BUILD_ID = "MAP-PAN-TILE-OVERSCAN-A";
+const APP_BUILD_DETAIL = "Pan GIS: preparazione locale delle tile in cache e continuità del frame cartografico.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 319;
+const APP_BUILD_NUM = 320;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -57464,6 +57484,685 @@ async function getTileBlobByKey(key){
   }
 }
 
+/* MAP-PAN-TILE-OVERSCAN-A: GIS-only, transient, cache-only raster preparation. */
+const GIS_PAN_TILE_LIMITS = Object.freeze({ jobs:4, records:256, slots:512, blobBytes:33554432, decodedBytes:134217728, jobMs:2500, commitMs:5000 });
+function gisPanTileSignature(layerId, zoom, width, height){
+  return [String(layerId), Number(zoom), Math.round(width), Math.round(height)].join("|");
+}
+function gisPanTileResources(root){
+  if (!root._gisPanResources) root._gisPanResources = { jobs:0, records:0, slots:0, urls:0, blobBytes:0, decodedBytes:0, waiters:new Set() };
+  return root._gisPanResources;
+}
+function clearGisPanTileFeedback(root){
+  const notice=root && root._gisPanNotice;
+  if(!notice)return;
+  root._gisPanNotice=null;
+  if(notice.timer!=null)clearTimeout(notice.timer);
+  notice.node.remove();
+}
+function gisPanTileFeedback(kind){
+  const lang = typeof state !== "undefined" ? state.lang : "en";
+  const messages = kind === "budget" ? {
+    it:"Limite di preparazione della mappa raggiunto. Gli spostamenti successivi usano la modalità standard.",
+    en:"Map preparation limit reached. Subsequent movements use standard panning.",
+    fr:"Limite de préparation de la carte atteinte. Les déplacements suivants utilisent le mode standard."
+  } : {
+    it:"Immagini della mappa non pronte: spostamento annullato. Riprovare.",
+    en:"Map images are not ready: pan cancelled. Please try again.",
+    fr:"Images cartographiques indisponibles : déplacement annulé. Réessayez."
+  };
+  const root=document.getElementById("miniMap");
+  if(!root || !root.isConnected || !document.body.classList.contains("gis-mode") || !root.closest("#gisMapMount"))return;
+  clearGisPanTileFeedback(root);
+  const node=document.createElement("div");
+  node.className="gis-pan-notice";
+  node.setAttribute("role","status");
+  node.setAttribute("aria-live","polite");
+  node.setAttribute("aria-atomic","true");
+  const notice={node,timer:null};
+  root._gisPanNotice=notice;
+  const viewport=window.visualViewport;
+  const vx=viewport ? viewport.offsetLeft : 0;
+  const vy=viewport ? viewport.offsetTop : 0;
+  const vw=viewport ? viewport.width : document.documentElement.clientWidth;
+  const vh=viewport ? viewport.height : document.documentElement.clientHeight;
+  const rect=root.getBoundingClientRect();
+  const left=Math.max(rect.left+8,vx+8);
+  const right=Math.min(rect.right-8,vx+vw-8);
+  if(right<=left || rect.bottom<=vy || rect.top>=vy+vh){clearGisPanTileFeedback(root);return;}
+  node.style.left=(left-rect.left)+"px";
+  node.style.width=(right-left)+"px";
+  root.appendChild(node);
+  node.textContent=messages[lang] || messages.en;
+  const height=node.getBoundingClientRect().height;
+  node.style.top=(Math.max(vy+8,Math.min(rect.bottom-8,vy+vh-8)-height)-rect.top)+"px";
+  notice.timer=setTimeout(()=>{
+    if(root._gisPanNotice===notice)clearGisPanTileFeedback(root);
+  },6000);
+}
+function releaseGisPanPreparedTiles(root){
+  const frame = root && root._gisPanPreparedTiles;
+  if (!frame) return;
+  root._gisPanPreparedTiles = null;
+  frame.rows.forEach(row => {
+    if (row.release) row.release();
+  });
+  frame.rows.clear();
+}
+function disposeGisPanTileContinuity(root, keepPrepared){
+  if (!root) return;
+  clearGisPanTileFeedback(root);
+  const m = root._gisPanTileContinuity;
+  if (m && typeof m.dispose === "function") m.dispose();
+  if (!keepPrepared) releaseGisPanPreparedTiles(root);
+}
+function consumeGisPanPreparedTiles(root, layerId, zoom, generation, originX, originY, width, height){
+  const frame = root && root._gisPanPreparedTiles;
+  if (!frame) return 0;
+  let count = 0;
+  const matches = frame.layerId === layerId && frame.zoom === zoom
+    && Math.abs(frame.originX - originX) < 0.01 && Math.abs(frame.originY - originY) < 0.01
+    && Math.abs(frame.width - width) < 1 && Math.abs(frame.height - height) < 1;
+  if (matches){
+    root.querySelectorAll(".tile-wrap").forEach(wrap => {
+      const x = Math.round((parseFloat(wrap.style.left) + originX) / 256);
+      const y = Number(wrap.dataset.y);
+      const row = frame.rows.get(x + "/" + y);
+      const old = wrap.querySelector("img.tile");
+      if (!row || !old || row.tkey !== wrap.dataset.tkey || !row.img.complete || row.img.naturalWidth <= 0 || row.img.naturalHeight <= 0) return;
+      const img = row.img;
+      img.className = "tile";
+      img.style.left = "0px";
+      img.style.top = "0px";
+      img.setAttribute("data-layer", layerId);
+      img.setAttribute("data-blob-url", row.url);
+      img._gisPanPrepared = { tkey:row.tkey, layerId, zoom, generation, ready:true };
+      old.replaceWith(img);
+      wrap.classList.remove("tile-pending", "tile-missing", "tile-network");
+      wrap.classList.add("tile-mission");
+      const voidEl = wrap.querySelector(".tile-void");
+      if (voidEl) voidEl.style.display = "none";
+      row.transfer();
+      frame.rows.delete(x + "/" + y);
+      count++;
+    });
+  }
+  releaseGisPanPreparedTiles(root);
+  return count;
+}
+function ensureGisPanTileContinuity(root, context){
+  if (!root || !context || !document.body.classList.contains("gis-mode") || !root.closest("#gisMapMount")) return null;
+  disposeGisPanTileContinuity(root, false);
+  const signature = gisPanTileSignature(context.layerId, context.zoom, context.width, context.height);
+  if (root._gisPanBudgetFallback && root._gisPanBudgetFallback.signature === signature) return null;
+  if (root._gisPanBudgetFallback) root._gisPanBudgetFallback = null;
+  const tileMap = root.querySelector(".tile-map");
+  const tileLayer = tileMap && tileMap.querySelector(".tile-layer");
+  if (!tileMap || !tileLayer) return null;
+  const limits = GIS_PAN_TILE_LIMITS;
+  const resources = gisPanTileResources(root);
+  const m = {
+    root, tileMap, tileLayer, signature, layerId:context.layerId, sourceZoom:context.zoom,
+    generation:context.generation, width:context.width, height:context.height,
+    originX:context.originX, originY:context.originY, epoch:0, phase:"priming", disposed:false,
+    desired:{dx:0,dy:0,scale:1}, applied:{dx:0,dy:0,scale:1},
+    records:new Map(), slots:new Map(), queue:[], running:0, blobBytes:0, decodedBytes:0,
+    front:new Set(), wanted:new Set(), required:new Set(), skippedHalo:new Set(), frame:null, pendingCommit:null, activeDrag:null,
+    lastError:null, tick:0, observer:null, commitTimer:null,
+    sceneImages:new Map(), sceneNeeded:new Set(), sceneTimer:null
+  };
+  root._gisPanTileContinuity = m;
+  const plane = document.createElement("div");
+  plane.className = "gis-pan-cache-plane";
+  plane.setAttribute("aria-hidden", "true");
+  tileLayer.insertBefore(plane, tileLayer.firstChild);
+  m.plane = plane;
+  const canonicalSlots = new Map();
+  tileLayer.querySelectorAll(".tile-wrap").forEach(wrap => {
+    const x = Math.round((parseFloat(wrap.style.left) + m.originX) / 256);
+    const y = Number(wrap.dataset.y);
+    if (Number.isFinite(x) && Number.isFinite(y)) canonicalSlots.set(slotKey(m.sourceZoom,x,y),wrap);
+  });
+  function live(){
+    return !m.disposed && root.isConnected && root._gisPanTileContinuity === m
+      && root.querySelector(".tile-map") === tileMap && tileLayer.isConnected
+      && root._mapTileGen === m.generation && document.body.classList.contains("gis-mode")
+      && (state.mapLayer || "osm") === m.layerId && Number(state.mapZoom) === m.sourceZoom;
+  }
+  function signalRoom(){
+    Array.from(resources.waiters).forEach(wake => wake());
+  }
+  function waitForRoom(deadline, needed){
+    return new Promise((resolve,reject) => {
+      let done=false;
+      const finish=error=>{
+        if(done)return;done=true;clearTimeout(timer);resources.waiters.delete(wake);
+        if(error)reject(error);else resolve();
+      };
+      const wake=()=>finish(!live() || !needed() ? "cancel" : null);
+      const timer=setTimeout(()=>finish("timeout"),Math.max(1,deadline-Date.now()));
+      resources.waiters.add(wake);
+      if(!live() || !needed())finish("cancel");
+    });
+  }
+  function roomIsRetiring(){
+    return resources.records>m.records.size || resources.blobBytes>m.blobBytes
+      || Array.from(m.slots.values()).some(s=>s.released && !s.finalized);
+  }
+  function dropRecord(r){
+    if (!r || r.users || r.promise) return;
+    if (m.records.get(r.key) !== r) return;
+    m.records.delete(r.key);
+    resources.records--;
+    if (r.blob){ resources.blobBytes -= r.blob.size; m.blobBytes -= r.blob.size; r.blob = null; }
+    signalRoom();
+  }
+  function pruneRecords(){
+    Array.from(m.records.values()).filter(r => !r.users && !r.promise).sort((a,b) => a.used - b.used).forEach(r => {
+      if (m.disposed || r.retired || resources.records >= limits.records || resources.blobBytes > limits.blobBytes * 0.85) dropRecord(r);
+    });
+  }
+  function finalizeSlot(s){
+    if (!s || s.finalized || s.running) return;
+    s.finalized = true;
+    if (m.slots.get(s.key) === s) m.slots.delete(s.key);
+    resources.slots--;
+    resources.decodedBytes -= s.bytes;
+    m.decodedBytes -= s.bytes;
+    s.bytes = 0;
+    if (s.record){ s.record.users--; if (m.disposed || s.record.retired) dropRecord(s.record); s.record = null; }
+    signalRoom();
+  }
+  function releaseSlot(s){
+    if (!s || s.released) return;
+    s.released = true;
+    if (s.cancelLoad) s.cancelLoad();
+    if (s.img){ s.img.remove(); s.img.removeAttribute("src"); }
+    if (s.node){s.node.remove();s.node=null;}
+    if (s.url){ try { URL.revokeObjectURL(s.url); } catch(_){} s.url = null; resources.urls--; }
+    finalizeSlot(s);
+    signalRoom();
+  }
+  function clearCommit(){
+    if (m.commitTimer != null){ clearTimeout(m.commitTimer); m.commitTimer = null; }
+    m.pendingCommit = null;
+  }
+  function resetScene(){
+    if (tileLayer.isConnected){ tileLayer.style.transform = ""; tileLayer.style.transformOrigin = ""; }
+    tileMap.classList.remove("dragging");
+    m.applied = {dx:0,dy:0,scale:1};
+  }
+  function cancel(reason, feedback){
+    clearSceneGate(false);
+    m.epoch++;
+    clearCommit();
+    if (m.activeDrag) m.activeDrag._gisPanFailed = true;
+    m.activeDrag = null;
+    m.front.clear(); m.wanted.clear(); m.required.clear(); m.skippedHalo.clear(); m.queue = []; m.frame = null;
+    m.desired = {dx:0,dy:0,scale:1};
+    resetScene();
+    m.records.forEach(r => { r.retired = true; });
+    Array.from(m.slots.values()).forEach(releaseSlot);
+    pruneRecords();
+    m.phase = reason || "idle";
+    if (feedback) gisPanTileFeedback(reason);
+  }
+  function fail(kind){
+    if (m.disposed || m.lastError) return;
+    m.lastError = kind;
+    const wasGesture = !!(m.activeDrag || m.pendingCommit);
+    if (kind === "budget") root._gisPanBudgetFallback = { signature:m.signature, reason:"budget", at:Date.now(), notified:wasGesture };
+    cancel(kind, wasGesture);
+  }
+  function isRequired(s){ return m.required.has(s.key) || m.front.has(s.key); }
+  function skipOptional(s){
+    m.skippedHalo.add(s.key);m.wanted.delete(s.key);releaseSlot(s);
+  }
+  function trimOptionalRoom(extraBytes, extraSlots, extraRecords=0, extraBlobBytes=0){
+    const enough=()=>resources.decodedBytes+extraBytes<=limits.decodedBytes && resources.slots+extraSlots<=limits.slots
+      && resources.records+extraRecords<=limits.records && resources.blobBytes+extraBlobBytes<=limits.blobBytes;
+    const pruneForRoom=()=>{
+      Array.from(m.records.values()).filter(r=>!r.users && !r.promise).sort((a,b)=>a.used-b.used).forEach(r=>{
+        if(resources.records+extraRecords>limits.records || resources.blobBytes+extraBlobBytes>limits.blobBytes)dropRecord(r);
+      });
+    };
+    pruneForRoom();
+    const candidates=Array.from(m.slots.values()).filter(s=>!s.released && !s.inHandoff && !isRequired(s)).sort((a,b)=>b.bytes-a.bytes);
+    for(const s of candidates){
+      if(enough())break;
+      skipOptional(s);pruneForRoom();
+    }
+    return enough();
+  }
+  async function entryFor(s, deadline){
+    while(live() && !s.released){
+      let r = m.records.get(s.tkey);
+      if (!r || r.retired){
+        if (r && !r.users && !r.promise) dropRecord(r);
+        if (r && m.records.get(s.tkey) === r) return null;
+        pruneRecords();
+        if (resources.records >= limits.records){
+          if(!isRequired(s))throw "budget";
+          if(!trimOptionalRoom(0,0,1,0)){
+            if(!roomIsRetiring())throw "budget";
+            await waitForRoom(deadline,()=>!s.released);
+            continue;
+          }
+        }
+        r = { key:s.tkey, blob:null, status:"new", users:0, used:++m.tick, promise:null, retired:false };
+        m.records.set(r.key, r); resources.records++;
+      }
+      r.used = ++m.tick;
+      r.users++; s.record = r;
+      return r;
+    }
+    throw "cancel";
+  }
+  async function readRecord(r, deadline){
+    if (r.status === "ready") return r.blob;
+    if (r.status === "missing") return null;
+    if (r.promise) return r.promise;
+    r.status = "reading";
+    const needed=()=>!r.retired && Array.from(m.slots.values()).some(s=>s.record===r && !s.released);
+    const required=()=>Array.from(m.slots.values()).some(s=>s.record===r && !s.released && isRequired(s));
+    r.promise = (async()=>{
+      while(live() && needed()){
+        if(Date.now()>=deadline)throw "timeout";
+        let blob=await getTileBlobByKey(r.key);
+        if(!live() || !needed())return null;
+        if(!blob){r.status="missing";return null;}
+        pruneRecords();
+        if(resources.blobBytes+blob.size>limits.blobBytes){
+          if(blob.size>limits.blobBytes || !required())throw "budget";
+          if(!trimOptionalRoom(0,0,0,blob.size)){
+            if(!roomIsRetiring())throw "budget";
+            // Do not retain an unaccounted Blob while retiring owners settle.
+            blob=null;
+            await waitForRoom(deadline,needed);
+            continue;
+          }
+        }
+        r.blob=blob;r.status="ready";
+        resources.blobBytes+=blob.size;m.blobBytes+=blob.size;
+        return blob;
+      }
+      return null;
+    })().finally(()=>{r.promise=null;if(r.retired || m.disposed)dropRecord(r);});
+    return r.promise;
+  }
+  function decodeSlot(s, deadline){
+    return new Promise((resolve,reject) => {
+      const img = s.img;
+      let settled = false, decoding = false;
+      const finish = (error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        img.onload = null; img.onerror = null; s.cancelLoad = null;
+        if (error) reject(error); else resolve();
+      };
+      const timer = setTimeout(() => finish("timeout"), Math.max(1, deadline - Date.now()));
+      s.cancelLoad = () => finish("cancel");
+      const ready = () => {
+        if (settled || decoding) return;
+        if (!img.complete || img.naturalWidth <= 0 || img.naturalHeight <= 0) return;
+        const bytes = img.naturalWidth * img.naturalHeight * 4;
+        if (resources.decodedBytes + bytes - s.bytes > limits.decodedBytes
+          && (!isRequired(s) || !trimOptionalRoom(bytes-s.bytes,0))){ finish("budget"); return; }
+        resources.decodedBytes += bytes - s.bytes; m.decodedBytes += bytes - s.bytes; s.bytes = bytes;
+        if (typeof img.decode === "function"){
+          decoding = true;
+          img.decode().then(() => {
+            if (img.naturalWidth > 0 && img.naturalHeight > 0) finish(); else finish("decode");
+          }, () => finish("decode"));
+        } else finish();
+      };
+      img.onload = ready;
+      img.onerror = () => finish("decode");
+      img.src = s.url;
+      ready();
+    });
+  }
+  async function loadSlot(s){
+    const deadline = Date.now() + limits.jobMs;
+    let timer = setTimeout(() => {
+      if (!s.released && live()){
+        if(isRequired(s))fail("timeout");else skipOptional(s);
+      }
+    }, limits.jobMs);
+    try {
+      const r = await entryFor(s, deadline);
+      if (!r){ if (!m.lastError) s.status = "blocked"; return; }
+      if(s.released || !live())return;
+      const blob = await readRecord(r, deadline);
+      if (s.released || !live() || r.retired) return;
+      if (!blob){ if (!m.lastError) s.status = "missing"; return; }
+      s.img = document.createElement("img");
+      s.img.className = "gis-pan-cache-tile";
+      s.img.alt = "";
+      s.img.draggable = false;
+      s.img.decoding = "async";
+      s.node=document.createElement("div");s.node.className="gis-pan-cache-slot";
+      s.node.appendChild(s.img);
+      s.url = URL.createObjectURL(blob); resources.urls++;
+      await decodeSlot(s, deadline);
+      if (s.released || !live()) return;
+      s.status = "ready";
+    } catch(error){
+      if (!s.released && live() && error !== "cancel"){
+        if(isRequired(s))fail(error === "budget" ? "budget" : error === "timeout" ? "timeout" : "decode");
+        else skipOptional(s);
+      }
+    } finally {
+      clearTimeout(timer);
+      s.running = false; m.running--; resources.jobs--;
+      if (s.released || m.disposed) finalizeSlot(s);
+      if (live()){ if (m.frame) queueFrame(m.frame); else pump(); checkCommit(); }
+      const next = root._gisPanTileContinuity;
+      if (next && next !== m && typeof next.pump === "function") next.pump();
+    }
+  }
+  function pump(){
+    if (!live() || m.lastError) return;
+    pumpCanonicalScene();
+    if (!live() || m.lastError) return;
+    while (resources.jobs < limits.jobs && m.queue.length){
+      const s = m.queue.shift();
+      if (!s || s.released || s.running || s.status !== "queued" || !m.wanted.has(s.key)) continue;
+      s.running = true; s.status = "loading"; m.running++; resources.jobs++;
+      void loadSlot(s);
+    }
+  }
+  m.pump = pump;
+  m.isCurrent = live;
+  m.endNoPan = drag => { if (m.activeDrag === drag){ clearSceneGate(false);m.activeDrag=null; m.phase="idle"; } };
+  function slotKey(z,x,y){ return z + "/" + x + "/" + y; }
+  function makeFrame(z, originX, originY, scale, dx, dy){
+    const cx = m.width / 2, cy = m.height / 2;
+    const left = originX + cx + (-cx - dx) / scale;
+    const right = originX + cx + (cx - dx) / scale;
+    const top = originY + cy + (-cy - dy) / scale;
+    const bottom = originY + cy + (cy - dy) / scale;
+    const n = Math.pow(2,z);
+    const x0 = Math.floor(left / 256), x1 = Math.floor(right / 256);
+    const y0 = Math.max(0,Math.floor(top / 256)), y1 = Math.min(n-1,Math.floor(bottom / 256));
+    if (!Number.isFinite(x0 + x1 + y0 + y1) || (x1-x0+1) * Math.max(0,y1-y0+1) > limits.slots){ fail("budget"); return null; }
+    const visible = [], halo = [];
+    for (let y=Math.max(0,y0-1); y<=Math.min(n-1,y1+1); y++){
+      for (let x=x0-1; x<=x1+1; x++){
+        const xw = ((x % n) + n) % n;
+        const desc = {key:slotKey(z,x,y),z,x,y,tkey:makeTileKey(m.layerId,z,xw,y)};
+        (x>=x0 && x<=x1 && y>=y0 && y<=y1 ? visible : halo).push(desc);
+      }
+    }
+    return {z,originX,originY,visible,halo};
+  }
+  function queueFrame(frame){
+    if (!frame || m.lastError) return false;
+    m.frame = frame;
+    const all = frame.visible.concat(frame.halo);
+    const allKeys=new Set(all.map(d=>d.key));
+    const required = new Set(frame.visible.map(d => d.key));
+    m.required=required;
+    m.skippedHalo=new Set(Array.from(m.skippedHalo).filter(key=>allKeys.has(key) && !required.has(key)));
+    m.wanted = new Set(all.filter(d=>!m.skippedHalo.has(d.key)).map(d => d.key));
+    Array.from(m.slots.values()).forEach(s => { if (!m.front.has(s.key) && !m.wanted.has(s.key)) releaseSlot(s); });
+    for (const d of all){
+      if(!m.wanted.has(d.key))continue;
+      let s = m.slots.get(d.key);
+      if (s && s.released){ if (s.running) continue; finalizeSlot(s); s = null; }
+      if (s){
+        if (s.status === "blocked"){
+          const r=m.records.get(s.tkey);
+          if (!r || !r.retired) s.status="queued";
+        }
+        continue;
+      }
+      const bytes = 256*256*4;
+      if (resources.slots >= limits.slots || resources.decodedBytes + bytes > limits.decodedBytes){
+        if (required.has(d.key)){
+          if(!trimOptionalRoom(bytes,1)){fail("budget");return false;}
+        } else {m.skippedHalo.add(d.key);m.wanted.delete(d.key);continue;}
+      }
+      s = Object.assign({},d,{status:"queued",bytes,released:false,finalized:false,running:false,img:null,node:null,url:null,record:null});
+      m.slots.set(s.key,s); resources.slots++; resources.decodedBytes += bytes; m.decodedBytes += bytes;
+    }
+    m.queue = all.map(d => m.slots.get(d.key)).filter(s => s && !s.released && s.status === "queued");
+    pump();
+    return !m.lastError;
+  }
+  function frameReady(frame){
+    return !!frame && frame.visible.every(d => {
+      const s = m.slots.get(d.key);
+      return !!s && !s.released && (s.status === "ready" || s.status === "missing");
+    });
+  }
+  function stopSceneTimer(){
+    if(m.sceneTimer!=null){clearTimeout(m.sceneTimer);m.sceneTimer=null;}
+  }
+  function unlistenScene(r){
+    if(!r || !r.img)return;
+    if(r.onLoad)r.img.removeEventListener("load",r.onLoad);
+    if(r.onError)r.img.removeEventListener("error",r.onError);
+    r.onLoad=null;r.onError=null;
+  }
+  function clearSceneGate(dispose){
+    stopSceneTimer();m.sceneNeeded.clear();
+    m.sceneImages.forEach(unlistenScene);
+    if(dispose)m.sceneImages.clear();
+  }
+  function sceneEntry(key){
+    const wrap=canonicalSlots.get(key);
+    const img=wrap && wrap.querySelector("img.tile");
+    const src=img ? img.getAttribute("src") || "" : "";
+    let r=m.sceneImages.get(key);
+    if(!r || r.img!==img || r.src!==src || r.generation!==m.generation){
+      unlistenScene(r);
+      r={key,wrap,img,src,generation:m.generation,status:"waiting",onLoad:null,onError:null};
+      m.sceneImages.set(key,r);
+    } else if(r.status==="ready" && (!img.complete || img.naturalWidth<=0 || img.naturalHeight<=0))r.status="waiting";
+    return r;
+  }
+  function sceneCurrent(r){
+    return live() && m.sceneImages.get(r.key)===r && r.generation===m.generation
+      && r.img && r.img.isConnected && r.wrap.isConnected && r.wrap.querySelector("img.tile")===r.img
+      && (r.img.getAttribute("src") || "")===r.src;
+  }
+  function pumpCanonicalScene(){
+    if(!live() || m.lastError || !m.activeDrag || m.pendingCommit || !frameReady(m.frame))return;
+    for(const key of m.sceneNeeded){
+      const r=sceneEntry(key), img=r.img;
+      if(!img || !sceneCurrent(r) || r.status==="ready" || r.status==="decoding" || r.status==="error")continue;
+      if(!r.src || !img.complete){
+        if(!r.onLoad){
+          r.onLoad=()=>{unlistenScene(r);if(live())pump();};
+          r.onError=()=>{unlistenScene(r);if(sceneCurrent(r))r.status="error";if(live())pump();};
+          img.addEventListener("load",r.onLoad);img.addEventListener("error",r.onError);
+        }
+        continue;
+      }
+      unlistenScene(r);
+      if(img.naturalWidth<=0 || img.naturalHeight<=0){r.status="error";continue;}
+      const proof=img._gisPanPrepared;
+      if(proof && proof.ready && proof.generation===m.generation && proof.layerId===m.layerId
+        && proof.zoom===m.sourceZoom && proof.tkey===r.wrap.dataset.tkey && r.src===img.getAttribute("data-blob-url")){
+        r.status="ready";continue;
+      }
+      if(typeof img.decode!=="function"){r.status="ready";continue;}
+      if(resources.jobs>=limits.jobs)continue;
+      r.status="decoding";m.running++;resources.jobs++;
+      let work;
+      try{work=img.decode();}catch(error){work=Promise.reject(error);}
+      Promise.resolve(work).then(()=>{
+        if(sceneCurrent(r))r.status=img.naturalWidth>0 && img.naturalHeight>0 ? "ready" : "error";
+      },()=>{if(sceneCurrent(r))r.status="error";}).finally(()=>{
+        m.running--;resources.jobs--;
+        if(live()){pump();checkCommit();}
+        const next=root._gisPanTileContinuity;
+        if(next && next!==m && typeof next.pump==="function")next.pump();
+      });
+    }
+    const needed=Array.from(m.sceneNeeded).map(key=>m.sceneImages.get(key));
+    if(needed.some(r=>r && sceneCurrent(r) && r.status==="error")){fail("decode");return;}
+    if(needed.every(r=>r && sceneCurrent(r) && r.status==="ready"))stopSceneTimer();
+  }
+  function canonicalSceneReady(frame){
+    if(!frame)return false;
+    m.sceneNeeded=new Set(frame.visible.filter(d=>{
+      const s=m.slots.get(d.key);
+      return canonicalSlots.has(d.key) && s && !s.released && s.status==="ready";
+    }).map(d=>d.key));
+    m.sceneImages.forEach(r=>{if(!m.sceneNeeded.has(r.key))unlistenScene(r);});
+    pumpCanonicalScene();
+    return !m.lastError && Array.from(m.sceneNeeded).every(key=>{
+      const r=m.sceneImages.get(key);
+      return r && sceneCurrent(r) && r.status==="ready";
+    });
+  }
+  function present(drag){
+    if (!live() || drag !== m.activeDrag || drag._gisPanEpoch !== m.epoch) return false;
+    if(!frameReady(m.frame)){stopSceneTimer();return false;}
+    const frame = m.frame;
+    if(!canonicalSceneReady(frame)){
+      if(!m.lastError && m.sceneTimer==null)m.sceneTimer=setTimeout(()=>{
+        m.sceneTimer=null;
+        if(live() && m.activeDrag && !m.pendingCommit && frameReady(m.frame) && !canonicalSceneReady(m.frame))fail("timeout");
+      },limits.jobMs);
+      return false;
+    }
+    stopSceneTimer();
+    m.front = new Set(frame.visible.map(d => d.key));
+    m.slots.forEach(s => {
+      if (s.released || s.status !== "ready" || s.z !== m.sourceZoom) return;
+      if (m.wanted.has(s.key) && !canonicalSlots.has(s.key)){
+        s.node.style.left = (s.x*256 - m.originX) + "px";
+        s.node.style.top = (s.y*256 - m.originY) + "px";
+        if (s.node.parentNode !== plane) plane.appendChild(s.node);
+      } else if (s.node.parentNode === plane) s.node.remove();
+    });
+    const d = m.desired;
+    tileLayer.style.transformOrigin = "50% 50%";
+    tileLayer.style.transform = `translate3d(${d.dx}px, ${d.dy}px, 0) scale(${d.scale})`;
+    m.applied = {dx:d.dx,dy:d.dy,scale:d.scale};
+    m.phase = "dragging-ready";
+    return true;
+  }
+  function checkCommit(){
+    const pending = m.pendingCommit;
+    if (!pending || !live() || pending.epoch !== m.epoch || !frameReady(m.frame)) return;
+    const frame = m.frame;
+    const rows = new Map();
+    frame.visible.forEach(d => {
+      const s = m.slots.get(d.key);
+      if (!s || s.status !== "ready" || !s.img || !s.url) return;
+      s.img.remove();
+      const row = {img:s.img,url:s.url,tkey:s.tkey};
+      let finished = false;
+      row.release = () => { if (finished) return; finished=true; releaseSlot(s); };
+      row.transfer = () => {
+        if (finished) return;
+        finished=true;
+        s.url=null; s.img=null; resources.urls--;
+        if(s.node){s.node.remove();s.node=null;}
+        s.released=true; finalizeSlot(s);
+      };
+      rows.set(s.x + "/" + s.y,row);
+      s.inHandoff = true;
+    });
+    clearCommit();
+    m.phase = "handoff";
+    root._gisPanPreparedTiles = {layerId:m.layerId,zoom:frame.z,originX:frame.originX,originY:frame.originY,width:m.width,height:m.height,rows};
+    try { pending.commit(); }
+    catch(error){ releaseGisPanPreparedTiles(root); if (!m.disposed) fail("decode"); throw error; }
+  }
+  m.begin = (drag) => {
+    if (!live() || root._gisPanBudgetFallback && root._gisPanBudgetFallback.signature === signature) return false;
+    clearSceneGate(false);
+    m.sceneImages.forEach((r,key)=>{if(r.status==="error")m.sceneImages.delete(key);});
+    const prior = m.pendingCommit && m.activeDrag;
+    const carry = prior ? {dx:m.desired.dx,dy:m.desired.dy,scale:m.desired.scale} : null;
+    m.epoch++; clearCommit();
+    if (prior) prior._gisPanFailed = true;
+    m.lastError = null;
+    m.records.forEach(r => { if (r.status === "missing" && !r.users) dropRecord(r); });
+    drag._gisPanEpoch = m.epoch;
+    drag._gisPanManager = m;
+    m.activeDrag = drag;
+    if (carry){
+      drag.sx -= carry.dx; drag.sy -= carry.dy;
+      drag.dx = carry.dx; drag.dy = carry.dy; drag.scale = carry.scale;
+      drag.moved = true;
+      if (prior.everPinched){
+        drag.everPinched = true; drag.afterPinchPan = true; drag._gisPanContinuation = true;
+        drag.anchorWorldX=prior.anchorWorldX; drag.anchorWorldY=prior.anchorWorldY;
+        drag.lastMidpointLocalX=prior.lastMidpointLocalX; drag.lastMidpointLocalY=prior.lastMidpointLocalY;
+        drag.panStartX=drag.sx+carry.dx; drag.panStartY=drag.sy+carry.dy;
+        drag.panBaseDx=carry.dx; drag.panBaseDy=carry.dy;
+        drag.panAnchorMidX=prior.lastMidpointLocalX; drag.panAnchorMidY=prior.lastMidpointLocalY;
+      }
+      m.desired = carry;
+    } else { m.desired={dx:0,dy:0,scale:1}; }
+    m.phase="dragging";
+    return true;
+  };
+  m.update = (drag) => {
+    if (drag._gisPanFailed || !live() || drag._gisPanEpoch !== m.epoch) return true;
+    m.desired={dx:drag.dx,dy:drag.dy,scale:Math.max(0.000001,Number(drag.scale)||1)};
+    const frame=makeFrame(m.sourceZoom,m.originX,m.originY,m.desired.scale,m.desired.dx,m.desired.dy);
+    if (queueFrame(frame)){ m.phase="dragging-wait"; present(drag); }
+    return true;
+  };
+  m.finish = (drag, target, commit) => {
+    if (drag._gisPanFailed || !live() || drag._gisPanEpoch !== m.epoch) return true;
+    clearSceneGate(false);
+    clearCommit();
+    const ox=lonToTileX(normalizeLon(target.lon),target.zoom)*256-m.width/2;
+    const oy=latToTileY(Math.max(-85.05,Math.min(85.05,target.lat)),target.zoom)*256-m.height/2;
+    m.pendingCommit={epoch:m.epoch,commit,target};
+    m.phase="commit-pending";
+    m.commitTimer=setTimeout(() => { if (m.pendingCommit && live()) fail("timeout"); },limits.commitMs);
+    if (queueFrame(makeFrame(target.zoom,ox,oy,1,0,0))) checkCommit();
+    return true;
+  };
+  m.cancel = () => cancel("idle",false);
+  m.dispose = () => {
+    if (m.disposed) return;
+    m.disposed=true; m.epoch++; clearCommit();
+    clearSceneGate(true);
+    if (m.activeDrag) m.activeDrag._gisPanFailed=true;
+    m.activeDrag=null;
+    if (m.observer) m.observer.disconnect();
+    window.removeEventListener("resize",onResize);
+    resetScene();
+    m.queue=[];
+    m.records.forEach(r => {r.retired=true;});
+    Array.from(m.slots.values()).forEach(s => { if (!s.inHandoff) releaseSlot(s); });
+    pruneRecords();
+    plane.remove();
+    m.phase="disposed";
+    if (root._gisPanTileContinuity===m) root._gisPanTileContinuity=null;
+  };
+  function onResize(){ resetScene(); disposeGisPanTileContinuity(root,false); }
+  window.addEventListener("resize",onResize,{passive:true});
+  if (typeof MutationObserver === "function"){
+    m.observer=new MutationObserver(() => {if(!live()) disposeGisPanTileContinuity(root,false);});
+    const mount=root.closest("#gisMapMount");
+    if (mount){m.observer.observe(mount,{childList:true,subtree:true});if(mount.parentNode)m.observer.observe(mount.parentNode,{childList:true});}
+    // Only this mode attribute, never a document-wide subtree observer.
+    m.observer.observe(document.body,{attributes:true,attributeFilter:["class"]});
+  }
+  queueFrame(makeFrame(m.sourceZoom,m.originX,m.originY,1,0,0));
+  return m;
+}
+function updateGisPanCacheTransform(drag){
+  const m=drag && drag._gisPanManager;
+  return m ? m.update(drag) : false;
+}
+function prepareGisPanCommit(root,drag,target,commit){
+  const m=drag && drag._gisPanManager;
+  return m ? m.finish(drag,target,commit) : false;
+}
+
 function collectBboxTiles(n, s, e, w, z0, z1){
   const out = [];
   n = +n; s = +s; e = +e; w = +w; z0 = +z0; z1 = +z1;
@@ -58363,6 +59062,16 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
     const img   = wrap.querySelector("img.tile");
     const voidE = wrap.querySelector(".tile-void");
     if (!img) return;
+    const prepared = img._gisPanPrepared;
+    if (prepared && prepared.ready && prepared.generation === tileGen && prepared.tkey === tkey
+      && prepared.layerId === layerId && prepared.zoom === z
+      && img.getAttribute("src") === img.getAttribute("data-blob-url")
+      && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0){
+      wrap.classList.remove("tile-pending", "tile-missing", "tile-network");
+      wrap.classList.add("tile-mission");
+      if (voidE) voidE.style.display="none";
+      return;
+    }
     const cleanBlobAttr = () => {
       const u = img.getAttribute("data-blob-url");
       if (u){ try { URL.revokeObjectURL(u); } catch(_){} img.removeAttribute("data-blob-url"); }
@@ -72300,6 +73009,8 @@ function openTrackPasteModal(){
 function renderTileMap(lat, lon, zoom){
   const root = document.getElementById("miniMap");
   if (!root) return;
+  disposeGisPanTileContinuity(root, true);
+  if (root._tileLoadMonitorCancel) root._tileLoadMonitorCancel();
   revokeMapBlobUrls(root);
 
   // On mobile the container may not be laid out yet when the first
@@ -73630,6 +74341,8 @@ function renderTileMap(lat, lon, zoom){
   }
   root._mapTileGen = (root._mapTileGen | 0) + 1;
   const __mapTileGen = root._mapTileGen;
+  consumeGisPanPreparedTiles(root, mapLayerId, zoom, __mapTileGen, originX, originY, W, H);
+  ensureGisPanTileContinuity(root, {layerId:mapLayerId,zoom,generation:__mapTileGen,originX,originY,width:W,height:H});
   void hydrateMapTiles(root, mapLayerId, layer, zoom, lat, lon, __mapTileGen, __hydrateFetchSig);
   void hydrateHillshadeOverlayTiles(root, __mapTileGen, __hydrateFetchSig);
   void hydrateWaymarkedHikingTiles(root, __mapTileGen, __hydrateFetchSig);
@@ -74009,50 +74722,48 @@ function attachCursorReadout(root, lat, lon, zoom){
  *   - file:// origin on a browser with strict mixed-content policies
  */
 function monitorTileLoading(root, lat, lon){
-  const imgs = root.querySelectorAll(".tile-map .tile");
-  const total = imgs.length;
-  if (!total) return;
-  let loaded = 0, errored = 0;
-  let decided = false;
-
-  const decide = () => {
-    if (decided) return;
-    // When offline (navigator.onLine=false or forceOffline), don't revert to
-    // the SVG map: cached tiles from IndexedDB are served by hydrateMapTiles
-    // and any remaining "?" placeholders are expected. The user explicitly
-    // chose offline mode; respect it.
-    if (!isEffectivelyOnline()){
-      decided = true;
-      return;
-    }
-    // If nothing loaded and at least 80% failed, fall back to SVG.
-    if (loaded === 0 && errored >= Math.ceil(total * 0.8)){
-      decided = true;
-      renderOfflineMiniMap(lat, lon);
-      const mm = document.getElementById("miniMap");
-      if (mm && !mm.querySelector(".tile-load-warn")){
-        const warn = document.createElement("div");
-        warn.className = "tile-load-warn";
-        warn.textContent = t("map.tileLoadFail") || "Tile non caricabili — mappa offline";
+  if (root._tileLoadMonitorCancel) root._tileLoadMonitorCancel();
+  const tileMap=root.querySelector(".tile-map");
+  const generation=root._mapTileGen;
+  const imgs=root.querySelectorAll(".tile-map .tile");
+  const total=imgs.length;
+  if (!total || !tileMap) return;
+  let loaded=0, errored=0, decided=false, timer=null, stopped=false;
+  const listeners=[];
+  const current=()=>root.isConnected && root._mapTileGen===generation && root.querySelector(".tile-map")===tileMap;
+  const cleanup=()=>{
+    if (stopped) return;
+    stopped=true;
+    if (timer!=null) clearTimeout(timer);
+    listeners.forEach(([img,type,fn])=>img.removeEventListener(type,fn));
+    if(root._tileLoadMonitorCancel===cleanup)root._tileLoadMonitorCancel=null;
+  };
+  root._tileLoadMonitorCancel=cleanup;
+  const decide=()=>{
+    if (stopped) return;
+    if (!current()){cleanup();return;}
+    if (decided){cleanup();return;}
+    // Preserve the existing offline policy and 80% failure threshold.
+    if (!isEffectivelyOnline()){decided=true;cleanup();return;}
+    if (loaded===0 && errored>=Math.ceil(total*0.8)){
+      decided=true;cleanup();
+      renderOfflineMiniMap(lat,lon);
+      const mm=document.getElementById("miniMap");
+      if(mm && !mm.querySelector(".tile-load-warn")){
+        const warn=document.createElement("div");warn.className="tile-load-warn";
+        warn.textContent=t("map.tileLoadFail")||"Tile non caricabili — mappa offline";
         mm.appendChild(warn);
       }
-    }
+    } else if(loaded>0) cleanup();
   };
-
-  imgs.forEach(img => {
-    // If a tile is already cached it may have loaded before we attached the
-    // handler — check naturalWidth synchronously.
-    if (img.complete && img.naturalWidth > 0){ loaded++; return; }
-    img.addEventListener("load",  () => { loaded++; if (loaded === 1) decided = true; });
-    img.addEventListener("error", () => {
-      errored++;
-      img.style.visibility = "hidden";
-      if (errored === total) decide();
-    });
+  imgs.forEach(img=>{
+    if(img.complete && img.naturalWidth>0){loaded++;return;}
+    const onLoad=()=>{if(!current()){cleanup();return;}loaded++;if(loaded===1)decided=true;};
+    const onError=()=>{if(!current()){cleanup();return;}errored++;img.style.visibility="hidden";if(errored===total)decide();};
+    img.addEventListener("load",onLoad);img.addEventListener("error",onError);
+    listeners.push([img,"load",onLoad],[img,"error",onError]);
   });
-
-  // Safety timeout in case some tiles never fire any event (e.g. hung).
-  setTimeout(decide, 4500);
+  timer=setTimeout(decide,4500);
 }
 
 /** GIS: doppio click sulla mappa centra la vista sul punto (solo viewCenter + render; niente lastResult/renderResults). */
@@ -74118,6 +74829,10 @@ function attachPanHandlers(root, lat, lon, zoom){
   const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .twb-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .gis-mobile-hud-row, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle, .poly-edit-shape, .poly-edit-handle, .poly-edit-handle-hit, .routing-marker-handle, .routing-marker-hit";
 
   let activeTouchDrag = null;
+  const cancelPendingPanForTool = () => {
+    const pendingPan=root._gisPanTileContinuity;
+    if(pendingPan && pendingPan.pendingCommit)pendingPan.cancel();
+  };
   const touchToolOwnsMapGesture = () => {
     let trackPick = false, workbenchPick = false;
     try { trackPick = (typeof trackMapPickEditingActive === "function") ? !!trackMapPickEditingActive() : !!(state.track && state.track.pickMode); } catch(_){}
@@ -74149,6 +74864,7 @@ function attachPanHandlers(root, lat, lon, zoom){
     };
   };
   const writeTouchTransform = (drag) => {
+    if (updateGisPanCacheTransform(drag)) return;
     tileLayer.style.transformOrigin = "50% 50%";
     tileLayer.style.transform = `translate3d(${drag.dx}px, ${drag.dy}px, 0) scale(${drag.scale || 1})`;
   };
@@ -74212,6 +74928,7 @@ function attachPanHandlers(root, lat, lon, zoom){
   };
   const yieldTouchGesture = (drag) => {
     if (!drag) return;
+    if(drag._gisPanManager){drag._gisPanManager.cancel();drag._gisPanManager=null;drag._gisPanFailed=false;}
     drag.toolGesture = true;
     drag.moved = true;
     drag.pinching = false;
@@ -74259,17 +74976,20 @@ function attachPanHandlers(root, lat, lon, zoom){
       }
       return;
     }
-    if (ev.target.closest(CTRL_SEL)) return; // don't hijack button clicks
+    if (ev.target.closest(CTRL_SEL)){
+      if(ev.target.closest(".mm-handle, .trk-handle, .wpt-handle, .rr-center-handle, .poly-edit-shape, .poly-edit-handle, .poly-edit-handle-hit, .routing-marker-handle, .routing-marker-hit"))cancelPendingPanForTool();
+      return; // don't hijack button clicks
+    }
     if (ev.button !== undefined && ev.button !== 0) return; // only left-click
     try {
-      if (typeof trackBrushYieldsPan === "function" && trackBrushYieldsPan()) return;
+      if (typeof trackBrushYieldsPan === "function" && trackBrushYieldsPan()){cancelPendingPanForTool();return;}
     } catch(_){}
     // Yield to bbox selection / handle drag. While .bbox-selecting is set
     // on .tile-map, the bbox draw handlers own the pointer. Also bail out
     // if the user clicked directly on an overlay handle or remove button.
-    if (state._bboxSelecting) return;
-    if (typeof boxZoomIsActive === "function" && boxZoomIsActive()) return;
-    if (ev.target.closest(".bbox-handle, .bbox-remove, .bbox-move")) return;
+    if (state._bboxSelecting){cancelPendingPanForTool();return;}
+    if (typeof boxZoomIsActive === "function" && boxZoomIsActive()){cancelPendingPanForTool();return;}
+    if (ev.target.closest(".bbox-handle, .bbox-remove, .bbox-move")){cancelPendingPanForTool();return;}
     const pt = getPt(ev);
     const isTouch = ev.type === "touchstart";
     const viewCenter = state.viewCenter || { lat, lon };
@@ -74282,9 +75002,16 @@ function attachPanHandlers(root, lat, lon, zoom){
       startViewCenter: { lat: viewCenter.lat, lon: viewCenter.lon },
       pinching: false, everPinched: false, afterPinchPan: false
     };
+    const panCache=root._gisPanTileContinuity;
+    if(drag.toolGesture)cancelPendingPanForTool();
+    else if(panCache)panCache.begin(drag);
+    if (!drag.toolGesture && root._gisPanBudgetFallback && !root._gisPanBudgetFallback.notified){
+      root._gisPanBudgetFallback.notified=true;gisPanTileFeedback("budget");
+    }
     if (isTouch) activeTouchDrag = drag;
 
     const onMove = (e) => {
+      if(drag._gisPanFailed || (drag._gisPanManager && !drag._gisPanManager.isCurrent()))return;
       if (drag.touch && drag.toolGesture){
         const pTool = getPt(e);
         if (Math.hypot(pTool.x - drag.sx, pTool.y - drag.sy) > 3) drag.moved = true;
@@ -74308,7 +75035,7 @@ function attachPanHandlers(root, lat, lon, zoom){
       if (drag.touch && drag.pinching){
         continueTouchPanAfterPinch(drag, e.touches && e.touches[0]);
       }
-      if (drag.touch && drag.afterPinchPan){
+      if (drag.afterPinchPan && (drag.touch || drag._gisPanContinuation)){
         drag.dx = drag.panBaseDx + (p.x - drag.panStartX);
         drag.dy = drag.panBaseDy + (p.y - drag.panStartY);
         const rect = tileMap.getBoundingClientRect();
@@ -74326,7 +75053,7 @@ function attachPanHandlers(root, lat, lon, zoom){
         tileMap.classList.add("dragging");
       }
       if (drag.moved){
-        tileLayer.style.transform = `translate3d(${drag.dx}px, ${drag.dy}px, 0)`;
+        if (!updateGisPanCacheTransform(drag)) tileLayer.style.transform = `translate3d(${drag.dx}px, ${drag.dy}px, 0)`;
         if (e.cancelable) e.preventDefault();
       }
     };
@@ -74350,6 +75077,7 @@ function attachPanHandlers(root, lat, lon, zoom){
 
       tileMap.classList.remove("dragging");
       if (drag.touch && ev.type === "touchcancel"){
+        if(drag._gisPanManager)drag._gisPanManager.cancel();
         tileLayer.style.transform = "";
         tileLayer.style.transformOrigin = "";
         return; // a cancelled gesture must never pan, zoom, or trigger a pick
@@ -74361,9 +75089,14 @@ function attachPanHandlers(root, lat, lon, zoom){
         tileLayer.style.transformOrigin = "";
         return;
       }
+      if(drag._gisPanFailed || (drag._gisPanManager && !drag._gisPanManager.isCurrent())){
+        if(drag.touch)root._mapTouchSuppressClickUntil=Date.now()+500;
+        return;
+      }
+      if(!drag.moved && drag._gisPanManager)drag._gisPanManager.endNoPan(drag);
       const cx = (ev && ev.clientX != null) ? ev.clientX : (ev && ev.changedTouches && ev.changedTouches[0] ? ev.changedTouches[0].clientX : null);
       const cy = (ev && ev.clientY != null) ? ev.clientY : (ev && ev.changedTouches && ev.changedTouches[0] ? ev.changedTouches[0].clientY : null);
-      if (drag.touch && drag.everPinched){
+      if (drag.everPinched && (drag.touch || drag._gisPanContinuation)){
         const scale = Math.max(0.01, Number(drag.scale) || 1);
         const mapLayer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
         const maxZoom = (mapLayer && Number.isFinite(mapLayer.maxZoom)) ? (mapLayer.maxZoom | 0) : 19;
@@ -74378,16 +75111,22 @@ function attachPanHandlers(root, lat, lon, zoom){
         const anchorWorldY = Number.isFinite(drag.anchorWorldY) ? drag.anchorWorldY : latToTileY(Math.max(-85.05, Math.min(85.05, vc.lat)), z0);
         const centerX = anchorWorldX * zoomFactor - (midpointX - rect.width / 2) / 256;
         const centerY = anchorWorldY * zoomFactor - (midpointY - rect.height / 2) / 256;
-        state.viewCenter = {
+        const finalCenter = {
           lat: Math.max(-85.05, Math.min(85.05, tileY2Lat(centerY, newZoom))),
           lon: normalizeLon(tileX2Lon(centerX, newZoom))
         };
-        state.mapZoom = newZoom;
-        try { saveStore(); } catch(_){}
-        root._mapTouchSuppressClickUntil = Date.now() + 500;
-        tileLayer.style.transform = "";
-        tileLayer.style.transformOrigin = "";
-        renderTileMap(lat, lon, newZoom);
+        const commitPinch = () => {
+          state.viewCenter = finalCenter;
+          state.mapZoom = newZoom;
+          try { saveStore(); } catch(_){}
+          root._mapTouchSuppressClickUntil = Date.now() + 500;
+          tileLayer.style.transform = "";
+          tileLayer.style.transformOrigin = "";
+          renderTileMap(lat, lon, newZoom);
+        };
+        if(drag.touch && drag._gisPanManager)root._mapTouchSuppressClickUntil=Date.now()+500;
+        if(prepareGisPanCommit(root,drag,{lat:finalCenter.lat,lon:finalCenter.lon,zoom:newZoom},commitPinch))return;
+        commitPinch();
         return;
       }
       if (drag.touch && drag.moved && !drag.toolGesture)
@@ -74718,9 +75457,13 @@ function attachPanHandlers(root, lat, lon, zoom){
       const newLon = normalizeLon(tileX2Lon(newVtx, z));
       let newLat   = tileY2Lat(newVty, z);
       newLat = Math.max(-85.05, Math.min(85.05, newLat));
-      state.viewCenter = { lat: newLat, lon: newLon };
-      saveStore();
-      renderTileMap(lat, lon, z);
+      const commitPan = () => {
+        state.viewCenter = { lat: newLat, lon: newLon };
+        saveStore();
+        renderTileMap(lat, lon, z);
+      };
+      if(prepareGisPanCommit(root,drag,{lat:newLat,lon:newLon,zoom:z},commitPan))return;
+      commitPan();
     };
 
     window.addEventListener("mousemove", onMove);
@@ -74750,6 +75493,12 @@ function attachPanHandlers(root, lat, lon, zoom){
 function renderOfflineMiniMap(lat, lon){
   const root = document.getElementById("miniMap");
   if (!root) return;
+  disposeGisPanTileContinuity(root, false);
+  if (root._tileLoadMonitorCancel) root._tileLoadMonitorCancel();
+  root._mapTileGen=(root._mapTileGen|0)+1;
+  try { if(root._miniMapTileHydrateAC)root._miniMapTileHydrateAC.abort(); } catch(_){}
+  root._miniMapTileHydrateAC=null;
+  revokeMapBlobUrls(root);
 
   const W = 360, H = 180;              // 1 unit = 1 degree
   const px = lon + 180;                // plate carrée x
