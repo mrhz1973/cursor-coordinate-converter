@@ -1,3 +1,22 @@
+# Report corrente — Build320 LIVE, Automated Browser QA aggregata PASS
+
+> Pass docs-only del 22 novembre 2026. `docs/FRONTIER.md` prevale; blocco ancora aperto, QA operatore PENDING. Cursor non usato.
+
+| Campo | Esito |
+| --- | --- |
+| BLOCK | `MAP-PAN-TILE-OVERSCAN-A` — Build320 |
+| Gate | `DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS (70/70 combinati) / QA_OPERATORE_PENDING` |
+| Runtime | source `ca3a38d1c7703c5bf93724cd5df608af2914751d`, SHA-256 `b3fcec1135b77bd0dec21351fb87b894c5f5828bce455995b8fa03aaf744f689` |
+| Evidence | [`REPORT.md`](../orchestrator/evidence/2026-11-22-build320-live-qa-aggregation/REPORT.md) e [`evidence.json`](../orchestrator/evidence/2026-11-22-build320-live-qa-aggregation/evidence.json) |
+| NEXT | ChatGPT presenta QA umana breve della Build320; soltanto dopo PASS operatore si innesca `finito` (OM §4 H) |
+| P0 | APERTO, autorizzato e NON ESEGUITO |
+
+R6 desktop 35/35 e R7 phone 35/35 sono ricevute distinte. Il precedente STOP non è cancellato. Nessuna modifica al monolite, al VPS o agli archivi dell'operatore. I report precedenti seguono come storico.
+
+---
+
+## Storico — rapporto del pass con gate HTTPS inizialmente bloccato
+
 # Handoff — Build320 LIVE, gate browser HTTPS bloccato
 
 > Report del pass. `docs/FRONTIER.md` è l’unica LIVE STATE; questo documento registra sviluppo, rilascio e arresto al gate effettivo.
