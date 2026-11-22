@@ -1,3 +1,25 @@
+# Handoff operativo — Build320 CLOSED, QA operatore PASS
+
+> Report di autosync della chiusura, non nuova evidenza runtime. La fonte LIVE STATE è `docs/FRONTIER.md`. Cursor non utilizzato.
+
+| Campo | Stato |
+| --- | --- |
+| BLOCK | MAP-PAN-TILE-OVERSCAN-A (Build320) — **CLOSED** |
+| GATE | `QA_OPERATORE_PASS / REGOLA_H_DOCS_CLOSURE_PUBLISHED` |
+| Runtime LIVE | Build320 source `ca3a38d1c7703c5bf93724cd5df608af2914751d`, SHA-256 `b3fcec1135b77bd0dec21351fb87b894c5f5828bce455995b8fa03aaf744f689` |
+| Tech | Deploy PASS; ABQA LIVE aggregata Edge158 desktop35/35 e phone35/35 = **70/70 PASS** |
+| Human | `QA MAP-PAN-TILE-OVERSCAN-A PASS operatore` in chat, senza dettaglio device/browser/ora |
+| Closure commit | [`17f17d0`](https://github.com/mrhz1973/cursor-coordinate-converter/commit/17f17d036cf835393cae77fd32f8d5394e07a31b) |
+| Evidence | [`QA320-closure`](../orchestrator/evidence/2026-11-22-qa320-closure/REPORT.md) · [`QA-live`](../orchestrator/evidence/2026-11-22-build320-live-qa-aggregation/REPORT.md) |
+| NEXT | Audit mirato del backlog autorizzato; nessun candidato successivo già aperto |
+| P0 | OPEN / APPLICATION_AUTHORIZED_NOT_EXECUTED |
+
+Regola H: chiusura documentale già pubblicata e remota verificata. Questo autosync registra lo stato, non riesegue alcun test, non modifica il runtime, non avvia Cursor o deploy, e non attribuisce compatibilità universale né prove umane non specificate.
+
+---
+
+## Storico — rapporto precedente (gate QA operatore pendente)
+
 # Report corrente — Build320 LIVE, Automated Browser QA aggregata PASS
 
 > Pass docs-only del 22 novembre 2026. `docs/FRONTIER.md` prevale; blocco ancora aperto, QA operatore PENDING. Cursor non usato.
