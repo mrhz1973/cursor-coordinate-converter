@@ -4,22 +4,28 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Build319 tooltip toolbar mappa GIS LIVE, selezionata dal backlog operativo su direttiva «segui il backlog». Qualifica candidata e LIVE PASS; QA operatore PENDING. P0 secondario, autorizzato e non eseguito. |
-| **WU ATTIVA** | â€” (bundle runtime a livello blocco) |
-| **BLOCCO ATTIVO** | MAP-RIGHT-TOOLBAR-TOOLTIPS-A — ROUTINE, Build319 LIVE. |
-| **STATO BLOCCO** | DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS / QA_FINALE_CHATGPT_PENDING. Candidato finale 196/196 e LIVE HTTPS reale 112/112 PASS; nessun PASS operatore319, CLOSED o FINITO attribuito. |
-| **GATE CORRENTE** | QA FINALE CHATGPT — PENDING. Resta la breve verifica operatore dei tooltip della toolbar mappa; deploy e Automated Browser QA sono PASS. |
+| **WORKSTREAM ATTIVO** | Build319 tooltip toolbar mappa GIS LIVE e CLOSED dopo QA operatore PASS. Prosecuzione del backlog operativo già autorizzata; audit della prima voce mappa in corso. P0 secondario, autorizzato e non eseguito. |
+| **WU ATTIVA** | — (nessuna WU attiva). |
+| **BLOCCO ATTIVO** | Nessuno — MAP-RIGHT-TOOLBAR-TOOLTIPS-A, ROUTINE, chiuso con Build319 LIVE. |
+| **STATO BLOCCO** | CLOSED / DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS / QA_OPERATORE_PASS. Attestazione operatore acquisita il 22/11/2026; candidato 196/196 e LIVE HTTPS 112/112 PASS riusati. |
+| **GATE CORRENTE** | QA finale Build319 PASS e blocco CLOSED. Prosecuzione del backlog operativo autorizzata: audit della prima voce mappa in corso; nessun candidato320 aperto. |
 | **RUNTIME LIVE** | Build319 source b858b4e368d4eaa9ac007e73b0487c7e1a253f2c, blob d953ae6416b6b6e3b0405acc5b59400e93166703, SHA256 5bd0375bdc851de12763b648eefb736db2c6a8e076ba8cbb4cbc3052d4600d18, 11.299.241 byte CR192/CRLF0; GitHub/VPS/file/HTTP/HTTPS concordi. |
-| **RUNTIME CANDIDATE** | Build319 qualificata e distribuita; nessun candidato successivo aperto. |
-| **ULTIMO BLOCCO CHIUSO** | GIS-RESPONSIVE-TOUCH-ACCESSIBILITY-A — Build318, QA operatore PASS 22/11/2026; [ricevuta](orchestrator/evidence/2026-11-22-qa318-closure/REPORT.md). |
-| **NEXT** | [Build319 e prove](orchestrator/evidence/2026-11-22-toolbar-tooltips-319/REPORT.md): QA operatore breve dei tooltip con hover, Tab e scroll della toolbar. Dopo il PASS, chiusura secondo metodo e prosecuzione del [backlog operativo](work-units/WU-0005-0009-roadmap.md), senza nuova domanda generica sul prossimo obiettivo. |
+| **RUNTIME CANDIDATE** | Nessuno. Build319 qualificata, distribuita e chiusa; nessun candidato320 aperto. |
+| **ULTIMO BLOCCO CHIUSO** | MAP-RIGHT-TOOLBAR-TOOLTIPS-A — Build319, QA operatore PASS 22/11/2026; [ricevuta](orchestrator/evidence/2026-11-22-qa319-closure/REPORT.md). |
+| **NEXT** | Completare l’audit della prima voce mappa del [backlog operativo](work-units/WU-0005-0009-roadmap.md) e proseguire con il primo intervento eseguibile nello scope già autorizzato da «segui il backlog». Nessuna nuova richiesta generica di scope; nessuna WU attiva o candidato320 ancora aperto. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P0 secondario APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: copie qualificate, autorizzazione acquisita; controllo dell’archivio interno richiesto non disponibile, backup corrente atteso e inventario istanze scriventi incompleto. Caricamento operatore già confermato; archivio interno non identificato e backup completo origine non attestato. Compatibilità mobile/iPad riaperta; P4 SOLO FUTURO. |
 | **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 recupero qualificato sulle copie](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
-| **SVILUPPO TELEFONO** | Requisito desktop/mobile/iPad confermato. Build319: candidato 196/196 e LIVE HTTPS 112/112 PASS su Edge157.0.4341.60 con viewport/touch emulati, inclusi 390 e 320 px. QA operatore319 PENDING; nessun PASS universale, su dispositivi fisici identificati, Safari o Firefox attribuito. |
+| **SVILUPPO TELEFONO** | Requisito desktop/mobile/iPad confermato. Build319: candidato 196/196 e LIVE HTTPS 112/112 PASS su Edge157.0.4341.60 con viewport/touch emulati, inclusi 390 e 320 px; QA operatore PASS 22/11/2026, dispositivo/browser non specificati. Nessun PASS universale, su dispositivi fisici identificati, Safari o Firefox attribuito. |
 | **ACCESSO / DEPLOY** | 22/11/2026: Build319 deploy GIS-only verificato, servizio attivo e clone pulito. Backup /var/backups/goi-gis-runtime/prebuild319-v1omhzk6; HTTP/HTTPS 200 senza redirect, Content-Length 11299241 e SHA256 concordi. [Apri Build319](https://ionos-n8n-new.tailc01234.ts.net/gis?v=5bd0375b). |
-| **EVIDENCE** | [Release319, iterazioni e limiti](orchestrator/evidence/2026-11-22-toolbar-tooltips-319/REPORT.md) - [Ricevute319](orchestrator/evidence/2026-11-22-toolbar-tooltips-319/evidence.json) - [Voce tooltip operativa](work-units/WU-0005-0009-roadmap.md#map-right-toolbar-tooltips-a) - [Chiusura QA318](orchestrator/evidence/2026-11-22-qa318-closure/REPORT.md) - [P0 controllo non disponibile](orchestrator/evidence/2026-11-22-internal-browser-operator-access/REPORT.md) - [P0 copie qualificate](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md). |
+| **EVIDENCE** | [Chiusura QA319](orchestrator/evidence/2026-11-22-qa319-closure/REPORT.md) - [Attestazione operatore319](orchestrator/evidence/2026-11-22-qa319-closure/evidence.json) - [Release319 e limiti al deploy](orchestrator/evidence/2026-11-22-toolbar-tooltips-319/REPORT.md) - [Ricevute tecniche319](orchestrator/evidence/2026-11-22-toolbar-tooltips-319/evidence.json) - [Voce tooltip chiusa](work-units/WU-0005-0009-roadmap.md#map-right-toolbar-tooltips-a) - [P0 controllo non disponibile](orchestrator/evidence/2026-11-22-internal-browser-operator-access/REPORT.md). |
+
+## Build319 — QA operatore PASS, blocco CLOSED (22 novembre 2026)
+
+Ricevuta l’attestazione esatta `QA MAP-RIGHT-TOOLBAR-TOOLTIPS-A PASS operatore`. Il blocco è CLOSED / QA_OPERATORE_PASS; [ricevuta](orchestrator/evidence/2026-11-22-qa319-closure/REPORT.md) ed [evidenza strutturata](orchestrator/evidence/2026-11-22-qa319-closure/evidence.json). Dispositivo, browser e ora del collaudo umano non specificati.
+
+Candidato 196/196 e LIVE HTTPS reale 112/112 PASS già acquisiti e riusati; runtime319 invariato, nessun nuovo test o deploy. La sezione di rilascio seguente conserva il precedente gate umano pendente. Prosecuzione del backlog operativo già autorizzata, con audit della prima voce mappa in corso; nessuna WU attiva o candidato320 aperto. P0 aperto/autorizzato/non applicato, DTM HOLD e P4 FUTURO invariati.
 
 ## Build319 — tooltip LIVE, QA operatore pendente (22 novembre 2026)
 

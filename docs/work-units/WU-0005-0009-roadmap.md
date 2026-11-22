@@ -779,7 +779,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **BACKLOG / NOT OPENED** |
 | **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **CLOSED / PASS** LIVE **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · finito Regola H |
 | **GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1)** | Accesso **Oggetti GIS** solo da Impostazioni; FIX1 ripristina geometria toolbar mappa | **CLOSED / PASS** LIVE **247** tip `ac4789e` · blob `6e10d568…` · QA operatore PASS · finito Regola H — modulo **FROZEN / MAINTENANCE-ONLY** |
-| **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **LIVE Build319 / TECHNICAL PASS / QA OPERATORE PENDING** |
+| **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **CLOSED / QA_OPERATORE_PASS** · LIVE **319** · 22/11/2026 |
 | **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **BACKLOG / NOT OPENED** — casa: §8 sopra; **non** riaprire WU-0018 |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
@@ -850,7 +850,7 @@ Acceptance futura primaria: se tutte le tile necessarie al nuovo viewport sono g
 
 #### MAP-RIGHT-TOOLBAR-TOOLTIPS-A
 
-**Stato:** **LIVE Build319 / TECHNICAL PASS / QA OPERATORE PENDING** (2026-11-22). Blocco ROUTINE selezionato su direttiva «segui il backlog»; runtime `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c`, blob `d953ae6416b6b6e3b0405acc5b59400e93166703`.
+**Stato:** **CLOSED / QA_OPERATORE_PASS** (2026-11-22). Blocco ROUTINE selezionato su direttiva «segui il backlog»; runtime `b858b4e368d4eaa9ac007e73b0487c7e1a253f2c`, blob `d953ae6416b6b6e3b0405acc5b59400e93166703`.
 
 Requisito: tutti i pulsanti della toolbar verticale a destra della mappa devono avere tooltip:
 
@@ -860,7 +860,9 @@ Requisito: tutti i pulsanti della toolbar verticale a destra della mappa devono 
 - testo breve e comprensibile;
 - nessuna modifica funzionale alle azioni dei pulsanti.
 
-Ricevuta: [release319, iterazioni e limiti](../orchestrator/evidence/2026-11-22-toolbar-tooltips-319/REPORT.md), [evidenze](../orchestrator/evidence/2026-11-22-toolbar-tooltips-319/evidence.json). Candidato finale 196/196 e LIVE HTTPS reale 112/112 PASS; QA operatore PENDING, nessun CLOSED o FINITO attribuito. Dopo il PASS operatore, chiusura secondo metodo e prosecuzione del backlog operativo. Requisito e acceptance invariati.
+Ricevuta del rilascio, con QA operatore allora pendente: [release319, iterazioni e limiti](../orchestrator/evidence/2026-11-22-toolbar-tooltips-319/REPORT.md), [evidenze tecniche](../orchestrator/evidence/2026-11-22-toolbar-tooltips-319/evidence.json). Candidato finale 196/196 e LIVE HTTPS reale 112/112 PASS già acquisiti e riusati.
+
+Chiusura: attestazione esatta `QA MAP-RIGHT-TOOLBAR-TOOLTIPS-A PASS operatore`, acquisita il 22/11/2026; [ricevuta QA319](../orchestrator/evidence/2026-11-22-qa319-closure/REPORT.md) ed [evidenza strutturata](../orchestrator/evidence/2026-11-22-qa319-closure/evidence.json). Dispositivo, browser e ora del collaudo umano non specificati. Runtime invariato, nessun nuovo test o deploy; requisito e acceptance invariati. La prosecuzione del backlog operativo resta autorizzata.
 
 #### D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2) — **CLOSED / PASS** (build 238, 2026-08-21)
 
