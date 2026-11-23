@@ -1967,11 +1967,11 @@ html[data-theme="dark"] .bbox-overlay{
 .offcache-named .btn{padding:5px 10px; font-size:.78rem}
 
 .tile-wrap{
-  position:absolute; width:256px; height:256px; overflow:hidden;
+  position:absolute; width:var(--gis-view-tile-px,256px); height:var(--gis-view-tile-px,256px); overflow:hidden;
   contain:layout style;
 }
 .tile-wrap .tile{
-  position:absolute; left:0; top:0; width:256px; height:256px;
+  position:absolute; left:0; top:0; width:100%; height:100%;
   display:block; pointer-events:none; image-rendering:auto;
 }
 /* Raster overlay stack (DOM order + shared z=3): basemap(2) < hillshade <
@@ -2183,8 +2183,8 @@ html[data-theme="light"] .mini-map{background:#eef3f9}
   position:absolute; inset:0; will-change:transform;
 }
 .gis-pan-cache-plane{position:absolute;inset:0;pointer-events:none;overflow:visible;}
-.gis-pan-cache-slot{position:absolute;width:256px;height:256px;overflow:hidden;contain:layout style;pointer-events:none;}
-.gis-pan-cache-tile{position:absolute;left:0;top:0;width:256px;height:256px;pointer-events:none;image-rendering:auto;-webkit-user-drag:none;}
+.gis-pan-cache-slot{position:absolute;width:var(--gis-view-tile-px,256px);height:var(--gis-view-tile-px,256px);overflow:hidden;contain:layout style;pointer-events:none;}
+.gis-pan-cache-tile{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;image-rendering:auto;-webkit-user-drag:none;}
 .tile-map.coverage-on .gis-pan-cache-slot::after{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:rgba(34,197,94,.045);box-shadow:inset 0 0 0 1px rgba(34,197,94,.16);
@@ -2193,7 +2193,7 @@ html[data-theme="light"] .tile-map.coverage-on .gis-pan-cache-slot::after{
   background:rgba(22,163,74,.055);box-shadow:inset 0 0 0 1px rgba(22,163,74,.22);
 }
 .tile-map .tile{
-  position:absolute; width:256px; height:256px;
+  position:absolute; width:var(--gis-view-tile-px,256px); height:var(--gis-view-tile-px,256px);
   pointer-events:none; image-rendering:auto; -webkit-user-drag:none;
 }
 /* Marker: inline SVG pin anchored at its tip (bottom-center). Using an SVG
@@ -18941,7 +18941,8 @@ const I18N = {
     "map.targetScaleLabel":"Scala nominale 1:",
     "map.targetScaleApply":"Applica",
     "map.targetScaleClose":"Chiudi",
-    "map.targetScaleHint":"Scala nominale: 0,28 mm/pixel convenzionali, zoom interi; non è una scala fisica calibrata.",
+    "map.targetScaleHint":"Scala nominale: 0,28 mm/pixel convenzionali, zoom intero per questo layer o overlay; non è una scala fisica calibrata.",
+    "map.targetScaleHintFractional":"Scala nominale continua: 0,28 mm/pixel convenzionali; tile raster a livelli interi. Non è una scala fisica calibrata.",
     "map.targetScaleInvalid":"Inserisci un denominatore valido tra 100 e 100.000.000 (es. 25.000).",
     "map.targetScaleResult":"Richiesta 1:{0}; ottenuta circa 1:{1} (zoom {2}, scarto {3}%).",
     "map.targetScaleBound":"Limite del livello zoom per questo layer.",
@@ -21519,7 +21520,8 @@ const I18N = {
     "map.targetScaleLabel":"Nominal scale 1:",
     "map.targetScaleApply":"Apply",
     "map.targetScaleClose":"Close",
-    "map.targetScaleHint":"Nominal scale: conventional 0.28 mm/pixel and integer zoom levels, not a calibrated physical screen scale.",
+    "map.targetScaleHint":"Nominal scale: conventional 0.28 mm/pixel, integer zoom for this layer or overlay; not a calibrated physical screen scale.",
+    "map.targetScaleHintFractional":"Continuous nominal scale: conventional 0.28 mm/pixel; integer raster tile levels. Not a calibrated physical screen scale.",
     "map.targetScaleInvalid":"Enter a valid denominator from 100 to 100,000,000 (e.g. 25000).",
     "map.targetScaleResult":"Requested 1:{0}; nearest about 1:{1} (zoom {2}, deviation {3}%).",
     "map.targetScaleBound":"Clamped by this layer's zoom range.",
@@ -23756,7 +23758,8 @@ const I18N = {
     "map.targetScaleLabel":"Échelle nominale 1 :",
     "map.targetScaleApply":"Appliquer",
     "map.targetScaleClose":"Fermer",
-    "map.targetScaleHint":"Échelle nominale : 0,28 mm/pixel conventionnels et niveaux de zoom entiers, sans calibrage physique de l’écran.",
+    "map.targetScaleHint":"Échelle nominale : 0,28 mm/pixel conventionnels, zoom entier pour cette couche ou superposition, sans calibrage physique de l’écran.",
+    "map.targetScaleHintFractional":"Échelle nominale continue : 0,28 mm/pixel conventionnels et tuiles raster à niveaux entiers. Sans calibrage physique de l’écran.",
     "map.targetScaleInvalid":"Saisir un dénominateur de 100 à 100 000 000 (ex. 25000).",
     "map.targetScaleResult":"Demandé 1:{0} ; obtenu environ 1:{1} (zoom {2}, écart {3} %).",
     "map.targetScaleBound":"Limite du zoom disponible pour cette couche.",
@@ -26721,10 +26724,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-FRACTIONAL-ZOOM-A-T1";
-const APP_BUILD_DETAIL = "Anteprima wheel raster fluida; commit a zoom intero con camera canonica invariata durante il gesto.";
+const APP_BUILD_ID = "MAP-FRACTIONAL-ZOOM-A-T2";
+const APP_BUILD_DETAIL = "Zoom frazionario persistente su raster compatibili; camera reale e livelli tile interi.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 322;
+const APP_BUILD_NUM = 323;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -34074,8 +34077,8 @@ function getQuickExportViewportSnapshot(){
 
   const zoomRaw = state.mapZoom;
   if (!Number.isFinite(zoomRaw)) return { ok: false, reason: "invalid_zoom" };
-  const zoom = zoomRaw | 0;
-  if (zoom !== zoomRaw || zoom < 2) return { ok: false, reason: "invalid_zoom" };
+  const zoom = zoomRaw;
+  if (zoom < 2 || zoom > 20) return { ok: false, reason: "invalid_zoom" };
 
   const layerId = sanitizeMapLayer(state.mapLayer);
   if (!layerId || !TILE_LAYERS[layerId]) return { ok: false, reason: "invalid_layer" };
@@ -34115,7 +34118,7 @@ function getQuickExportViewportSnapshot(){
   return {
     ok: true,
     bbox: { n, s, e, w },
-    zoom,
+    zoom: gisRasterZoomModel(zoom).tileZoom,
     layerId,
     widthPx,
     heightPx
@@ -56619,7 +56622,25 @@ function buildScaleBar(zoom, lat, size, mapW){
 /* MAP-TARGET-SCALE-A: match the existing 0.28 mm nominal-pixel convention.
  * Fractional zoom is a separate backlog item. No physical-display DPI is inferred.
  */
-function gisTargetScaleChoose(raw, lat, maxZoom){
+/* T2: real camera zoom, integer raster source zoom. No new storage key.
+ * This conservative allowlist excludes specialized raster overlays and providers. */
+function gisFractionalZoomAllowed(layerId = state.mapLayer || "osm"){
+  return ["osm","osmHot","osmStandard","cyclosm","topo"].includes(layerId) &&
+    !state.showSeamarks && !state.showSonarChart && !state.showHillshadeOverlay &&
+    !state.showWaymarkedHiking && !state.showStravaRunHeatmap &&
+    !(typeof _dflightOverlayVisible !== "undefined" && _dflightOverlayVisible);
+}
+function gisNormalizeViewZoom(value, maxZoom, fractional = gisFractionalZoomAllowed()){
+  const max = Number.isFinite(maxZoom) ? Math.max(2, Math.floor(maxZoom)) : 18;
+  const raw = Number.isFinite(value) ? value : 11;
+  const z = Math.max(2, Math.min(max, raw));
+  return fractional ? Math.round(z * 1000000) / 1000000 : Math.round(z);
+}
+function gisRasterZoomModel(viewZoom){
+  const tileZoom = Math.floor(viewZoom);
+  return { viewZoom, tileZoom, tilePx:256 * Math.pow(2, viewZoom - tileZoom) };
+}
+function gisTargetScaleChoose(raw, lat, maxZoom, fractional = false){
   let s = String(raw == null ? "" : raw).trim().replace(/^1\s*[:/]\s*/, "").trim();
   if (s.length > 24) return null;
   if (/^\d{1,3}(?:[.,\u00a0\u202f ]\d{3})+$/.test(s)) s = s.replace(/[.,\s\u00a0\u202f]/g, "");
@@ -56632,7 +56653,7 @@ function gisTargetScaleChoose(raw, lat, maxZoom){
   const atZeroZoom = 156543.03392 * Math.cos(centerLat * DEG) / 0.00028;
   const idealZoom = Math.log2(atZeroZoom / requested);
   if (!Number.isFinite(idealZoom)) return null;
-  const zoom = Math.max(2, Math.min(max, Math.round(idealZoom)));
+  const zoom = gisNormalizeViewZoom(idealZoom, max, fractional);
   const actual = atZeroZoom / Math.pow(2, zoom);
   return { requested, zoom, actual, clamped:idealZoom < 2 || idealZoom > max,
     deviationPercent:Math.abs(actual / requested - 1) * 100 };
@@ -56680,7 +56701,7 @@ function gisTargetScaleBind(root, markerLat, markerLon){
     const center = state.viewCenter && Number.isFinite(state.viewCenter.lat) &&
       Number.isFinite(state.viewCenter.lon) ? state.viewCenter : {lat:markerLat,lon:markerLon};
     const layer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
-    const result = gisTargetScaleChoose(input.value, center.lat, layer.maxZoom);
+    const result = gisTargetScaleChoose(input.value, center.lat, layer.maxZoom, gisFractionalZoomAllowed());
     if (!result){
       feedback.textContent = t("map.targetScaleInvalid");
       input.focus();
@@ -57717,12 +57738,13 @@ function consumeGisPanPreparedTiles(root, layerId, zoom, generation, originX, or
   const frame = root && root._gisPanPreparedTiles;
   if (!frame) return 0;
   let count = 0;
-  const matches = frame.layerId === layerId && frame.zoom === zoom
+  const {tileZoom, tilePx} = gisRasterZoomModel(zoom);
+  const matches = frame.layerId === layerId && frame.zoom === tileZoom && frame.viewZoom === zoom
     && Math.abs(frame.originX - originX) < 0.01 && Math.abs(frame.originY - originY) < 0.01
     && Math.abs(frame.width - width) < 1 && Math.abs(frame.height - height) < 1;
   if (matches){
     root.querySelectorAll(".tile-wrap").forEach(wrap => {
-      const x = Math.round((parseFloat(wrap.style.left) + originX) / 256);
+      const x = Math.round((parseFloat(wrap.style.left) + originX) / tilePx);
       const y = Number(wrap.dataset.y);
       const row = frame.rows.get(x + "/" + y);
       const old = wrap.querySelector("img.tile");
@@ -57733,7 +57755,7 @@ function consumeGisPanPreparedTiles(root, layerId, zoom, generation, originX, or
       img.style.top = "0px";
       img.setAttribute("data-layer", layerId);
       img.setAttribute("data-blob-url", row.url);
-      img._gisPanPrepared = { tkey:row.tkey, layerId, zoom, generation, ready:true };
+      img._gisPanPrepared = { tkey:row.tkey, layerId, zoom:tileZoom, generation, ready:true };
       old.replaceWith(img);
       wrap.classList.remove("tile-pending", "tile-missing", "tile-network");
       wrap.classList.add("tile-mission");
@@ -57759,7 +57781,8 @@ function ensureGisPanTileContinuity(root, context){
   const limits = GIS_PAN_TILE_LIMITS;
   const resources = gisPanTileResources(root);
   const m = {
-    root, tileMap, tileLayer, signature, layerId:context.layerId, sourceZoom:context.zoom,
+    root, tileMap, tileLayer, signature, layerId:context.layerId,
+    viewZoom:context.zoom, sourceZoom:gisRasterZoomModel(context.zoom).tileZoom, tilePx:gisRasterZoomModel(context.zoom).tilePx,
     generation:context.generation, width:context.width, height:context.height,
     originX:context.originX, originY:context.originY, epoch:0, phase:"priming", disposed:false,
     desired:{dx:0,dy:0,scale:1}, applied:{dx:0,dy:0,scale:1},
@@ -57776,7 +57799,7 @@ function ensureGisPanTileContinuity(root, context){
   m.plane = plane;
   const canonicalSlots = new Map();
   tileLayer.querySelectorAll(".tile-wrap").forEach(wrap => {
-    const x = Math.round((parseFloat(wrap.style.left) + m.originX) / 256);
+    const x = Math.round((parseFloat(wrap.style.left) + m.originX) / m.tilePx);
     const y = Number(wrap.dataset.y);
     if (Number.isFinite(x) && Number.isFinite(y)) canonicalSlots.set(slotKey(m.sourceZoom,x,y),wrap);
   });
@@ -57784,7 +57807,7 @@ function ensureGisPanTileContinuity(root, context){
     return !m.disposed && root.isConnected && root._gisPanTileContinuity === m
       && root.querySelector(".tile-map") === tileMap && tileLayer.isConnected
       && root._mapTileGen === m.generation && document.body.classList.contains("gis-mode")
-      && (state.mapLayer || "osm") === m.layerId && Number(state.mapZoom) === m.sourceZoom;
+      && (state.mapLayer || "osm") === m.layerId && Number(state.mapZoom) === m.viewZoom;
   }
   function signalRoom(){
     Array.from(resources.waiters).forEach(wake => wake());
@@ -58034,15 +58057,16 @@ function ensureGisPanTileContinuity(root, context){
   m.isCurrent = live;
   m.endNoPan = drag => { if (m.activeDrag === drag){ clearSceneGate(false);m.activeDrag=null; m.phase="idle"; } };
   function slotKey(z,x,y){ return z + "/" + x + "/" + y; }
-  function makeFrame(z, originX, originY, scale, dx, dy){
+  function makeFrame(viewZoom, originX, originY, scale, dx, dy){
+    const {tileZoom:z, tilePx} = gisRasterZoomModel(viewZoom);
     const cx = m.width / 2, cy = m.height / 2;
     const left = originX + cx + (-cx - dx) / scale;
     const right = originX + cx + (cx - dx) / scale;
     const top = originY + cy + (-cy - dy) / scale;
     const bottom = originY + cy + (cy - dy) / scale;
     const n = Math.pow(2,z);
-    const x0 = Math.floor(left / 256), x1 = Math.floor(right / 256);
-    const y0 = Math.max(0,Math.floor(top / 256)), y1 = Math.min(n-1,Math.floor(bottom / 256));
+    const x0 = Math.floor(left / tilePx), x1 = Math.floor(right / tilePx);
+    const y0 = Math.max(0,Math.floor(top / tilePx)), y1 = Math.min(n-1,Math.floor(bottom / tilePx));
     if (!Number.isFinite(x0 + x1 + y0 + y1) || (x1-x0+1) * Math.max(0,y1-y0+1) > limits.slots){ fail("budget"); return null; }
     const visible = [], halo = [];
     for (let y=Math.max(0,y0-1); y<=Math.min(n-1,y1+1); y++){
@@ -58052,7 +58076,7 @@ function ensureGisPanTileContinuity(root, context){
         (x>=x0 && x<=x1 && y>=y0 && y<=y1 ? visible : halo).push(desc);
       }
     }
-    return {z,originX,originY,visible,halo};
+    return {z,viewZoom,tilePx,originX,originY,visible,halo};
   }
   function queueFrame(frame){
     if (!frame || m.lastError) return false;
@@ -58192,8 +58216,8 @@ function ensureGisPanTileContinuity(root, context){
     m.slots.forEach(s => {
       if (s.released || s.status !== "ready" || s.z !== m.sourceZoom) return;
       if (m.wanted.has(s.key) && !canonicalSlots.has(s.key)){
-        s.node.style.left = (s.x*256 - m.originX) + "px";
-        s.node.style.top = (s.y*256 - m.originY) + "px";
+        s.node.style.left = (s.x*m.tilePx - m.originX) + "px";
+        s.node.style.top = (s.y*m.tilePx - m.originY) + "px";
         if (s.node.parentNode !== plane) plane.appendChild(s.node);
       } else if (s.node.parentNode === plane) s.node.remove();
     });
@@ -58228,7 +58252,7 @@ function ensureGisPanTileContinuity(root, context){
     });
     clearCommit();
     m.phase = "handoff";
-    root._gisPanPreparedTiles = {layerId:m.layerId,zoom:frame.z,originX:frame.originX,originY:frame.originY,width:m.width,height:m.height,rows};
+    root._gisPanPreparedTiles = {layerId:m.layerId,zoom:frame.z,viewZoom:frame.viewZoom,originX:frame.originX,originY:frame.originY,width:m.width,height:m.height,rows};
     try { pending.commit(); }
     catch(error){ releaseGisPanPreparedTiles(root); if (!m.disposed) fail("decode"); throw error; }
   }
@@ -58265,7 +58289,7 @@ function ensureGisPanTileContinuity(root, context){
   m.update = (drag) => {
     if (drag._gisPanFailed || !live() || drag._gisPanEpoch !== m.epoch) return true;
     m.desired={dx:drag.dx,dy:drag.dy,scale:Math.max(0.000001,Number(drag.scale)||1)};
-    const frame=makeFrame(m.sourceZoom,m.originX,m.originY,m.desired.scale,m.desired.dx,m.desired.dy);
+    const frame=makeFrame(m.viewZoom,m.originX,m.originY,m.desired.scale,m.desired.dx,m.desired.dy);
     if (queueFrame(frame)){ m.phase="dragging-wait"; present(drag); }
     return true;
   };
@@ -58308,7 +58332,7 @@ function ensureGisPanTileContinuity(root, context){
     // Only this mode attribute, never a document-wide subtree observer.
     m.observer.observe(document.body,{attributes:true,attributeFilter:["class"]});
   }
-  queueFrame(makeFrame(m.sourceZoom,m.originX,m.originY,1,0,0));
+  queueFrame(makeFrame(m.viewZoom,m.originX,m.originY,1,0,0));
   return m;
 }
 function updateGisPanCacheTransform(drag){
@@ -60184,7 +60208,7 @@ function mapZoomApplyFocusedZoomIn(root, newZoom, focus){
   if (!Number.isFinite(focus.lat) || !Number.isFinite(focus.lon)) return false;
   const layer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
   const maxZ = (layer && Number.isFinite(layer.maxZoom)) ? (layer.maxZoom | 0) : 19;
-  const z = Math.max(2, Math.min(maxZ, Math.round(newZoom)));
+  const z = gisNormalizeViewZoom(newZoom, maxZ);
   let u = null;
   try { u = gisMapUsableRect(root); } catch(_){}
   let cam = { lat: focus.lat, lon: normalizeLon(focus.lon) };
@@ -73185,7 +73209,8 @@ function renderTileMap(lat, lon, zoom){
   root._tileRetries = 0;
 
   const layer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
-  zoom = Math.max(2, Math.min(layer.maxZoom, Math.round(zoom)));
+  zoom = gisNormalizeViewZoom(zoom, layer.maxZoom);
+  const {tileZoom, tilePx} = gisRasterZoomModel(zoom);
   state.mapZoom = zoom;
 
   const size = state.mapSize || "small";
@@ -73214,9 +73239,9 @@ function renderTileMap(lat, lon, zoom){
   const ctrPx = vtx * 256, ctrPy = vty * 256;
   const originX = ctrPx - W / 2;
   const originY = ctrPy - H / 2;
-  const txMin = Math.floor(originX / 256), txMax = Math.floor((originX + W) / 256);
-  const tyMin = Math.floor(originY / 256), tyMax = Math.floor((originY + H) / 256);
-  const maxTile = Math.pow(2, zoom);
+  const txMin = Math.floor(originX / tilePx), txMax = Math.floor((originX + W) / tilePx);
+  const tyMin = Math.floor(originY / tilePx), tyMax = Math.floor((originY + H) / tilePx);
+  const maxTile = Math.pow(2, tileZoom);
 
   // Marker position: the actual converted point (may be off-center after pan)
   const mtx = lonToTileX(lon, zoom);
@@ -73229,7 +73254,7 @@ function renderTileMap(lat, lon, zoom){
   // Small mode: do NOT set inline height — it fought with width:100% and
   // produced a tall rectangle when W was wrongly large. CSS aspect-ratio:1/1
   // keeps the viewport truly square after the W fix above.
-  const mapBoxStyle = size === "small" ? "" : `height:${H}px`;
+  const mapBoxStyle = (size === "small" ? "" : `height:${H}px;`) + `--gis-view-tile-px:${tilePx}px`;
   const hintCls = (state.tilePackHints !== false) ? " tile-hints-on" : "";
   let html = `<div class="tile-map ${isEnlarged ? "tm-enlarged" : ""} size-${size}${hintCls}${state.mapLayer === "sat" ? " has-imagery-date" : ""}"${mapBoxStyle ? ` style="${mapBoxStyle}"` : ""}>`;
 
@@ -73259,13 +73284,13 @@ function renderTileMap(lat, lon, zoom){
     for (let y = tyMin; y <= tyMax; y++){
       if (y < 0 || y >= maxTile) continue;
       const xw = ((x % maxTile) + maxTile) % maxTile;
-      const left = x * 256 - originX;
-      const top  = y * 256 - originY;
-      const tkey = makeTileKey(mapLayerId, zoom, xw, y);
+      const left = x * tilePx - originX;
+      const top  = y * tilePx - originY;
+      const tkey = makeTileKey(mapLayerId, tileZoom, xw, y);
       // B2: <img> has no initial src; hydrateMapTiles fills from IndexedDB
       // (mission pack) or fetches the network, or shows the hatched "?"
       // placeholder when nothing is available offline.
-      html += `<div class="tile-wrap tile-pending" data-tkey="${esc(tkey)}" data-xw="${xw}" data-y="${y}" data-z="${zoom}" style="left:${left}px;top:${top}px">`;
+      html += `<div class="tile-wrap tile-pending" data-tkey="${esc(tkey)}" data-xw="${xw}" data-y="${y}" data-z="${tileZoom}" style="left:${left}px;top:${top}px">`;
       html += `<div class="tile-void" style="display:none" aria-hidden="true">?</div>`;
       html += `<img class="tile" alt="" data-layer="${esc(mapLayerId)}" style="left:0;top:0" draggable="false" decoding="async">`;
       if (hillshadeOn){
@@ -73281,10 +73306,10 @@ function renderTileMap(lat, lon, zoom){
         html += `<img class="tile tile-sonarchart" alt="" style="left:0;top:0" draggable="false" decoding="async">`;
       }
       if (seamarksOn){
-        html += `<img class="tile tile-seamark" alt="" src="${esc(SEAMARK_OVERLAY.url(zoom, xw, y))}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
+        html += `<img class="tile tile-seamark" alt="" src="${esc(SEAMARK_OVERLAY.url(tileZoom, xw, y))}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
       }
       if (__atm09Want){
-        const atmUrl = (typeof dflightAtm09TileUrl === "function") ? dflightAtm09TileUrl(zoom, xw, y) : "";
+        const atmUrl = (typeof dflightAtm09TileUrl === "function") ? dflightAtm09TileUrl(tileZoom, xw, y) : "";
         if (atmUrl){
           html += `<img class="tile tile-atm09" alt="" data-atm09-gen="${__atm09GenForRender}" src="${esc(atmUrl)}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy">`;
           __atm09Expected++;
@@ -73784,7 +73809,7 @@ function renderTileMap(lat, lon, zoom){
     html += `<button type="submit">${esc(t("map.targetScaleApply"))}</button>`;
     html += `<button type="button" data-role="gis-target-scale-close" aria-label="${esc(t("map.targetScaleClose"))}" title="${esc(t("map.targetScaleClose"))}">×</button>`;
     html += `</div></form>`;
-    html += `<p class="gis-target-scale-note" id="gis-target-scale-hint">${esc(t("map.targetScaleHint"))}</p>`;
+    html += `<p class="gis-target-scale-note" id="gis-target-scale-hint">${esc(t(gisFractionalZoomAllowed() ? "map.targetScaleHintFractional" : "map.targetScaleHint"))}</p>`;
     html += `<p class="gis-target-scale-feedback" data-role="gis-target-scale-feedback" tabindex="-1" role="status" aria-live="polite"></p>`;
     html += `</div></div>`;
   }
@@ -73912,8 +73937,8 @@ function renderTileMap(lat, lon, zoom){
         if (focus){
           const mapLayer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
           const maxZ = (mapLayer && Number.isFinite(mapLayer.maxZoom)) ? (mapLayer.maxZoom | 0) : 19;
-          const curZoom = Math.max(2, Math.min(maxZ, Math.round(state.mapZoom || zoom)));
-          const newZoom = Math.max(2, Math.min(maxZ, curZoom + d));
+          const curZoom = gisNormalizeViewZoom(state.mapZoom || zoom, maxZ);
+          const newZoom = gisNormalizeViewZoom(curZoom + d, maxZ);
           if (newZoom === curZoom) return;
           if (mapZoomApplyFocusedZoomIn(root, newZoom, focus)){
             try { saveStore(); } catch(_){}
@@ -74514,7 +74539,7 @@ function renderTileMap(lat, lon, zoom){
   const __mapTileGen = root._mapTileGen;
   consumeGisPanPreparedTiles(root, mapLayerId, zoom, __mapTileGen, originX, originY, W, H);
   ensureGisPanTileContinuity(root, {layerId:mapLayerId,zoom,generation:__mapTileGen,originX,originY,width:W,height:H});
-  void hydrateMapTiles(root, mapLayerId, layer, zoom, lat, lon, __mapTileGen, __hydrateFetchSig);
+  void hydrateMapTiles(root, mapLayerId, layer, tileZoom, lat, lon, __mapTileGen, __hydrateFetchSig);
   void hydrateHillshadeOverlayTiles(root, __mapTileGen, __hydrateFetchSig);
   void hydrateWaymarkedHikingTiles(root, __mapTileGen, __hydrateFetchSig);
   void hydrateStravaRunHeatmapTiles(root, __mapTileGen, __hydrateFetchSig);
@@ -74637,7 +74662,7 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
     return !!(scene && root.isConnected && root.querySelector(".tile-map") === scene.tileMap &&
       root._mapTileGen === scene.generation &&
       (state.mapLayer || "osm") === scene.layerId &&
-      Math.round(Number(state.mapZoom || zoom)) === scene.zoom &&
+      Number(state.mapZoom || zoom) === scene.zoom &&
       Number.isFinite(vc.lat) && Number.isFinite(vc.lon) &&
       Math.abs(vc.lat - scene.centerLat) <= 1e-10 &&
       Math.abs(normalizeLon(vc.lon) - scene.centerLon) <= 1e-10);
@@ -74686,9 +74711,9 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
       // A pan or other tool owns this transform; never overwrite it.
       return;
     }
-    const z = Math.max(2, Math.min(layer.maxZoom, Math.round(Number(state.mapZoom || zoom))));
+    const z = gisNormalizeViewZoom(state.mapZoom || zoom, layer.maxZoom);
     const delta = -Math.sign(st.acc) * Math.min(1, Math.abs(st.acc) / 120);
-    const visualZ = Math.max(2, Math.min(layer.maxZoom, z + delta));
+    const visualZ = gisFractionalZoomAllowed() ? gisNormalizeViewZoom(z + delta, layer.maxZoom) : Math.max(2, Math.min(layer.maxZoom, z + delta));
     const factor = Math.pow(2, visualZ - z);
     if (!Number.isFinite(factor) || Math.abs(factor - 1) < 0.002){
       clearWheelPreview();
@@ -74737,13 +74762,14 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
     clearWheelPreview();
 
     const step = st.acc > 0 ? -1 : 1;
+    const delta = step * Math.min(1, Math.abs(st.acc) / 120);
     st.acc = 0;
     st.cooldownUntil = Date.now() + WHEEL_STEP_COOLDOWN_MS;
 
     const mapLayer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
     const maxZ = mapLayer.maxZoom;
-    const curZoom = Math.max(2, Math.min(maxZ, Math.round(state.mapZoom || zoom)));
-    const newZoom = Math.max(2, Math.min(maxZ, curZoom + step));
+    const curZoom = gisNormalizeViewZoom(state.mapZoom || zoom, maxZ);
+    const newZoom = gisNormalizeViewZoom(curZoom + (gisFractionalZoomAllowed() ? delta : step), maxZ);
     if (newZoom === curZoom) return;
 
     // Zoom-in with valid focus → usable-rect center (panel-aware). Else: zoom-around-cursor.
@@ -74833,7 +74859,7 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
       st.scene = {
         tileMap, generation: root._mapTileGen,
         layerId: state.mapLayer || "osm",
-        zoom: Math.round(Number(state.mapZoom || zoom)),
+        zoom: Number(state.mapZoom || zoom),
         centerLat: vc.lat, centerLon: normalizeLon(vc.lon)
       };
     }
@@ -75307,7 +75333,7 @@ function attachPanHandlers(root, lat, lon, zoom){
     const drag = {
       sx: pt.x, sy: pt.y, dx: 0, dy: 0, moved: false, downTarget: ev.target,
       touch: isTouch, toolGesture: isTouch && touchToolOwnsMapGesture(),
-      scale: 1, startZoom: Math.max(2, Math.min(dragMaxZoom, Math.round(state.mapZoom || zoom))),
+      scale: 1, startZoom: gisNormalizeViewZoom(state.mapZoom || zoom, dragMaxZoom),
       startViewCenter: { lat: viewCenter.lat, lon: viewCenter.lon },
       pinching: false, everPinched: false, afterPinchPan: false
     };
@@ -75409,7 +75435,7 @@ function attachPanHandlers(root, lat, lon, zoom){
         const scale = Math.max(0.01, Number(drag.scale) || 1);
         const mapLayer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
         const maxZoom = (mapLayer && Number.isFinite(mapLayer.maxZoom)) ? (mapLayer.maxZoom | 0) : 19;
-        const newZoom = Math.max(2, Math.min(maxZoom, Math.round(drag.startZoom + Math.log2(scale))));
+        const newZoom = gisNormalizeViewZoom(drag.startZoom + Math.log2(scale), maxZoom);
         const vc = drag.startViewCenter || { lat, lon };
         const z0 = drag.startZoom;
         const zoomFactor = Math.pow(2, newZoom - z0);
@@ -107999,7 +108025,7 @@ function init(){
       if (["DD","DDM","DMS","UTM","MGRS"].includes(stored.settings.primary)) initPrimary = stored.settings.primary;
       if (typeof stored.settings.batchClosed === "boolean") state.batchClosed = stored.settings.batchClosed;
       if (typeof stored.settings.forceOffline === "boolean") state.forceOffline = stored.settings.forceOffline;
-      if (Number.isFinite(stored.settings.mapZoom)) state.mapZoom = Math.max(2, Math.min(18, Math.round(stored.settings.mapZoom)));
+      // T2: defer zoom normalization until the layer and overlay preferences are restored.
       if (resolveCatalogLayerId(stored.settings.mapLayer, MAP_BASE_LAYER_IDS)){
         state.mapLayer = sanitizeMapLayer(stored.settings.mapLayer);
       }
@@ -108009,6 +108035,11 @@ function init(){
       if (typeof stored.settings.showWaymarkedHiking === "boolean") state.showWaymarkedHiking = stored.settings.showWaymarkedHiking;
       if (typeof stored.settings.showStravaRunHeatmap === "boolean") state.showStravaRunHeatmap = stored.settings.showStravaRunHeatmap;
       if (typeof stored.settings.showHillshadeOverlay === "boolean") state.showHillshadeOverlay = stored.settings.showHillshadeOverlay;
+      if (Number.isFinite(stored.settings.mapZoom)){
+        const layer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
+        const compatible = gisFractionalZoomAllowed();
+        state.mapZoom = gisNormalizeViewZoom(stored.settings.mapZoom, compatible ? layer.maxZoom : Math.min(18, layer.maxZoom), compatible);
+      }
       if (typeof stored.settings.mapMeasureUnit === "string") state.mapMeasureUnit = stored.settings.mapMeasureUnit;
       if (typeof stored.settings.trackDisplayUnit === "string") state.trackDisplayUnit = normalizeTrackDisplayUnit(stored.settings.trackDisplayUnit);
        state._savedTracksColumnWidths=savedTracksSanitizeColumnWidths(stored.settings.savedTracksColumnWidths);
