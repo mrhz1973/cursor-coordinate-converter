@@ -1,3 +1,22 @@
+# Handoff operativo — Build322 T1 LIVE, QA browser HTTPS BLOCCATA
+
+> Report del rilascio tecnico e del gate effettivo. `docs/FRONTIER.md` è l’unica LIVE STATE; QA umana ancora PENDING.
+
+| Campo | Stato |
+| --- | --- |
+| Blocco | `MAP-FRACTIONAL-ZOOM-A-T1` DELICATO, Build322 LIVE, **OPEN** |
+| Gate | `DEPLOY_TECHNICAL_PASS / REVIEW_GPT_SOSTITUTIVA_PASS / ABQA_LIVE_BLOCKED_HTTPS_MAIN_INCOMPLETE / QA_OPERATORE_PENDING` |
+| Runtime | source `e707870b7f0b550f2e4ccf61af498e7dd480b8f6` · SHA256 `c2c31a2e5bc4b9e702c33283e1d2d0185c5543db86263d3591376ce21d28e31c` · 11.351.420 byte |
+| VPS | `goi-gis-app` active, checkout `cc398bf20953031645bb4960f660953fa564ee4b` clean, HTTP/HTTPS hash PASS, backup verificato |
+| Browser LIVE | R1 desktop1440/phone320 completati; tablet768/phone390 STOP. R3 `ERR_INCOMPLETE_CHUNKED_ENCODING`, documento incompleto |
+| Evidenza | [Report](../orchestrator/evidence/2026-11-23-wheel-preview-322/REPORT.md) · [evidence.json](../orchestrator/evidence/2026-11-23-wheel-preview-322/evidence.json) |
+| NEXT | Qualificare stream browser HTTPS senza attenuare sicurezza; QA LIVE residua prima del gate umano |
+| Coda | FINITO NON INNESCATO; Build321 ultimo CLOSED |
+
+---
+
+## Storico — report predeploy
+
 # Build322 T1 — REVIEW GPT-SOSTITUTIVA PASS, deploy PENDING
 
 > Stato intermedio predeploy. Fonte LIVE STATE: `docs/FRONTIER.md`; nessun nuovo test o deploy in questo commit docs-only.
