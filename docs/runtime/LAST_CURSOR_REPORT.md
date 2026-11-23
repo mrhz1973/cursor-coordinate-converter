@@ -1,3 +1,20 @@
+# Handoff operativo — Build322 T1 LIVE, ABQA HTTPS aggregata PASS
+
+> Aggiornamento post QA browser. `docs/FRONTIER.md` prevale; QA umana PENDING, Build321 ultimo CLOSED.
+
+| Campo | Stato |
+| --- | --- |
+| Blocco | `MAP-FRACTIONAL-ZOOM-A-T1` DELICATO, Build322 LIVE, OPEN |
+| Gate | `DEPLOY_TECHNICAL_PASS / REVIEW_GPT_SOSTITUTIVA_PASS / ABQA_PASS_AGGREGATED_78_OF_78 / QA_OPERATORE_PENDING` |
+| Runtime | source `e707870b7f0b550f2e4ccf61af498e7dd480b8f6`, SHA256 `c2c31a2e5bc4b9e702c33283e1d2d0185c5543db86263d3591376ce21d28e31c` |
+| Evidenza | [QA LIVE aggregata](../orchestrator/evidence/2026-11-23-build322-live-qa-aggregation/REPORT.md) · [JSON](../orchestrator/evidence/2026-11-23-build322-live-qa-aggregation/evidence.json) |
+| NEXT | QA umana breve ChatGPT, attesa attestazione `QA MAP-FRACTIONAL-ZOOM-A-T1 PASS operatore` |
+| Limiti | R1/R2/R3/R4 FAIL storicizzati; non certificati device fisici e browser non Edge; T1 non è zoom frazionario persistente |
+
+---
+
+## Storico — precedente gate browser HTTPS bloccato
+
 # Handoff operativo — Build322 T1 LIVE, QA browser HTTPS BLOCCATA
 
 > Report del rilascio tecnico e del gate effettivo. `docs/FRONTIER.md` è l’unica LIVE STATE; QA umana ancora PENDING.
