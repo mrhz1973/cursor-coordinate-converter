@@ -1,3 +1,19 @@
+# Audit T2 — MAP-FRACTIONAL-ZOOM-A, implementazione NON aperta
+
+> `docs/FRONTIER.md` prevale; solo audit del runtime Build322 T1, nessuna nuova build/deploy/QA prodotto.
+
+| Voce | Stato |
+| --- | --- |
+| Audit | [Report](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-audit/REPORT.md) · [matematica](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-audit/evidence.json) |
+| Geometria proposta | 6.048/6.048 PASS matematica pura, non runtime QA |
+| Current LIVE/CLOSED | Build322 T1, SHA256 `c2c31a2e5bc4b9e702c33283e1d2d0185c5543db86263d3591376ce21d28e31c` |
+| Parent | `MAP-FRACTIONAL-ZOOM-A` OPEN per zoom frazionario persistente |
+| NEXT | Contratto T2 DELICATO prima di qualsiasi Build323 candidata |
+
+---
+
+## Storico — Build322 T1 CLOSED
+
 # Handoff operativo — Build322 T1 CLOSED, QA operatore PASS
 
 > Autosync della chiusura T1. `docs/FRONTIER.md` è l’unica LIVE STATE. Il requisito parent di zoom finale frazionario persistente rimane OPEN.

@@ -8,7 +8,7 @@
 | Ultimo CLOSED | **Build322 T1**, attestazione `QA MAP-FRACTIONAL-ZOOM-A-T1 PASS operatore` 23/11/2026; [ricevuta](evidence/2026-11-23-qa322-t1-closure/REPORT.md) |
 | Gate riusati | Deploy tecnico PASS, review GPT-sostitutiva 18/18 PASS, statici17/17, candidato78/78, ABQA LIVE HTTPS aggregata78/78 PASS |
 | Bundle runtime attivo | **Nessuno**; `MAP-FRACTIONAL-ZOOM-A` parent ancora OPEN per zoom frazionario persistente; nessuna build T2 candidata |
-| NEXT | Audit mirato T2 zoom frazionario finale persistente, includendo camera/renderer/cache/layer/overlay/hit-test, prima di aprire nuovo bundle |
+| NEXT | Audit T2 completato, definire contratto DELICATO per zoom frazionario persistente (camera viewZoom/tileZoom, cache/overlay/hit-test, roundtrip storage); nessuna candidata Build323 |
 | Residui | P0 recupero archivio autorizzato ma non applicato; DTM5/10m HOLD, P4 FUTURO; nessuna compatibilità universale o dispositivo fisico attestati |
 
 Chiusura Regola H docs-only al commit `57cb5f5043bc5b873150317a4720c0f6224f34c1`; nessun nuovo deploy, test o accesso agli archivi utente durante tale chiusura.
