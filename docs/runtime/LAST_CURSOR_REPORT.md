@@ -1,3 +1,16 @@
+# Audit preliminare MAP-FRACTIONAL-ZOOM-A — implementazione NON aperta
+
+> Pass docs-only su Build321, rapporto in [`REPORT.md`](../orchestrator/evidence/2026-11-23-map-fractional-zoom-audit/REPORT.md). `docs/FRONTIER.md` prevale come LIVE STATE.
+
+| Stato | `AUDIT_ONLY_COMPLETED / IMPLEMENTATION_NOT_OPENED` |
+| --- | --- |
+| Runtime | Build321 source `64522d52d102cdd0bcd89f4b671b65dc0ba8e9b2`, SHA-256 `96c2c34eec74f43a1dbc636620d6e54989529d53213e58f31edd2d56203dd971` |
+| NEXT | Contratto DELICATO del prossimo zoom continuo raster, con verifica cache-pan e hit-test. Nessun deploy o QA effettuato in questo audit |
+
+---
+
+## Storico — Build321 CLOSED
+
 # Handoff operativo — Build321 CLOSED, QA operatore PASS
 
 > Autosync post-chiusura; [`docs/FRONTIER.md`](../FRONTIER.md) è l’unica LIVE STATE. Questo è un contenitore documentale, non una nuova prova runtime.

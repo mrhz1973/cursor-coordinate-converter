@@ -8,7 +8,7 @@
 | Ultimo CLOSED | **Build321**, QA operatore PASS 23/11/2026; [ricevuta](evidence/2026-11-23-qa321-closure/REPORT.md) |
 | Gate tecnico riusato | Deploy tecnico PASS; statici 77/77, candidato 45/45 e HTTPS LIVE 45/45 PASS (Edge158 viewport emulati) |
 | Bundle runtime attivo | **Nessuno**; nessun candidato Build322 aperto |
-| NEXT | Audit on-demand `MAP-FRACTIONAL-ZOOM-A` secondo backlog; non dedurne una funzione già implementata |
+| NEXT | Audit `MAP-FRACTIONAL-ZOOM-A` completato; definire contratto DELICATO per anteprima wheel raster e gate hit-test/overlays, senza candidata Build322 |
 | Limiti/residui | P0 archivio autorizzato ma non applicato; DTM5/10m HOLD, P4 FUTURO; nessuna compatibilità universale attestata |
 
 Chiusura docs-only al commit `64e9443b42e1493e5cffa6c2f1bb63b6d8c3981e`; nessun ulteriore test o deploy, nessuna modifica agli archivi dell’operatore.
