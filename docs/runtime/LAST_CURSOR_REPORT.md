@@ -1,3 +1,19 @@
+# Build322 T1 — REVIEW GPT-SOSTITUTIVA PASS, deploy PENDING
+
+> Stato intermedio predeploy. Fonte LIVE STATE: `docs/FRONTIER.md`; nessun nuovo test o deploy in questo commit docs-only.
+
+| Campo | Stato |
+| --- | --- |
+| Blocco | `MAP-FRACTIONAL-ZOOM-A-T1` DELICATO, Build322 candidata |
+| Sorgente | `e707870b7f0b550f2e4ccf61af498e7dd480b8f6` · SHA256 `c2c31a2e5bc4b9e702c33283e1d2d0185c5543db86263d3591376ce21d28e31c` |
+| Review | [GPT-SOSTITUTIVA PASS 18/18](../orchestrator/evidence/2026-11-23-wheel-preview-322/REVIEW.md), review esterna PENDING |
+| Candidato QA | Statici 17/17 e browser 78/78 PASS; STOP intermedi storicizzati |
+| NEXT | Deploy GIS-only, ABQA HTTPS LIVE, poi QA operatore. Build321 ancora LIVE e CLOSED |
+
+---
+
+## Storico — audit precedente
+
 # Audit preliminare MAP-FRACTIONAL-ZOOM-A — implementazione NON aperta
 
 > Pass docs-only su Build321, rapporto in [`REPORT.md`](../orchestrator/evidence/2026-11-23-map-fractional-zoom-audit/REPORT.md). `docs/FRONTIER.md` prevale come LIVE STATE.

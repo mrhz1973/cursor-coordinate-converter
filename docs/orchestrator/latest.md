@@ -8,7 +8,7 @@
 | Ultimo CLOSED | **Build321**, QA operatore PASS 23/11/2026; [ricevuta](evidence/2026-11-23-qa321-closure/REPORT.md) |
 | Gate tecnico riusato | Deploy tecnico PASS; statici 77/77, candidato 45/45 e HTTPS LIVE 45/45 PASS (Edge158 viewport emulati) |
 | Bundle runtime attivo | **Nessuno**; nessun candidato Build322 aperto |
-| NEXT | Contratto T1 wheel preview DELICATO pronto; implementazione su branch isolato + review/QA, nessuna candidata Build322 ancora pubblicata |
+| NEXT | Deploy GIS-only Build322 T1 dopo review PASS, poi QA browser HTTPS LIVE e QA umana; zoom frazionario persistente non ancora implementato |
 | Limiti/residui | P0 archivio autorizzato ma non applicato; DTM5/10m HOLD, P4 FUTURO; nessuna compatibilità universale attestata |
 
 Chiusura docs-only al commit `64e9443b42e1493e5cffa6c2f1bb63b6d8c3981e`; nessun ulteriore test o deploy, nessuna modifica agli archivi dell’operatore.
