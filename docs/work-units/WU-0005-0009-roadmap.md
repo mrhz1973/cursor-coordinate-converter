@@ -829,6 +829,8 @@ Note tecniche (i residui di calibrazione fisica, stampa/export e zoom frazionari
 
 #### MAP-FRACTIONAL-ZOOM-A
 
+Contratto DELICATO T2 (23/11/2026): [CONTRACT](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-contract/CONTRACT.md). Implementazione non aperta; nessuna Build323 candidata.
+
 Audit T2 23/11/2026: [modello viewZoom/tileZoom e matrice impatti](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-audit/REPORT.md) · Web Mercator geometria pura 6.048/6.048 PASS, ma il runtime arrotonda lo zoom al render e al restore. **Solo audit, nessuna Build323 candidata e nessuna QA T2 eseguita.** NEXT: contratto DELICATO per camera frazionaria persistente, tile/cache interi e hit-test/overlay coerenti.
 
 Build322 T1 LIVE tecnicamente verificata: [rapporto deploy e QA LIVE bloccata](../orchestrator/evidence/2026-11-23-wheel-preview-322/REPORT.md); [review GPT-sostitutiva PASS](../orchestrator/evidence/2026-11-23-wheel-preview-322/REVIEW.md) sul raw e707870; candidato browser 78/78 PASS, deploy HTTP/HTTPS200 con SHA verificato. **QA browser LIVE aggregata PASS 78/78** dai casi validi R1/R5/R6 sul medesimo SHA, con STOP del documento HTTPS originari conservati; attestazione `QA MAP-FRACTIONAL-ZOOM-A-T1 PASS operatore` acquisita 23/11/2026, **T1 CLOSED** secondo Regola H; [ricevuta](../orchestrator/evidence/2026-11-23-qa322-t1-closure/REPORT.md). Il **parent non è CLOSED**. **Non implementa zoom finale frazionario persistente.**
