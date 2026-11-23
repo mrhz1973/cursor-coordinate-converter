@@ -4,22 +4,22 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Build323 T2 e parent MAP-FRACTIONAL-ZOOM-A CLOSED / QA_OPERATORE_PASS nel perimetro raster qualificato; prosecuzione backlog autorizzata; P0 non applicato. |
+| **WORKSTREAM ATTIVO** | Build324 candidata qualificata, Build323 LIVE/CLOSED; GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A aperto; P0 non applicato. |
 | **WU ATTIVA** | — (nessuna WU attiva). |
-| **BLOCCO ATTIVO** | — (nessun bundle runtime attivo; ultimo CLOSED MAP-FRACTIONAL-ZOOM-A-T2 Build323). |
-| **STATO BLOCCO** | CLOSED / QA_OPERATORE_PASS — Build323 T2 e parent nel perimetro qualificato; deploy, review sostitutiva e ABQA PASS riusati. |
-| **GATE CORRENTE** | Build323 T2 CLOSED tramite attestazione esatta QA MAP-FRACTIONAL-ZOOM-A-T2 PASS operatore. [QA323 CLOSED](orchestrator/evidence/2026-11-24-qa323-t2-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa323-t2-closure/evidence.json). Nessun gate runtime aperto; NEXT audit legende/barre coordinate. |
+| **BLOCCO ATTIVO** | GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A - Build324 DELICATO / STANDARD_RUNTIME_BUNDLE. |
+| **STATO BLOCCO** | OPEN / CANDIDATE_QA_PASS / REVIEW_GPT_SOSTITUTIVA_PASS / DEPLOY_PENDING. |
+| **GATE CORRENTE** | Review 19/19 PASS, candidato108/108 PASS, [Review Build324](orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REVIEW.md) - [evidence](orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/review.json). NEXT deploy GIS-only. |
 | **RUNTIME LIVE** | Build323 MAP-FRACTIONAL-ZOOM-A-T2, source c484e7d467b8927055cb6779b9bcdd1d01ce02e3, blob 09df8b67c832ee38818ed8d1134b9ccb3647590a, SHA256 c260561d7ab9fa9cddf827b29547b8464aa2ab97a49090a161c606504e1db09a, 11.354.085 byte; deploy e ABQA LIVE PASS; QA operatore PASS; CLOSED. |
-| **RUNTIME CANDIDATE** | Nessun candidato distinto dal LIVE. Build323 statici44/44, review23/23, ABQA HTTPS LIVE R2 79/79, R3 33/33, R4 29/29, R5 27/27 PASS (suite sovrapposte, non sommate) e QA operatore PASS. Nessuna Build324 candidata. |
+| **RUNTIME CANDIDATE** | Build324 source b08459bfa2eaf49df938d550b1800edce105096d, blob cb838af70477a2136f654f1b52397e35046d2848, SHA256 78d8acb4a549ab60e4d44fd798240b57b0617bf0964a7e93700db12dab90ebbf, 11.356.016 byte; statici12/12, geometria4065/4065, candidato108/108 PASS, review sostitutiva PASS. |
 | **ULTIMO BLOCCO CHIUSO** | MAP-FRACTIONAL-ZOOM-A-T2 — Build323, QA operatore PASS registrato 24/11/2026; [QA323 CLOSED](orchestrator/evidence/2026-11-24-qa323-t2-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa323-t2-closure/evidence.json). Parent CLOSED per layer compatibili. |
-| **NEXT** | Prosecuzione backlog: audit on-demand [GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A backlog](work-units/WU-0005-0009-roadmap.md#gis-legends-no-overlap-coord-bars-a---hard-no-overlap-con-barre-coordinate); hard no-overlap legende/barre coordinate, non riaprire WU-0018. P0 non applicato; DTM HOLD; P4 FUTURO. |
+| **NEXT** | Deploy GIS-only con backup, readback HTTP/HTTPS e ABQA LIVE; poi QA operatore. WU-0018 non riaperta. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P0 secondario APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: copie qualificate, autorizzazione acquisita; controllo dell’archivio interno richiesto non disponibile, backup corrente atteso e inventario istanze scriventi incompleto. Caricamento operatore già confermato; archivio interno non identificato e backup completo origine non attestato. Compatibilità mobile/iPad riaperta; P4 SOLO FUTURO. |
 | **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 recupero qualificato sulle copie](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
 | **SVILUPPO TELEFONO** | Build323 ABQA LIVE Edge158 desktop1440/tablet768/phone390/phone320 R2 79/79, R3 33/33, R4 29/29, R5 27/27 PASS (suite sovrapposte, non sommate); QA operatore PASS (device/browser/ora della prova non specificati). Compatibilita universale e device fisici non attestati. |
 | **ACCESSO / DEPLOY** | Build323 LIVE, backup Build322 verificato /var/backups/goi-gis-runtime/prebuild323-5o4t7ooL; goi-gis-app active al deploy; HTTP/HTTPS200 11.354.085 byte SHA c260561d7ab9fa9cddf827b29547b8464aa2ab97a49090a161c606504e1db09a; ABQA e QA operatore PASS, nessun nuovo deploy. [Build323 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=c260561d). |
-| **EVIDENCE** | [QA323 CLOSED](orchestrator/evidence/2026-11-24-qa323-t2-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa323-t2-closure/evidence.json) - [QA LIVE](orchestrator/evidence/2026-11-23-fractional-zoom-t2-323/REPORT.md) - [Review T2](orchestrator/evidence/2026-11-23-fractional-zoom-t2-323/REVIEW.md) - [Roadmap](work-units/WU-0005-0009-roadmap.md). |
+| **EVIDENCE** | [Review Build324](orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REVIEW.md) - [evidence](orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/review.json) - [QA323 CLOSED](orchestrator/evidence/2026-11-24-qa323-t2-closure/REPORT.md). |
 
 ## Build323 T2 — QA operatore PASS / CLOSED (24/11/2026)
 
