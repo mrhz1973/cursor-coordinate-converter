@@ -4,22 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Build321 MAP-TARGET-SCALE-A CLOSED / QA_OPERATORE_PASS. Audit in sola lettura `MAP-FRACTIONAL-ZOOM-A` completato; implementazione non aperta. P0 secondario autorizzato e non applicato. |
+| **WORKSTREAM ATTIVO** | Build321 MAP-TARGET-SCALE-A CLOSED. Contratto T1 anteprima wheel raster di MAP-FRACTIONAL-ZOOM-A definito; nessuna Build322 candidata aperta. P0 secondario autorizzato e non applicato. |
 | **WU ATTIVA** | — (nessuna WU attiva). |
 | **BLOCCO ATTIVO** | — (nessun bundle runtime attivo; ultimo chiuso MAP-TARGET-SCALE-A, Build321). |
 | **STATO BLOCCO** | CLOSED / QA_OPERATORE_PASS — Build321; deploy tecnico PASS e QA browser LIVE 45/45 PASS riusati, chiusura Regola H. |
-| **GATE CORRENTE** | Nessun gate QA runtime aperto. Audit `MAP-FRACTIONAL-ZOOM-A` completato sui simboli della Build321; [rapporto](orchestrator/evidence/2026-11-23-map-fractional-zoom-audit/REPORT.md). NEXT: contratto di implementazione DELICATO, senza attribuire una Build322. |
+| **GATE CORRENTE** | Contratto DELICATO T1 per wheel raster pronto su [CONTRACT](orchestrator/evidence/2026-11-23-map-fractional-wheel-preview-contract/CONTRACT.md); implementazione e QA non ancora avviate. Build321 resta ultimo CLOSED. |
 | **RUNTIME LIVE** | Build321 MAP-TARGET-SCALE-A, source 64522d52d102cdd0bcd89f4b671b65dc0ba8e9b2, blob d102cc7e91ea39ad6f85afdbc2348e36bb7c12ec, SHA256 96c2c34eec74f43a1dbc636620d6e54989529d53213e58f31edd2d56203dd971, 11.345.158 byte; VPS/file/HTTP/HTTPS byte e hash concordi. |
 | **RUNTIME CANDIDATE** | Nessun candidato distinto dal LIVE. Build321: statici 77/77 PASS, browser candidato 45/45 PASS, LIVE HTTPS45/45 PASS e QA operatore PASS; blocco CLOSED. Nessuna Build322 candidata attestata. |
 | **ULTIMO BLOCCO CHIUSO** | MAP-TARGET-SCALE-A — Build321, QA operatore PASS 23/11/2026; [ricevuta](orchestrator/evidence/2026-11-23-qa321-closure/REPORT.md) ed [evidenza](orchestrator/evidence/2026-11-23-qa321-closure/evidence.json). |
-| **NEXT** | Definire e validare il contratto del bundle DELICATO `MAP-FRACTIONAL-ZOOM-A` per anteprima wheel raster, protezione hit-test/overlay e interazione con pan-cache/touch; solo successivamente aprire candidata Build322. P0 autorizzato non eseguito, DTM5/10m HOLD, P4 FUTURO. |
+| **NEXT** | Implementare T1 wheel preview raster secondo [CONTRACT](orchestrator/evidence/2026-11-23-map-fractional-wheel-preview-contract/CONTRACT.md) in branch isolato, testare regressione pan-cache, OPSEC, geometria e hit-test. Non dichiarare zoom frazionario persistente; P0/DTM/P4 invariati. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P0 secondario APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: copie qualificate, autorizzazione acquisita; controllo dell’archivio interno richiesto non disponibile, backup corrente atteso e inventario istanze scriventi incompleto. Caricamento operatore già confermato; archivio interno non identificato e backup completo origine non attestato. Compatibilità mobile/iPad riaperta; P4 SOLO FUTURO. |
 | **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 recupero qualificato sulle copie](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
 | **SVILUPPO TELEFONO** | Requisito Windows/macOS/browser/telefono/iPad confermato. Build321 Edge158 QA browser LIVE viewport emulati 1440, 390 e 320 px (45/45 PASS); nessun dispositivo fisico Safari/Firefox o garanzia universale attestati. |
 | **ACCESSO / DEPLOY** | 23/11/2026: Build321 GIS-only distribuita sul VPS; backup verificato `/var/backups/goi-gis-runtime/prebuild321-4jkjgYPN`, `goi-gis-app` active, checkout VPS clean. Primo smoke immediato connection refused (storico), verifiche successive HTTP/HTTPS200, 11.345.158 byte e SHA 96c2c34eec74f43a1dbc636620d6e54989529d53213e58f31edd2d56203dd971 concordi. [Apri Build321](https://ionos-n8n-new.tailc01234.ts.net/gis?v=96c2c34e). |
-| **EVIDENCE** | [Audit fractional zoom](orchestrator/evidence/2026-11-23-map-fractional-zoom-audit/REPORT.md) - [QA321 CLOSED](orchestrator/evidence/2026-11-23-qa321-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-23-qa321-closure/evidence.json) - [Release321](orchestrator/evidence/2026-11-23-map-target-scale-321/REPORT.md) - [Backlog MAP UX](work-units/WU-0005-0009-roadmap.md) - [P0 controllo non disponibile](orchestrator/evidence/2026-11-22-internal-browser-operator-access/REPORT.md). |
+| **EVIDENCE** | [Contratto T1 wheel preview](orchestrator/evidence/2026-11-23-map-fractional-wheel-preview-contract/CONTRACT.md) - [Audit fractional zoom](orchestrator/evidence/2026-11-23-map-fractional-zoom-audit/REPORT.md) - [QA321 CLOSED](orchestrator/evidence/2026-11-23-qa321-closure/REPORT.md) - [Roadmap MAP UX](work-units/WU-0005-0009-roadmap.md). |
+
+## MAP-FRACTIONAL-ZOOM-A — contratto T1 wheel preview (23 novembre 2026)
+
+Definito [contratto DELICATO](orchestrator/evidence/2026-11-23-map-fractional-wheel-preview-contract/CONTRACT.md): animazione temporanea wheel raster con camera/zoom canonici invariati fino al commit intero, cleanup a redraw/pan/touch, hit-test e rete invariati. **CONTRACT_READY / IMPLEMENTATION_NOT_OPENED**; zoom frazionario persistente fuori da T1. Nessun runtime cambiato.
 
 ## MAP-FRACTIONAL-ZOOM-A — audit preliminare (23 novembre 2026)
 
