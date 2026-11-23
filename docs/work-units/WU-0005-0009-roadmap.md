@@ -895,6 +895,8 @@ Finding originale: markup HTML/entity in Dettagli. WU-0013 resta **CLOSED / PASS
 
 #### D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A
 
+Audit 24/11/2026 su Build324: [rapporto e acceptance](../orchestrator/evidence/2026-11-24-atm09-details-link-audit/REPORT.md). **AUDIT_ONLY_COMPLETED / IMPLEMENTATION_NOT_OPENED**. Baseline e stato storico seguenti invariati.
+
 **Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Residuo UX post-QA PASS di `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2`. **Non** aperto come blocco runtime. **Non** riaprire CLEANUP-A (resta CLOSED / PASS).
 
 **Baseline sicuro:** LIVE build **238** / `dflightAtm09OpenDetails` + helpers display-only (Rule/Regola testo sicuro, raw invariati).
