@@ -1,3 +1,23 @@
+# Handoff operativo — Build321 CLOSED, QA operatore PASS
+
+> Autosync post-chiusura; [`docs/FRONTIER.md`](../FRONTIER.md) è l’unica LIVE STATE. Questo è un contenitore documentale, non una nuova prova runtime.
+
+| Campo | Stato |
+| --- | --- |
+| BLOCK | `MAP-TARGET-SCALE-A` — Build321 **CLOSED / QA_OPERATORE_PASS** |
+| Gate | `DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS_45_OF_45 / QA_OPERATORE_PASS` |
+| Runtime LIVE | source `64522d52d102cdd0bcd89f4b671b65dc0ba8e9b2` · SHA-256 `96c2c34eec74f43a1dbc636620d6e54989529d53213e58f31edd2d56203dd971` |
+| Chiusura | [`64e9443b4`](https://github.com/mrhz1973/cursor-coordinate-converter/commit/64e9443b42e1493e5cffa6c2f1bb63b6d8c3981e) |
+| Evidence | [QA321 closure](../orchestrator/evidence/2026-11-23-qa321-closure/REPORT.md) · [release321](../orchestrator/evidence/2026-11-23-map-target-scale-321/REPORT.md) |
+| NEXT | Audit mirato del backlog `MAP-FRACTIONAL-ZOOM-A` |
+| P0 | OPEN / APPLICATION_AUTHORIZED_NOT_EXECUTED |
+
+Regola H applicata alla sola documentazione. PASS umano esplicito; browser, dispositivo e ora del test umano non attestati. Nessun commit runtime, QA ripetuta o deploy in questo pass. Cursor non utilizzato.
+
+---
+
+## Storico — Build321 LIVE, QA operatore precedentemente PENDING
+
 # Handoff operativo — Build321 LIVE, QA browser PASS, operatore PENDING
 
 > Aggiornamento del rilascio `MAP-TARGET-SCALE-A` (23/11/2026); `docs/FRONTIER.md` prevale come LIVE STATE. Cursor non utilizzato.
