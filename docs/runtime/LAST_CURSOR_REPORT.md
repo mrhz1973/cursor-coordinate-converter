@@ -1,3 +1,22 @@
+# Handoff operativo — Build322 T1 CLOSED, QA operatore PASS
+
+> Autosync della chiusura T1. `docs/FRONTIER.md` è l’unica LIVE STATE. Il requisito parent di zoom finale frazionario persistente rimane OPEN.
+
+| Campo | Stato |
+| --- | --- |
+| BLOCK | `MAP-FRACTIONAL-ZOOM-A-T1` — **CLOSED / QA_OPERATORE_PASS**, Build322 LIVE |
+| GATE | `DEPLOY_TECHNICAL_PASS / REVIEW_GPT_SOSTITUTIVA_PASS / ABQA_PASS_AGGREGATED_78_OF_78 / QA_OPERATORE_PASS` |
+| Runtime | source `e707870b7f0b550f2e4ccf61af498e7dd480b8f6` · SHA256 `c2c31a2e5bc4b9e702c33283e1d2d0185c5543db86263d3591376ce21d28e31c` · 11.351.420 byte |
+| Closure | [`57cb5f5`](https://github.com/mrhz1973/cursor-coordinate-converter/commit/57cb5f5043bc5b873150317a4720c0f6224f34c1) · [ricevuta](../orchestrator/evidence/2026-11-23-qa322-t1-closure/REPORT.md) |
+| NEXT | Audit T2 on-demand su camera/renderer/cache/hit-test/layer; nessuna nuova build automaticamente aperta |
+| Residui | P0 autorizzato non applicato · DTM HOLD · P4 FUTURO · parent `MAP-FRACTIONAL-ZOOM-A` aperto |
+
+Regola H applicata senza secondo comando `finito`; il PASS umano è attestato ma browser, dispositivo e momento della prova non sono comunicati. Chiusura docs-only, nessun nuovo test/deploy. Cursor non utilizzato.
+
+---
+
+## Storico — Build322 T1 LIVE con QA operatore precedentemente PENDING
+
 # Handoff operativo — Build322 T1 LIVE, ABQA HTTPS aggregata PASS
 
 > Aggiornamento post QA browser. `docs/FRONTIER.md` prevale; QA umana PENDING, Build321 ultimo CLOSED.
