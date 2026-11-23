@@ -9320,6 +9320,46 @@ body.gis-mode dialog.app-modal.gis-panel-floating[open]{
 .dflight-details-panel .dflight-details-meta{
   font-size:12px; color:var(--muted, #64748b); margin:0 0 8px;
 }
+/* ATM09-only detail presentation; native D-Flight keeps its existing styles. */
+#dflightDetailsPanelBody:has(> .atm09-details-readable){
+  background:#101217;color:#edf2f8;color-scheme:dark;
+  border-radius:8px;
+}
+#dflightDetailsPanelBody > .atm09-details-readable{
+  display:grid;grid-template-columns:minmax(78px,0.72fr) minmax(0,1.6fr);
+  gap:8px 12px;margin:0;padding:12px;box-sizing:border-box;
+  color:#edf2f8;background:#101217;font-size:13px;line-height:1.48;
+}
+#dflightDetailsPanelBody > .atm09-details-readable dt{
+  margin:0;color:#b7c4d4;font-size:11.5px;font-weight:650;
+  overflow-wrap:anywhere;padding-top:2px;
+}
+#dflightDetailsPanelBody > .atm09-details-readable dd{
+  margin:0;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap;
+  padding-bottom:5px;border-bottom:1px solid #27303b;
+}
+#dflightDetailsPanelBody > .atm09-details-readable .atm09-rule-label{
+  grid-column:1/-1;margin-top:6px;padding-top:9px;border-top:1px solid #445367;
+  color:#dceaff;font-size:12.5px;
+}
+#dflightDetailsPanelBody > .atm09-details-readable .atm09-rule-text{
+  grid-column:1/-1;line-height:1.65;padding:10px;background:#191f29;
+  border:1px solid #35465c;border-radius:6px;
+}
+#dflightDetailsPanelBody .atm09-detail-link{
+  color:#93d5ff;text-decoration:underline;text-underline-offset:3px;
+  cursor:pointer;overflow-wrap:anywhere;word-break:break-word;
+}
+#dflightDetailsPanelBody .atm09-detail-link:focus-visible{
+  outline:2px solid #93d5ff;outline-offset:2px;border-radius:2px;
+}
+@media(max-width:480px){
+  #dflightDetailsPanelBody > .atm09-details-readable{
+    grid-template-columns:minmax(66px,0.72fr) minmax(0,1.6fr);
+    gap:7px 8px;padding:9px;font-size:12.5px;
+  }
+}
+
 .dflight-cta-row{
   display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 10px; align-items:center;
 }
@@ -19268,6 +19308,10 @@ const I18N = {
     "dflight.layerMenuTip":"Mostra o nasconde le zone geografiche UAS D-Flight",
     "dflight.panelTitle":"Zone D-Flight (UAS)",
     "dflight.detailsTitle":"Dettaglio zona",
+    "dflight.atm09LinkBlocked":"Collegamento non disponibile: rete offline, OPSEC attivo o destinazione non consentita.",
+    "dflight.atm09LinkConfirm":"Aprire questo sito esterno in una nuova scheda? La connessione raggiungera direttamente il sito indicato. Confermare solo se la destinazione e attendibile.",
+    "dflight.atm09LinkHttpConfirm":"Attenzione: il collegamento usa HTTP non cifrato. Aprire questo sito esterno in una nuova scheda?",
+    "dflight.atm09LinkLabel":"Apri collegamento esterno:",
     "dflight.toggleVisible":"Mostra zone sulla mappa",
     "dflight.noDataset":"Nessun dataset caricato",
     "dflight.noDatasetHint":"Apri il pannello con rete consentita per caricare automaticamente le zone dal helper.",
@@ -26737,10 +26781,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A";
-const APP_BUILD_DETAIL = "Legende: contenimento completo fuori da coordinate e toolbar.";
+const APP_BUILD_ID = "D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A";
+const APP_BUILD_DETAIL = "Dettagli ATM09 leggibili e link esterni con consenso esplicito.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 324;
+const APP_BUILD_NUM = 325;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -44755,6 +44799,61 @@ function dflightAtm09FormatHoverText(feat){
   return bits.join(" · ");
 }
 
+/* ATM09 Rule/Regola: presentation only. Do not give untrusted text an href
+ * (native context-menu/new-tab paths could bypass the network gate).
+ * No DOM parser, markup sink, fetch, prefetch or stored consent is introduced. */
+function dflightAtm09ValidateDetailUrl(raw){
+  if(typeof raw!=="string" || !/^[\x21-\x7e]{1,2048}$/.test(raw) ||
+     /[\\<>"']/.test(raw) || /%(?![0-9a-f]{2})|%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)/i.test(raw)) return null;
+  const match=/^https?:\/\/([^/?#]+)(?:[/?#]|$)/i.exec(raw);
+  if(!match || !/^[a-z0-9.-]+(?::(?:80|443))?$/i.test(match[1])) return null;
+  try{
+    const u=new URL(raw),host=u.hostname.toLowerCase(),labels=host.split(".");
+    if(!["http:","https:"].includes(u.protocol) || u.username || u.password || u.port ||
+       labels.length<2 || host.length>253 || !/^[a-z]{2,63}$/.test(labels.at(-1)) ||
+       !labels.every(l=>/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(l)) ||
+       /(?:^|\.)(?:localhost|local|internal|lan|home|test|invalid|onion)$/.test(host) ||
+       /(?:^|\.)ts\.net$/.test(host)) return null;
+    return u.href;
+  }catch(_){return null;}
+}
+function dflightAtm09ActivateDetailLink(ev, destination){
+  if(!ev || !ev.isTrusted) return;
+  ev.preventDefault();ev.stopPropagation();
+  const url=dflightAtm09ValidateDetailUrl(destination);
+  if(!url || !dflightClientNetworkAllowed()){
+    window.alert(dflightScopedT("dflight.atm09LinkBlocked"));return;
+  }
+  const warning=dflightScopedT(url.startsWith("http:")?"dflight.atm09LinkHttpConfirm":"dflight.atm09LinkConfirm");
+  if(!window.confirm(warning+"\n\n"+url))return;
+  if(!dflightClientNetworkAllowed() || dflightAtm09ValidateDetailUrl(url)!==url){
+    window.alert(dflightScopedT("dflight.atm09LinkBlocked"));return;
+  }
+  window.open(url,"_blank","noopener,noreferrer");
+}
+function dflightAtm09RenderRuleText(dd,raw){
+  const plain=dflightDetailsDisplayText(raw);
+  let end=0,count=0;
+  for(const match of plain.matchAll(/\S+/g)){
+    const word=match[0];
+    const url=dflightAtm09ValidateDetailUrl(word);
+    if(!url)continue;
+    if(count>=24)break;
+    dd.appendChild(document.createTextNode(plain.slice(end,match.index)));
+    const a=document.createElement("a");
+    a.className="atm09-detail-link";
+    a.setAttribute("role","link");a.tabIndex=0;
+    a.textContent=word;a.title=url;
+    a.setAttribute("aria-label",dflightScopedT("dflight.atm09LinkLabel")+" "+word);
+    a.addEventListener("click",ev=>dflightAtm09ActivateDetailLink(ev,url));
+    a.addEventListener("keydown",ev=>{
+      if((ev.key==="Enter" || ev.key===" ")&&!ev.repeat)dflightAtm09ActivateDetailLink(ev,url);
+    });
+    dd.appendChild(a);end=match.index+word.length;count++;
+  }
+  dd.appendChild(document.createTextNode(plain.slice(end)));
+}
+
 function dflightAtm09OpenDetails(feat){
   if (!feat) return;
   const p = feat.properties || {};
@@ -44785,14 +44884,17 @@ function dflightAtm09OpenDetails(feat){
   ];
   body.textContent = "";
   const dl = document.createElement("dl");
-  dl.className = "dflight-details-meta";
+  dl.className = "dflight-details-meta atm09-details-readable";
   for (let i = 0; i < rows.length; i++){
     const k = rows[i][0], v = rows[i][1];
     if (v == null || v === "") continue;
     const dt = document.createElement("dt");
     dt.textContent = k;
     const dd = document.createElement("dd");
-    dd.textContent = dflightDetailsDisplayText(v);
+    if(k==="Rule" || k==="Regola"){
+      dt.className="atm09-rule-label";dd.className="atm09-rule-text";
+      dflightAtm09RenderRuleText(dd,v);
+    }else dd.textContent = dflightDetailsDisplayText(v);
     dl.appendChild(dt);
     dl.appendChild(dd);
   }
