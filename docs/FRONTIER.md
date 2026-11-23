@@ -4,22 +4,22 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Build324 CLOSED / QA_OPERATORE_PASS; prosecuzione backlog autorizzata; P0 non applicato. |
+| **WORKSTREAM ATTIVO** | Build325 candidata qualificata; Build324 LIVE/CLOSED; D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A aperto; P0 non applicato. |
 | **WU ATTIVA** | — (nessuna WU attiva). |
-| **BLOCCO ATTIVO** | — (nessun bundle runtime attivo; ultimo CLOSED GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A Build324). |
-| **STATO BLOCCO** | CLOSED / QA_OPERATORE_PASS — Build324; deploy, review sostitutiva e ABQA PASS riusati secondo Regola H. |
-| **GATE CORRENTE** | Build324 CLOSED; contratto DELICATO Build325 definito. [CONTRACT](orchestrator/evidence/2026-11-24-atm09-details-link-contract/CONTRACT.md). Implementazione non ancora qualificata. |
+| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A - Build325 DELICATO / STANDARD_RUNTIME_BUNDLE. |
+| **STATO BLOCCO** | OPEN / CANDIDATE_QA_PASS / REVIEW_GPT_SOSTITUTIVA_PASS / DEPLOY_PENDING. |
+| **GATE CORRENTE** | Review sostitutiva 32/32 PASS; statici71/71, candidato80/80 PASS. [Review Build325](orchestrator/evidence/2026-11-24-atm09-details-325/REVIEW.md) - [evidenza](orchestrator/evidence/2026-11-24-atm09-details-325/review.json). NEXT deploy GIS-only. |
 | **RUNTIME LIVE** | Build324 GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A, source b08459bfa2eaf49df938d550b1800edce105096d, blob cb838af70477a2136f654f1b52397e35046d2848, SHA256 78d8acb4a549ab60e4d44fd798240b57b0617bf0964a7e93700db12dab90ebbf, 11.356.016 byte; deploy tecnico e ABQA HTTPS LIVE 108/108 PASS; QA operatore PASS; CLOSED. |
-| **RUNTIME CANDIDATE** | Nessun candidato distinto dal LIVE. Build324 statici12/12, geometria4065/4065, candidato108/108, review19/19, ABQA LIVE108/108 e QA operatore PASS. Nessuna Build325 candidata. |
+| **RUNTIME CANDIDATE** | Build325 source 72ac2ef267ae7162094fe7971b6761ed5b9ec661, blob fca7705968c8cdf74624847700f48325426c2d23, SHA256 74f2a0a54c98c3b414f24c30cb587f26ffdd2580a922f74b728118a748f0e4e0, 11.361.129 byte; statici71/71, candidato80/80, review sostitutiva32/32 PASS. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A — Build324, QA operatore PASS registrato 24/11/2026; [QA324 CLOSED](orchestrator/evidence/2026-11-24-qa324-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa324-closure/evidence.json). |
-| **NEXT** | Implementare D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A secondo [contratto](orchestrator/evidence/2026-11-24-atm09-details-link-contract/CONTRACT.md), worktree isolato; test e review prima di deploy. P0/DTM/P4 invariati. |
+| **NEXT** | Deploy GIS-only con preflight e backup, readback HTTP/HTTPS, ABQA LIVE e QA operatore. Non riaprire CLEANUP-A o WU-0013. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P0 secondario APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: copie qualificate, autorizzazione acquisita; controllo dell’archivio interno richiesto non disponibile, backup corrente atteso e inventario istanze scriventi incompleto. Caricamento operatore già confermato; archivio interno non identificato e backup completo origine non attestato. Compatibilità mobile/iPad riaperta; P4 SOLO FUTURO. |
 | **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 recupero qualificato sulle copie](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
 | **SVILUPPO TELEFONO** | Build324 ABQA HTTPS LIVE 108/108 PASS su viewport Edge emulati desktop1440/tablet768/phone390/phone320; QA operatore PASS con device/browser/ora del test non specificati. Nessuna qualifica universale o di device fisici. |
 | **ACCESSO / DEPLOY** | Build324 LIVE, backup Build323 /var/backups/goi-gis-runtime/prebuild324-FXSQb9US verificato, goi-gis-app active al deploy; HTTP/HTTPS200 byte/SHA concordi; QA browser108/108 e operatore PASS. Nessun nuovo deploy per chiusura. [Build324 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=78d8acb4). |
-| **EVIDENCE** | [QA324 CLOSED](orchestrator/evidence/2026-11-24-qa324-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa324-closure/evidence.json) - [QA LIVE](orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REPORT.md) - [Review](orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REVIEW.md) - [Roadmap](work-units/WU-0005-0009-roadmap.md). |
+| **EVIDENCE** | [Review Build325](orchestrator/evidence/2026-11-24-atm09-details-325/REVIEW.md) - [evidenza](orchestrator/evidence/2026-11-24-atm09-details-325/review.json) - [Contratto](orchestrator/evidence/2026-11-24-atm09-details-link-contract/CONTRACT.md) - [QA324 CLOSED](orchestrator/evidence/2026-11-24-qa324-closure/REPORT.md). |
 
 ## Build324 — QA operatore PASS / CLOSED (24/11/2026)
 

@@ -782,7 +782,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **CLOSED / QA_OPERATORE_PASS** · LIVE **319** · 22/11/2026 |
 | **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **CLOSED / QA_OPERATORE_PASS** - LIVE **324** - 24/11/2026 - [ricevuta](../orchestrator/evidence/2026-11-24-qa324-closure/REPORT.md); WU-0018 non riaperta |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
-| **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
+| **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilita tipografica + link sicuri (Rule/Regola) | **Build325 CANDIDATE QA/REVIEW PASS / DEPLOY PENDING** - [review](../orchestrator/evidence/2026-11-24-atm09-details-325/REVIEW.md); WU-0013 non riaperta |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
 | **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)** | Lista coordinate vertici (edit + drawing) + no auto-minimize + draft verts trascinabili | **CLOSED / PASS** LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21) |
@@ -897,7 +897,7 @@ Finding originale: markup HTML/entity in Dettagli. WU-0013 resta **CLOSED / PASS
 
 Audit 24/11/2026 su Build324: [rapporto e acceptance](../orchestrator/evidence/2026-11-24-atm09-details-link-audit/REPORT.md). **AUDIT_ONLY_COMPLETED / IMPLEMENTATION_NOT_OPENED**. Baseline e stato storico seguenti invariati.
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Residuo UX post-QA PASS di `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2`. **Non** aperto come blocco runtime. **Non** riaprire CLEANUP-A (resta CLOSED / PASS).
+**Stato:** **Build325 CANDIDATE QA/REVIEW PASS / DEPLOY PENDING**. [Review](../orchestrator/evidence/2026-11-24-atm09-details-325/REVIEW.md). Storico:  Residuo UX post-QA PASS di `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2`. **Non** aperto come blocco runtime. **Non** riaprire CLEANUP-A (resta CLOSED / PASS).
 
 **Baseline sicuro:** LIVE build **238** / `dflightAtm09OpenDetails` + helpers display-only (Rule/Regola testo sicuro, raw invariati).
 
