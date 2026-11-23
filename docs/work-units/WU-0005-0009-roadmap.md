@@ -774,7 +774,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 
 | Item | Titolo | Stato |
 | --- | --- | --- |
-| **MAP-TARGET-SCALE-A** | Visualizzazione mappa a scala nominale richiesta 1:N | **LIVE Build321 / QA_OPERATORE_PENDING** · [release](../orchestrator/evidence/2026-11-23-map-target-scale-321/REPORT.md) |
+| **MAP-TARGET-SCALE-A** | Visualizzazione mappa a scala nominale richiesta 1:N | **CLOSED / QA_OPERATORE_PASS** · LIVE **321** · 23/11/2026 · [ricevuta](../orchestrator/evidence/2026-11-23-qa321-closure/REPORT.md) |
 | **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **BACKLOG / NOT OPENED** |
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **CLOSED / QA_OPERATORE_PASS** · LIVE **320** · 22/11/2026 · [ricevuta](../orchestrator/evidence/2026-11-22-qa320-closure/REPORT.md) |
 | **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **CLOSED / PASS** LIVE **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · finito Regola H |
@@ -814,7 +814,7 @@ FIX1 deploy+ABQA 245: [`../orchestrator/inbox/2026-08-21_2135_MAP-CENTER-VIEWPOR
 
 #### MAP-TARGET-SCALE-A
 
-Stato: **Build321 LIVE / DEPLOY_TECHNICAL_PASS / AUTOMATED_BROWSER_QA_PASS 45/45 / QA_OPERATORE_PENDING** (ROUTINE, STANDARD_RUNTIME_BUNDLE), source `64522d52d102cdd0bcd89f4b671b65dc0ba8e9b2`; [rapporto di rilascio](../orchestrator/evidence/2026-11-23-map-target-scale-321/REPORT.md). Selettore scala nominale `1:N`: zoom intero più vicino, centro/layer invariati, richiesta ed effettivo 1:N chiaramente distinti; scala fisica non calibrata. La voce `MAP-FRACTIONAL-ZOOM-A` rimane distinta e non implementata. Nessun PASS umano o FINITO attribuito.
+Stato: **Build321 LIVE — CLOSED / QA_OPERATORE_PASS** (ROUTINE / STANDARD_RUNTIME_BUNDLE, Regola H), source `64522d52d102cdd0bcd89f4b671b65dc0ba8e9b2`; [ricevuta QA321](../orchestrator/evidence/2026-11-23-qa321-closure/REPORT.md) e [rilascio](../orchestrator/evidence/2026-11-23-map-target-scale-321/REPORT.md). Selettore scala nominale `1:N`: zoom intero più vicino, centro/layer invariati, richiesta ed effettivo 1:N distinti; scala fisica non calibrata. QA browser LIVE 45/45 PASS, QA operatore PASS; nessuna qualifica universale. `MAP-FRACTIONAL-ZOOM-A` resta distinta, non implementata.
 
 Requisito: l’operatore può richiedere una scala (es. `1:25000`) e la mappa porta il viewport alla scala nominale corrispondente, mantenendo il centro corrente salvo scelta diversa.
 
