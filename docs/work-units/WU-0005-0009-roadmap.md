@@ -775,7 +775,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | Item | Titolo | Stato |
 | --- | --- | --- |
 | **MAP-TARGET-SCALE-A** | Visualizzazione mappa a scala nominale richiesta 1:N | **CLOSED / QA_OPERATORE_PASS** · LIVE **321** · 23/11/2026 · [ricevuta](../orchestrator/evidence/2026-11-23-qa321-closure/REPORT.md) |
-| **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **T1 BUILD322 CLOSED / PASS**; **T2 BUILD323 LIVE / ABQA PASS / QA OPERATORE PENDING**; [QA LIVE](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-323/REPORT.md); parent OPEN |
+| **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **CLOSED / QA_OPERATORE_PASS** - T1 Build322 e T2 Build323; 24/11/2026; [ricevuta](../orchestrator/evidence/2026-11-24-qa323-t2-closure/REPORT.md) - perimetro layer qualificati |
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **CLOSED / QA_OPERATORE_PASS** · LIVE **320** · 22/11/2026 · [ricevuta](../orchestrator/evidence/2026-11-22-qa320-closure/REPORT.md) |
 | **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **CLOSED / PASS** LIVE **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · finito Regola H |
 | **GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1)** | Accesso **Oggetti GIS** solo da Impostazioni; FIX1 ripristina geometria toolbar mappa | **CLOSED / PASS** LIVE **247** tip `ac4789e` · blob `6e10d568…` · QA operatore PASS · finito Regola H — modulo **FROZEN / MAINTENANCE-ONLY** |
@@ -829,7 +829,9 @@ Note tecniche (i residui di calibrazione fisica, stampa/export e zoom frazionari
 
 #### MAP-FRACTIONAL-ZOOM-A
 
-Contratto DELICATO T2 (23/11/2026): [CONTRACT](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-contract/CONTRACT.md). Build323 T2 implementata e qualificata; [review sostitutiva 23/23 PASS](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-323/REVIEW.md). Deploy e ABQA LIVE PASS; [rapporto](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-323/REPORT.md). QA operatore PENDING.
+**Stato attuale: CLOSED / QA_OPERATORE_PASS** Build323 T2, parent chiuso nel perimetro layer compatibili. QA MAP-FRACTIONAL-ZOOM-A-T2 PASS operatore; registrazione 24/11/2026. [Ricevuta](../orchestrator/evidence/2026-11-24-qa323-t2-closure/REPORT.md). Righe audit e pre-QA sotto sono storiche.
+
+Contratto DELICATO T2 (23/11/2026): [CONTRACT](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-contract/CONTRACT.md). Build323 T2 implementata e qualificata; [review sostitutiva 23/23 PASS](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-323/REVIEW.md). Deploy e ABQA LIVE PASS; [rapporto](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-323/REPORT.md). QA operatore PASS, T2/parent CLOSED nel perimetro qualificato.
 
 Audit T2 23/11/2026: [modello viewZoom/tileZoom e matrice impatti](../orchestrator/evidence/2026-11-23-fractional-zoom-t2-audit/REPORT.md) · Web Mercator geometria pura 6.048/6.048 PASS, ma il runtime arrotonda lo zoom al render e al restore. **Solo audit, nessuna Build323 candidata e nessuna QA T2 eseguita.** NEXT: contratto DELICATO per camera frazionaria persistente, tile/cache interi e hit-test/overlay coerenti.
 
