@@ -1,16 +1,14 @@
 # TMAR GIS Tool - stato operativo corrente
 
-> FRONTIER.md e unica LIVE STATE.
+> FRONTIER.md unica fonte LIVE STATE.
 
 | Campo | Stato |
 | --- | --- |
-| Runtime LIVE | Build324 GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A, source b08459bfa2eaf49df938d550b1800edce105096d, blob cb838af70477a2136f654f1b52397e35046d2848, SHA256 78d8acb4a549ab60e4d44fd798240b57b0617bf0964a7e93700db12dab90ebbf, 11.356.016 byte; deploy tecnico e ABQA HTTPS LIVE 108/108 PASS; QA operatore PASS; CLOSED. |
-| Ultimo CLOSED | Build324 GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A; QA operatore PASS 24/11/2026 |
-| Gate riusati | Build325 statici71/71, candidato80/80, review sostitutiva32/32 PASS; deploy pending. |
-| Bundle runtime attivo | Build325 D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A; [review](evidence/2026-11-24-atm09-details-325/REVIEW.md) |
-| NEXT | Deploy GIS-only, ABQA LIVE, QA operatore. |
+| Runtime LIVE | Build325 D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A, source 72ac2ef267ae7162094fe7971b6761ed5b9ec661, blob fca7705968c8cdf74624847700f48325426c2d23, SHA256 74f2a0a54c98c3b414f24c30cb587f26ffdd2580a922f74b728118a748f0e4e0, 11.361.129 byte; VPS checkout f359fc690466a45466592a95723a97120946a668 al deploy, HTTP/HTTPS200 byte/SHA verificati; ABQA HTTPS LIVE 80/80 PASS; QA operatore PENDING. |
+| Ultimo CLOSED | Build324 GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A |
+| Gate | Statici71/71, candidato80/80, review32/32, deploy e ABQA HTTPS LIVE80/80 PASS |
+| Bundle runtime attivo | D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A - OPEN / QA operatore PENDING |
+| NEXT | QA D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A PASS operatore, dopo verifica umana |
 | Residui | P0 autorizzato non applicato; DTM HOLD; P4 FUTURO; review esterna post-hoc PENDING |
 
-Chiusura docs-only 48f990836d4b0fbb701be975353468cc25a2340f.
-
-[Build324 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=78d8acb4) - [Ricevuta](evidence/2026-11-24-qa324-closure/REPORT.md)
+[Build325 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=74f2a0a5) - [QA LIVE](evidence/2026-11-24-atm09-details-325/REPORT.md)
