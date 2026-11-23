@@ -775,7 +775,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | Item | Titolo | Stato |
 | --- | --- | --- |
 | **MAP-TARGET-SCALE-A** | Visualizzazione mappa a scala nominale richiesta 1:N | **CLOSED / QA_OPERATORE_PASS** · LIVE **321** · 23/11/2026 · [ricevuta](../orchestrator/evidence/2026-11-23-qa321-closure/REPORT.md) |
-| **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **T1 BUILD322 LIVE / ABQA AGGREGATA PASS 78/78 / OPERATORE PENDING** · [QA](../orchestrator/evidence/2026-11-23-build322-live-qa-aggregation/REPORT.md) · parent non CLOSED |
+| **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **T1 BUILD322 CLOSED / QA_OPERATORE_PASS** · [ricevuta](../orchestrator/evidence/2026-11-23-qa322-t1-closure/REPORT.md) · **parent OPEN (T2 persistente non implementato)** |
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **CLOSED / QA_OPERATORE_PASS** · LIVE **320** · 22/11/2026 · [ricevuta](../orchestrator/evidence/2026-11-22-qa320-closure/REPORT.md) |
 | **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **CLOSED / PASS** LIVE **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · finito Regola H |
 | **GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1)** | Accesso **Oggetti GIS** solo da Impostazioni; FIX1 ripristina geometria toolbar mappa | **CLOSED / PASS** LIVE **247** tip `ac4789e` · blob `6e10d568…` · QA operatore PASS · finito Regola H — modulo **FROZEN / MAINTENANCE-ONLY** |
@@ -829,9 +829,9 @@ Note tecniche (i residui di calibrazione fisica, stampa/export e zoom frazionari
 
 #### MAP-FRACTIONAL-ZOOM-A
 
-Build322 T1 LIVE tecnicamente verificata: [rapporto deploy e QA LIVE bloccata](../orchestrator/evidence/2026-11-23-wheel-preview-322/REPORT.md); [review GPT-sostitutiva PASS](../orchestrator/evidence/2026-11-23-wheel-preview-322/REVIEW.md) sul raw e707870; candidato browser 78/78 PASS, deploy HTTP/HTTPS200 con SHA verificato. **QA browser LIVE aggregata PASS 78/78** dai casi validi R1/R5/R6 sul medesimo SHA, con STOP del documento HTTPS originari conservati; QA operatore PENDING, parent non CLOSED. **Non implementa zoom finale frazionario persistente.**
+Build322 T1 LIVE tecnicamente verificata: [rapporto deploy e QA LIVE bloccata](../orchestrator/evidence/2026-11-23-wheel-preview-322/REPORT.md); [review GPT-sostitutiva PASS](../orchestrator/evidence/2026-11-23-wheel-preview-322/REVIEW.md) sul raw e707870; candidato browser 78/78 PASS, deploy HTTP/HTTPS200 con SHA verificato. **QA browser LIVE aggregata PASS 78/78** dai casi validi R1/R5/R6 sul medesimo SHA, con STOP del documento HTTPS originari conservati; attestazione `QA MAP-FRACTIONAL-ZOOM-A-T1 PASS operatore` acquisita 23/11/2026, **T1 CLOSED** secondo Regola H; [ricevuta](../orchestrator/evidence/2026-11-23-qa322-t1-closure/REPORT.md). Il **parent non è CLOSED**. **Non implementa zoom finale frazionario persistente.**
 
-Contratto T1 per preview wheel raster: [CONTRACT](../orchestrator/evidence/2026-11-23-map-fractional-wheel-preview-contract/CONTRACT.md); DELICATO, nessuna candidata Build322. Non implementa zoom finale frazionario persistente.
+Contratto storico T1 per preview wheel raster: [CONTRACT](../orchestrator/evidence/2026-11-23-map-fractional-wheel-preview-contract/CONTRACT.md), DELICATO; all’epoca non esisteva una candidata Build322. Successiva Build322 T1 CLOSED, ma **non** implementa zoom finale frazionario persistente.
 
 Audit 23/11/2026: `renderTileMap` usa zoom interi; wheel applica passi ±1, mentre il pinch possiede un’anteprima continua che torna a zoom intero al commit. La trasformazione della scena va qualificata rispetto a cache-pan, hit-test, waypoint/tracce/poligoni, misure e overlay speciali. [Audit e NEXT](../orchestrator/evidence/2026-11-23-map-fractional-zoom-audit/REPORT.md). Nessuna candidata Build322 o QA è aperta.
 
