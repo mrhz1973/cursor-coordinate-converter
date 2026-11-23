@@ -9230,6 +9230,19 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
   touch-action:none;
 }
 #dflightRestrictionsLegend[hidden]{ display:none !important; }
+
+/* Hard coordinate exclusion: show only after a full geometric placement. */
+#dflightAtm09UserLegend:not(.legend-ws-contained),
+#dflightRestrictionsLegend:not(.legend-ws-contained){visibility:hidden;pointer-events:none;}
+#dflightAtm09UserLegend,#dflightRestrictionsLegend{
+  min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;
+}
+#dflightAtm09UserLegend .dflight-atm09-ul-title,
+#dflightRestrictionsLegend .dflight-legend-ws-head{touch-action:none;}
+#dflightAtm09UserLegend li,#dflightRestrictionsLegend .dflight-legend-item{
+  white-space:normal;overflow-wrap:anywhere;min-width:0;
+}
+
 #dflightRestrictionsLegend.is-compact{
   max-width:min(180px, 52vw);
   padding:6px 8px 7px;
@@ -26724,10 +26737,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-FRACTIONAL-ZOOM-A-T2";
-const APP_BUILD_DETAIL = "Zoom frazionario persistente su raster compatibili; camera reale e livelli tile interi.";
+const APP_BUILD_ID = "GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A";
+const APP_BUILD_DETAIL = "Legende: contenimento completo fuori da coordinate e toolbar.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 323;
+const APP_BUILD_NUM = 324;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -48577,180 +48590,167 @@ function legendWorkspacePlaceBeside(w, h, other, rec, gap){
 }
 
 function legendWorkspaceClampPos(left, top, w, h, rec){
-  const minVisX = Math.min(LEGEND_WS_HEADER_MIN_PX, w);
-  const minVisY = Math.min(LEGEND_WS_HEADER_MIN_PX, h);
-  const minL = rec.left + minVisX - w;
-  const maxL = rec.right - minVisX;
-  const minT = rec.top + minVisY - h;
-  const maxT = rec.bottom - minVisY;
-  return {
-    left: Math.max(minL, Math.min(left, maxL)),
-    top: Math.max(minT, Math.min(top, maxT))
-  };
+  if (!rec || ![left,top,w,h,rec.left,rec.top,rec.right,rec.bottom].every(Number.isFinite)
+      || w <= 0 || h <= 0) return null;
+  const minL = Math.ceil(rec.left), maxL = Math.floor(rec.right - w);
+  const minT = Math.ceil(rec.top), maxT = Math.floor(rec.bottom - h);
+  if (maxL < minL || maxT < minT) return null;
+  return {left:Math.max(minL, Math.min(Math.round(left), maxL)),
+          top:Math.max(minT, Math.min(Math.round(top), maxT))};
+}
+
+/* Select one fully free rectangle, never just a reachable title. Reserve all
+ * visible coordinate readouts (including mobile HUD) and the map toolbar. */
+function legendWorkspaceFreeRect(bounds, obstacles, gap){
+  let rects = [bounds];
+  const valid = r => r.right > r.left && r.bottom > r.top;
+  for (const o of obstacles){
+    const x = {left:o.left-gap,top:o.top-gap,right:o.right+gap,bottom:o.bottom+gap};
+    const next = [];
+    for (const r of rects){
+      if (x.right <= r.left || x.left >= r.right || x.bottom <= r.top || x.top >= r.bottom){
+        next.push(r); continue;
+      }
+      next.push({left:r.left,top:r.top,right:Math.min(r.right,x.left),bottom:r.bottom},
+        {left:Math.max(r.left,x.right),top:r.top,right:r.right,bottom:r.bottom},
+        {left:r.left,top:r.top,right:r.right,bottom:Math.min(r.bottom,x.top)},
+        {left:r.left,top:Math.max(r.top,x.bottom),right:r.right,bottom:r.bottom});
+    }
+    const good = next.filter(valid);
+    rects = good.filter((r,i) => !good.some((q,j) => j!==i && q.left<=r.left && q.top<=r.top &&
+      q.right>=r.right && q.bottom>=r.bottom && (q.left<r.left || q.top<r.top ||
+      q.right>r.right || q.bottom>r.bottom || j<i)));
+  }
+  const area = r => (r.right-r.left)*(r.bottom-r.top);
+  rects = rects.filter(r => r.right-r.left >= 64 && r.bottom-r.top >= 36);
+  rects.sort((a,b) => area(b)-area(a) || b.right-a.right || b.bottom-a.bottom);
+  return rects[0] || {left:bounds.left,top:bounds.top,right:bounds.left,bottom:bounds.top};
 }
 
 function legendWorkspaceSafeRect(){
   const atmEl = document.getElementById("dflightAtm09UserLegend");
   const dfEl = document.getElementById("dflightRestrictionsLegend");
-  const host = (atmEl && atmEl.parentElement)
-    || (dfEl && dfEl.parentElement)
-    || document.getElementById("gisMapMount")
-    || document.getElementById("miniMap");
+  const host = (atmEl && atmEl.parentElement) || (dfEl && dfEl.parentElement)
+    || document.getElementById("gisMapMount") || document.getElementById("miniMap");
   if (!host) return null;
-  const mapRoot = (host.querySelector && host.querySelector(".tile-map"))
-    || document.querySelector("#gisMapMount .tile-map")
-    || document.querySelector("#miniMap .tile-map")
-    || host;
-  const ctrls = mapRoot.querySelector ? mapRoot.querySelector(".tile-ctrls") : null;
-  const readout = mapRoot.querySelector ? mapRoot.querySelector(".tile-readout") : null;
-  const pointRow = mapRoot.querySelector ? mapRoot.querySelector(".trp-point") : null;
-  const cursorRow = mapRoot.querySelector ? mapRoot.querySelector(".trp-cursor") : null;
-  const hostRect = host.getBoundingClientRect();
-  const mapRect = mapRoot.getBoundingClientRect();
-  const gap = DFLIGHT_ATM09_UL_GAP_PX;
-  if (!(hostRect.width > 0 && mapRect.width > 0)) return null;
-  let rightEdge = mapRect.right - gap;
-  if (ctrls){
-    const cr = ctrls.getBoundingClientRect();
-    if (cr.width > 0 && cr.height > 0) rightEdge = Math.min(rightEdge, cr.left - gap);
-  }
-  let bottomEdge = mapRect.bottom - gap;
-  let coordsTop = null;
-  [pointRow, cursorRow].forEach(function(n){
-    if (!n) return;
-    const r = n.getBoundingClientRect();
-    if (r.width > 0 && r.height > 0) coordsTop = (coordsTop == null) ? r.top : Math.min(coordsTop, r.top);
+  const mapRoot = host.querySelector(".tile-map") || document.querySelector("#miniMap .tile-map");
+  if (!mapRoot) return null;
+  const hr = host.getBoundingClientRect(), mr = mapRoot.getBoundingClientRect(), gap = DFLIGHT_ATM09_UL_GAP_PX;
+  const viewport = window.visualViewport;
+  const vl = viewport ? viewport.offsetLeft : 0, vt = viewport ? viewport.offsetTop : 0;
+  const vr = vl + (viewport ? viewport.width : window.innerWidth);
+  const vb = vt + (viewport ? viewport.height : window.innerHeight);
+  const bounds = {left:Math.max(hr.left,mr.left,vl)+gap,top:Math.max(hr.top,mr.top,vt)+gap,
+    right:Math.min(hr.right,mr.right,vr)-gap,bottom:Math.min(hr.bottom,mr.bottom,vb)-gap};
+  const nodes = Array.from(mapRoot.querySelectorAll(".tile-ctrls, .tile-readout, .trp-point, .trp-cursor, .gis-mobile-hud-row"));
+  const obstacles = nodes.flatMap(n => {
+    const cs = getComputedStyle(n), cr = n.getBoundingClientRect();
+    if (cs.display === "none" || cs.visibility === "hidden" || !(cr.width > 0 && cr.height > 0)) return [];
+    return [{left:cr.left,top:cr.top,right:cr.right,bottom:cr.bottom}];
   });
-  if (coordsTop == null && readout){
-    const rr = readout.getBoundingClientRect();
-    if (rr.width > 0 && rr.height > 0) coordsTop = rr.top;
-  }
-  if (coordsTop != null) bottomEdge = Math.min(bottomEdge, coordsTop - gap);
-  const leftEdge = mapRect.left + gap;
-  const topEdge = mapRect.top + gap;
-  const availW = Math.max(72, rightEdge - leftEdge);
-  const availH = Math.max(48, bottomEdge - topEdge);
-  const needCompact = availW < 200 || availH < 280 || hostRect.width < 560;
-  return {
-    host: host,
-    hostRect: hostRect,
-    left: leftEdge - hostRect.left,
-    top: topEdge - hostRect.top,
-    right: rightEdge - hostRect.left,
-    bottom: bottomEdge - hostRect.top,
-    availW: availW,
-    availH: availH,
-    needCompact: !!needCompact
-  };
+  const free = legendWorkspaceFreeRect(bounds, obstacles, gap);
+  const availW = Math.max(0,free.right-free.left), availH = Math.max(0,free.bottom-free.top);
+  return {host,hostRect:hr,mapRoot,nodes,free,obstacles,
+    left:free.left-hr.left,top:free.top-hr.top,right:free.right-hr.left,bottom:free.bottom-hr.top,
+    availW,availH,needCompact:availW<200||availH<280||hr.width<560};
 }
 
-function legendWorkspaceApplyChrome(el, rec){
+function legendWorkspaceApplyChrome(el, rec, heightLimit){
   if (!el || !rec) return;
-  try { el.classList.toggle("is-compact", !!rec.needCompact); } catch(_){}
-  if (rec.availH < 220){
-    el.style.maxHeight = Math.max(72, Math.floor(rec.availH)) + "px";
-    el.style.overflow = "auto";
-  } else {
-    el.style.maxHeight = "";
-    el.style.overflow = "";
-  }
-  el.style.maxWidth = Math.min(rec.needCompact ? 180 : 210, Math.floor(rec.availW)) + "px";
+  el.classList.toggle("is-compact", !!rec.needCompact);
+  el.style.maxWidth = Math.max(0,Math.min(rec.needCompact ? 180 : 210, Math.floor(rec.availW))) + "px";
+  el.style.maxHeight = Math.max(0,Math.floor(Math.min(rec.availH, Number.isFinite(heightLimit)?heightLimit:rec.availH))) + "px";
+  el.style.overflow = "auto";
 }
-
-function legendWorkspaceApplyEl(el, left, top){
-  if (!el) return;
-  el.style.left = Math.round(left) + "px";
-  el.style.top = Math.round(top) + "px";
-  el.style.right = "auto";
-  el.style.bottom = "auto";
+function legendWorkspaceApplyEl(el, left, top, rec){
+  if (!el) return null;
+  rec = rec || legendWorkspaceSafeRect();
+  const sz = legendWorkspaceReadSize(el);
+  const pos = rec && rec.availW>=64 && rec.availH>=36 && legendWorkspaceClampPos(left,top,sz.w,sz.h,rec);
+  if (!pos){el.classList.remove("legend-ws-contained");return null;}
+  el.style.left = pos.left+"px"; el.style.top = pos.top+"px";
+  el.style.right = "auto"; el.style.bottom = "auto";
+  const r = el.getBoundingClientRect(), f = rec.free, eps = .25;
+  const safe = r.width>0 && r.height>0 && r.left>=f.left-eps && r.top>=f.top-eps &&
+    r.right<=f.right+eps && r.bottom<=f.bottom+eps;
+  el.classList.toggle("legend-ws-contained",safe);
+  return safe ? pos : null;
 }
-
 function legendWorkspaceReadSize(el){
-  const w = Math.max(1, (el && (el.offsetWidth || (el.getBoundingClientRect && el.getBoundingClientRect().width))) || 160);
-  const h = Math.max(1, (el && (el.offsetHeight || (el.getBoundingClientRect && el.getBoundingClientRect().height))) || 160);
-  return { w: w, h: h };
+  const r = el && el.getBoundingClientRect();
+  return {w:r&&r.width||0,h:r&&r.height||0};
+}
+
+let _legendWsLayoutBusy = false;
+let _legendWsBoundsObserver = null;
+let _legendWsObservedNodes = [];
+function legendWorkspaceWatchBounds(rec, elements){
+  if (typeof ResizeObserver !== "function") return;
+  const nodes = rec ? Array.from(new Set([rec.host,rec.mapRoot,...rec.nodes,...elements].filter(Boolean))) : [];
+  if (nodes.length===_legendWsObservedNodes.length && nodes.every((n,i)=>n===_legendWsObservedNodes[i])) return;
+  if (_legendWsBoundsObserver) _legendWsBoundsObserver.disconnect();
+  _legendWsObservedNodes = nodes;
+  if (!nodes.length) return;
+  if (!_legendWsBoundsObserver) _legendWsBoundsObserver = new ResizeObserver(()=>legendWorkspaceLayout("bounds"));
+  nodes.forEach(n=>_legendWsBoundsObserver.observe(n));
 }
 
 function legendWorkspaceLayout(reason){
+  if (_legendWsLayoutBusy) return;
+  _legendWsLayoutBusy = true;
+  let atmEl, dfEl;
   try {
-    if (_legendWsDraggingKey && reason !== "drag") return;
-    const showAtm = dflightLegendWorkspaceNeedAtm();
-    const showDf = dflightLegendWorkspaceNeedDf();
-    const atmEl = showAtm ? dflightEnsureAtm09UserLegend() : document.getElementById("dflightAtm09UserLegend");
-    const dfEl = showDf ? dflightEnsureRestrictionsLegend() : document.getElementById("dflightRestrictionsLegend");
-    if (atmEl) try { atmEl.hidden = !showAtm; } catch(_){}
-    if (dfEl) try { dfEl.hidden = !showDf; } catch(_){}
-    if (!showAtm && !showDf){
-      _legendWsPrev.showAtm = false;
-      _legendWsPrev.showDf = false;
+    const showAtm=dflightLegendWorkspaceNeedAtm(),showDf=dflightLegendWorkspaceNeedDf();
+    atmEl=showAtm?dflightEnsureAtm09UserLegend():document.getElementById("dflightAtm09UserLegend");
+    dfEl=showDf?dflightEnsureRestrictionsLegend():document.getElementById("dflightRestrictionsLegend");
+    if(atmEl)atmEl.hidden=!showAtm;
+    if(dfEl)dfEl.hidden=!showDf;
+    if(!showAtm&&!showDf){
+      legendWorkspaceWatchBounds(null,[]);
+      _legendWsPrev.showAtm=false;_legendWsPrev.showDf=false;
       return;
     }
-    const rec = legendWorkspaceSafeRect();
-    if (!rec) return;
-    if (atmEl && showAtm) legendWorkspaceApplyChrome(atmEl, rec);
-    if (dfEl && showDf) legendWorkspaceApplyChrome(dfEl, rec);
-    const gap = DFLIGHT_ATM09_UL_GAP_PX;
-    const atmSz = (atmEl && showAtm) ? legendWorkspaceReadSize(atmEl) : { w: 160, h: 200 };
-    const dfSz = (dfEl && showDf) ? legendWorkspaceReadSize(dfEl) : { w: 160, h: 160 };
-    /* FIX2: any enter solo-D-Flight (from dual or none) → snap right once per transition. */
-    const isSoloDf = !!(showDf && !showAtm);
-    const wasSoloDf = !!(_legendWsPrev.showDf && !_legendWsPrev.showAtm);
-    const enterSoloDf = !!(isSoloDf && !wasSoloDf && reason !== "drag");
-    if (enterSoloDf && dfEl){
-      const soloPos = legendWorkspacePlaceSingle(dfSz.w, dfSz.h, rec);
-      legendWorkspaceApplyEl(dfEl, soloPos.left, soloPos.top);
-      _legendWs.df.left = soloPos.left;
-      _legendWs.df.top = soloPos.top;
-      _legendWs.df.touched = false;
-      _legendWsPrev.showAtm = showAtm;
-      _legendWsPrev.showDf = showDf;
-      return;
+    const rec=legendWorkspaceSafeRect(),gap=DFLIGHT_ATM09_UL_GAP_PX;
+    legendWorkspaceWatchBounds(rec,[showAtm&&atmEl,showDf&&dfEl]);
+    if(!rec){
+      [atmEl,dfEl].forEach(el=>{if(el)el.classList.remove("legend-ws-contained");});return;
     }
-    const dfTouched = !!(_legendWs.df && _legendWs.df.touched);
-    const atmTouched = !!(_legendWs.atm && _legendWs.atm.touched);
-    const both = !!(showAtm && showDf);
-    const rePair = both && !dfTouched && !atmTouched && reason !== "drag";
-    if (rePair){
-      const pair = legendWorkspaceComputeDefaultPair(rec, dfSz.w, dfSz.h, atmSz.w, atmSz.h, gap);
-      legendWorkspaceApplyEl(dfEl, pair.df.left, pair.df.top);
-      legendWorkspaceApplyEl(atmEl, pair.atm.left, pair.atm.top);
-      _legendWs.df.left = pair.df.left; _legendWs.df.top = pair.df.top;
-      _legendWs.atm.left = pair.atm.left; _legendWs.atm.top = pair.atm.top;
-      _legendWsPrev.showAtm = showAtm;
-      _legendWsPrev.showDf = showDf;
-      return;
+    if(showAtm&&atmEl)legendWorkspaceApplyChrome(atmEl,rec);
+    if(showDf&&dfEl)legendWorkspaceApplyChrome(dfEl,rec);
+    let atmSz=legendWorkspaceReadSize(atmEl),dfSz=legendWorkspaceReadSize(dfEl);
+    const both=!!(showAtm&&showDf&&atmEl&&dfEl);
+    if(both && dfSz.w+atmSz.w+gap>rec.availW && rec.availH>=82+gap){
+      const half=Math.floor((rec.availH-gap)/2)-1;
+      legendWorkspaceApplyChrome(atmEl,rec,half);legendWorkspaceApplyChrome(dfEl,rec,half);
+      atmSz=legendWorkspaceReadSize(atmEl);dfSz=legendWorkspaceReadSize(dfEl);
     }
-    function placeOne(key, el, sz, otherEl, otherKey, otherSz, showOther){
-      if (!el) return;
-      const st = _legendWs[key];
-      const otherSt = _legendWs[otherKey];
-      const otherTouched = !!(otherSt && otherSt.touched);
-      const hasPos = !!(st && Number.isFinite(st.left) && Number.isFinite(st.top));
-      if (hasPos){
-        const clamped = legendWorkspaceClampPos(st.left, st.top, sz.w, sz.h, rec);
-        legendWorkspaceApplyEl(el, clamped.left, clamped.top);
-        st.left = clamped.left; st.top = clamped.top;
-        return;
+    const place=(key,el,pos)=>{
+      const applied=legendWorkspaceApplyEl(el,pos.left,pos.top,rec);
+      if(applied){_legendWs[key].left=applied.left;_legendWs[key].top=applied.top;}
+    };
+    const isSoloDf=showDf&&!showAtm,wasSoloDf=_legendWsPrev.showDf&&!_legendWsPrev.showAtm;
+    if(isSoloDf&&!wasSoloDf&&reason!=="drag"&&!_legendWsDraggingKey&&dfEl){
+      _legendWs.df.touched=false;place("df",dfEl,legendWorkspacePlaceSingle(dfSz.w,dfSz.h,rec));
+    }else if(both&&!_legendWs.df.touched&&!_legendWs.atm.touched&&reason!=="drag"&&!_legendWsDraggingKey){
+      const pair=legendWorkspaceComputeDefaultPair(rec,dfSz.w,dfSz.h,atmSz.w,atmSz.h,gap);
+      place("df",dfEl,pair.df);place("atm",atmEl,pair.atm);
+    }else{
+      function placeOne(key,el,sz,otherEl,otherKey,otherSz,showOther){
+        if(!el)return;
+        const st=_legendWs[key],otherSt=_legendWs[otherKey];
+        let pos;
+        if(Number.isFinite(st.left)&&Number.isFinite(st.top))pos={left:st.left,top:st.top};
+        else if(showOther&&otherSt.touched&&otherEl)pos=legendWorkspacePlaceBeside(sz.w,sz.h,{left:otherSt.left||0,top:otherSt.top||0,w:otherSz.w,h:otherSz.h},rec,gap);
+        else pos=legendWorkspacePlaceSingle(sz.w,sz.h,rec);
+        place(key,el,pos);
       }
-      if (showOther && otherTouched && otherEl){
-        const oLeft = Number.isFinite(otherSt.left) ? otherSt.left : (parseFloat(otherEl.style.left) || 0);
-        const oTop = Number.isFinite(otherSt.top) ? otherSt.top : (parseFloat(otherEl.style.top) || 0);
-        const pos = legendWorkspacePlaceBeside(sz.w, sz.h, {
-          left: oLeft, top: oTop, w: otherSz.w, h: otherSz.h
-        }, rec, gap);
-        legendWorkspaceApplyEl(el, pos.left, pos.top);
-        st.left = pos.left; st.top = pos.top;
-        return;
-      }
-      const pos = legendWorkspacePlaceSingle(sz.w, sz.h, rec);
-      legendWorkspaceApplyEl(el, pos.left, pos.top);
-      st.left = pos.left; st.top = pos.top;
+      if(showAtm)placeOne("atm",atmEl,atmSz,dfEl,"df",dfSz,showDf);
+      if(showDf)placeOne("df",dfEl,dfSz,atmEl,"atm",atmSz,showAtm);
     }
-    if (showAtm) placeOne("atm", atmEl, atmSz, dfEl, "df", dfSz, showDf);
-    if (showDf) placeOne("df", dfEl, dfSz, atmEl, "atm", atmSz, showAtm);
-    _legendWsPrev.showAtm = showAtm;
-    _legendWsPrev.showDf = showDf;
-  } catch(_){}
+    _legendWsPrev.showAtm=showAtm;_legendWsPrev.showDf=showDf;
+  }catch(_){
+    [atmEl,dfEl].forEach(el=>{if(el)el.classList.remove("legend-ws-contained");});
+  }finally{_legendWsLayoutBusy=false;}
 }
 
 function legendWorkspaceAttachDrag(el, key){
@@ -48763,14 +48763,8 @@ function legendWorkspaceAttachDrag(el, key){
     let left = down.startL + (ev.clientX - down.sx);
     let top = down.startT + (ev.clientY - down.sy);
     const rec = legendWorkspaceSafeRect();
-    const sz = legendWorkspaceReadSize(el);
-    if (rec){
-      const c = legendWorkspaceClampPos(left, top, sz.w, sz.h, rec);
-      left = c.left; top = c.top;
-    }
-    legendWorkspaceApplyEl(el, left, top);
-    _legendWs[key].left = left;
-    _legendWs[key].top = top;
+    const placed = legendWorkspaceApplyEl(el, left, top, rec);
+    if(placed){_legendWs[key].left=placed.left;_legendWs[key].top=placed.top;}
     _legendWs[key].touched = true;
     try { el.style.zIndex = "6"; } catch(_){}
   }
@@ -48783,6 +48777,7 @@ function legendWorkspaceAttachDrag(el, key){
     down = null;
     _legendWsDraggingKey = null;
     try { head.classList.remove("is-dragging"); } catch(_){}
+    legendWorkspaceLayout("drag-end");
   }
   head.addEventListener("pointerdown", function(ev){
     if (ev.pointerType === "mouse" && ev.button !== 0) return;
@@ -48835,6 +48830,10 @@ function dflightWireAtm09UserLegendPositioning(){
     window.addEventListener("orientationchange", function(){
       try { legendWorkspaceLayout("resize"); } catch(_){}
     });
+    if(window.visualViewport){
+      window.visualViewport.addEventListener("resize",()=>legendWorkspaceLayout("resize"));
+      window.visualViewport.addEventListener("scroll",()=>legendWorkspaceLayout("resize"));
+    }
   } catch(_){}
 }
 let _dflightAtm09UserLegendBuilt = false;
