@@ -726,7 +726,7 @@ Destinazione preferita: spazio libero sul **lato destro** della mappa, tra toolb
 
 ##### GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A — Hard no-overlap con barre coordinate
 
-**Stato:** **Build324 LIVE / DEPLOY PASS / ABQA 108/108 PASS / QA OPERATORE PENDING**. [Rapporto](../orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REPORT.md). [Review](../orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REVIEW.md). Storico:  Residuo futuro nella casa canonica roadmap (questa sezione). **Non** riaprire WU-0018. **Non** blocco runtime aperto.
+**Stato:** **CLOSED / QA_OPERATORE_PASS** - Build324 LIVE, 24/11/2026, [ricevuta](../orchestrator/evidence/2026-11-24-qa324-closure/REPORT.md). [Rapporto](../orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REPORT.md). [Review](../orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REVIEW.md). Storico:  Residuo futuro nella casa canonica roadmap (questa sezione). **Non** riaprire WU-0018. **Non** blocco runtime aperto.
 
 **SUPERSEDES** la regola F-BATCH1 che ammetteva overlap se touched.
 
@@ -780,7 +780,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **CLOSED / PASS** LIVE **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · finito Regola H |
 | **GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1)** | Accesso **Oggetti GIS** solo da Impostazioni; FIX1 ripristina geometria toolbar mappa | **CLOSED / PASS** LIVE **247** tip `ac4789e` · blob `6e10d568…` · QA operatore PASS · finito Regola H — modulo **FROZEN / MAINTENANCE-ONLY** |
 | **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **CLOSED / QA_OPERATORE_PASS** · LIVE **319** · 22/11/2026 |
-| **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **Build324 LIVE / ABQA 108/108 PASS / QA OPERATORE PENDING** - [QA LIVE](../orchestrator/evidence/2026-11-24-legends-coordinate-exclusion-324/REPORT.md); WU-0018 non riaperta |
+| **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **CLOSED / QA_OPERATORE_PASS** - LIVE **324** - 24/11/2026 - [ricevuta](../orchestrator/evidence/2026-11-24-qa324-closure/REPORT.md); WU-0018 non riaperta |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
