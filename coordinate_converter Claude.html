@@ -26721,10 +26721,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-TARGET-SCALE-A";
-const APP_BUILD_DETAIL = "Scala nominale 1:N: scelta dello zoom più vicino e riscontro della scala effettiva.";
+const APP_BUILD_ID = "MAP-FRACTIONAL-ZOOM-A-T1";
+const APP_BUILD_DETAIL = "Anteprima wheel raster fluida; commit a zoom intero con camera canonica invariata durante il gesto.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 321;
+const APP_BUILD_NUM = 322;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -73166,6 +73166,7 @@ function openTrackPasteModal(){
 function renderTileMap(lat, lon, zoom){
   const root = document.getElementById("miniMap");
   if (!root) return;
+  if (typeof root._gisWheelCancel === "function") root._gisWheelCancel();
   disposeGisPanTileContinuity(root, true);
   if (root._tileLoadMonitorCancel) root._tileLoadMonitorCancel();
   revokeMapBlobUrls(root);
@@ -74599,7 +74600,118 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
     acc: 0,
     idleTimer: null,
     lastCursor: null,
-    cooldownUntil: 0
+    cooldownUntil: 0,
+    scene: null
+  };
+
+  // MAP-FRACTIONAL-ZOOM-A T1: visual-only wheel preview owned by this map root.
+  // Canonical camera, tile level and overlay hit-testing remain integer until flush.
+  let wheelPreview = null;
+  const clearWheelPreview = () => {
+    const p = wheelPreview;
+    wheelPreview = null;
+    root._gisWheelPreviewActive = false;
+    // CSSOM may serialize scale(1.155350) as scale(1.15535): compare factors,
+    // not the literal transform strings, and never overwrite a foreign transform.
+    if (p && p.layer && p.layer.isConnected){
+      const actual = /^scale\((\d+(?:\.\d+)?)\)$/.exec(p.layer.style.transform);
+      const expected = /^scale\((\d+(?:\.\d+)?)\)$/.exec(p.appliedTransform);
+      if (actual && expected && Math.abs(Number(actual[1]) - Number(expected[1])) <= 1e-5){
+        p.layer.style.transform = p.previousTransform;
+        p.layer.style.transformOrigin = p.previousOrigin;
+        p.layer.style.transition = p.previousTransition;
+      }
+    }
+  };
+  const cancelWheel = () => {
+    if (st.idleTimer != null) clearTimeout(st.idleTimer);
+    st.idleTimer = null;
+    st.acc = 0;
+    st.lastCursor = null;
+    st.scene = null;
+    clearWheelPreview();
+  };
+  root._gisWheelCancel = cancelWheel;
+  const wheelSceneCurrent = scene => {
+    const vc = state.viewCenter || { lat, lon };
+    return !!(scene && root.isConnected && root.querySelector(".tile-map") === scene.tileMap &&
+      root._mapTileGen === scene.generation &&
+      (state.mapLayer || "osm") === scene.layerId &&
+      Math.round(Number(state.mapZoom || zoom)) === scene.zoom &&
+      Number.isFinite(vc.lat) && Number.isFinite(vc.lon) &&
+      Math.abs(vc.lat - scene.centerLat) <= 1e-10 &&
+      Math.abs(normalizeLon(vc.lon) - scene.centerLon) <= 1e-10);
+  };
+  if (!root._gisWheelPreviewSafetyWired){
+    root._gisWheelPreviewSafetyWired = true;
+    // Cancel before pointer handlers consume a transformed scene: no false hit-test.
+    for (const type of ["pointerdown", "mousedown", "touchstart", "click", "dblclick"]){
+      root.addEventListener(type, () => {
+        if (root._gisWheelPreviewActive && typeof root._gisWheelCancel === "function")
+          root._gisWheelCancel();
+      }, true);
+    }
+    // Avoid stale cursor-coordinate readout during the brief visual-only transform.
+    root.addEventListener("mousemove", ev => {
+      if (!root._gisWheelPreviewActive) return;
+      const map = root.querySelector(".tile-map");
+      if (map && map.contains(ev.target)) ev.stopImmediatePropagation();
+    }, true);
+  }
+  const showWheelPreview = (ev, map) => {
+    if (!document.body.classList.contains("gis-mode") || !map || map.classList.contains("dragging")){
+      clearWheelPreview();
+      return;
+    }
+    const layer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
+    const plane = map.querySelector(".tile-layer");
+    if (!plane || !layer || !(typeof layer.url === "function" || typeof layer.urlBase === "string") ||
+        !Number.isFinite(layer.maxZoom) ||
+        (root._gisPanTileContinuity && root._gisPanTileContinuity.pendingCommit) ||
+        state._bboxSelecting || state.mapMeasureMode || state.mapPickMode ||
+        state.polygonDrawMode || state.waypointPickMode ||
+        state.rangeRingsPickCenterMode || state.rangeRingsPickAndCreateMode ||
+        state.showSonarChart || state.showHillshadeOverlay ||
+        state.showWaymarkedHiking || state.showStravaRunHeatmap ||
+        (typeof _dflightOverlayVisible !== "undefined" && _dflightOverlayVisible)){
+      clearWheelPreview();
+      return;
+    }
+    // Focus zoom-in has a separate, panel-aware anchor. Preserve its old behavior.
+    if (st.acc < 0 && typeof mapZoomFocusGetValid === "function" && mapZoomFocusGetValid()){
+      clearWheelPreview();
+      return;
+    }
+    if (!wheelPreview && plane.style.transform){
+      // A pan or other tool owns this transform; never overwrite it.
+      return;
+    }
+    const z = Math.max(2, Math.min(layer.maxZoom, Math.round(Number(state.mapZoom || zoom))));
+    const delta = -Math.sign(st.acc) * Math.min(1, Math.abs(st.acc) / 120);
+    const visualZ = Math.max(2, Math.min(layer.maxZoom, z + delta));
+    const factor = Math.pow(2, visualZ - z);
+    if (!Number.isFinite(factor) || Math.abs(factor - 1) < 0.002){
+      clearWheelPreview();
+      return;
+    }
+    if (wheelPreview && wheelPreview.layer !== plane) clearWheelPreview();
+    if (!wheelPreview){
+      wheelPreview = {
+        layer: plane,
+        previousTransform: plane.style.transform,
+        previousOrigin: plane.style.transformOrigin,
+        previousTransition: plane.style.transition,
+        appliedTransform: ""
+      };
+    }
+    const r = map.getBoundingClientRect();
+    const px = Math.max(0, Math.min(r.width, ev.clientX - r.left));
+    const py = Math.max(0, Math.min(r.height, ev.clientY - r.top));
+    plane.style.transformOrigin = px.toFixed(2) + "px " + py.toFixed(2) + "px";
+    plane.style.transition = "transform 105ms ease-out";
+    wheelPreview.appliedTransform = "scale(" + factor.toFixed(6) + ")";
+    plane.style.transform = wheelPreview.appliedTransform;
+    root._gisWheelPreviewActive = true;
   };
 
   const wheelDeltaPx = (ev) => {
@@ -74611,7 +74723,18 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
 
   const flush = () => {
     st.idleTimer = null;
-    if (!st.acc || !st.lastCursor) return;
+    if (!st.acc || !st.lastCursor){
+      st.scene = null;
+      clearWheelPreview();
+      return;
+    }
+    const scene = st.scene;
+    st.scene = null;
+    if (!wheelSceneCurrent(scene)){
+      cancelWheel();
+      return; // A redraw/tool/camera change invalidated the wheel gesture.
+    }
+    clearWheelPreview();
 
     const step = st.acc > 0 ? -1 : 1;
     st.acc = 0;
@@ -74663,6 +74786,7 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
     try {
       const block = (typeof gisUiBlocksMapWheelZoom === "function") ? gisUiBlocksMapWheelZoom(ev) : null;
       if (block){
+        if (root._gisWheelPreviewActive) cancelWheel();
         const targetInBlock = !!(block.contains && ev.target && block.contains(ev.target));
         if (!targetInBlock){
           // Fall-through: swallow map zoom and forward scroll to the UI under the cursor.
@@ -74702,7 +74826,18 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
       x: ev.clientX - rect.left - rect.width  / 2,
       y: ev.clientY - rect.top  - rect.height / 2
     };
+    if (st.scene && !wheelSceneCurrent(st.scene)) cancelWheel();
+    if (!st.scene){
+      const vc = state.viewCenter || { lat, lon };
+      st.scene = {
+        tileMap, generation: root._mapTileGen,
+        layerId: state.mapLayer || "osm",
+        zoom: Math.round(Number(state.mapZoom || zoom)),
+        centerLat: vc.lat, centerLon: normalizeLon(vc.lon)
+      };
+    }
     st.acc += wheelDeltaPx(ev);
+    showWheelPreview(ev, tileMap);
     if (st.idleTimer) clearTimeout(st.idleTimer);
     st.idleTimer = setTimeout(flush, WHEEL_GESTURE_IDLE_MS);
   }, { passive: false, capture: true });
@@ -75131,6 +75266,9 @@ function attachPanHandlers(root, lat, lon, zoom){
   };
 
   const onDown = (ev) => {
+    // Terminate a visual-only wheel preview before a map pan or hit-test begins.
+    if (root._gisWheelPreviewActive && typeof root._gisWheelCancel === "function")
+      root._gisWheelCancel();
     // A second contact belongs to the one active touch gesture. Do not create
     // another drag/listener set; either promote it to pinch or leave it to an
     // active map tool.
