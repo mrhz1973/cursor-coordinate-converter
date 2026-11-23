@@ -74822,11 +74822,12 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
     ev.preventDefault();
 
     const rect = tileMap.getBoundingClientRect();
+    // A stale-scene cancellation also clears lastCursor: reassign it afterwards.
+    if (st.scene && !wheelSceneCurrent(st.scene)) cancelWheel();
     st.lastCursor = {
       x: ev.clientX - rect.left - rect.width  / 2,
       y: ev.clientY - rect.top  - rect.height / 2
     };
-    if (st.scene && !wheelSceneCurrent(st.scene)) cancelWheel();
     if (!st.scene){
       const vc = state.viewCenter || { lat, lon };
       st.scene = {
