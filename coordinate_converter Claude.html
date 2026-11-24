@@ -19482,6 +19482,8 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Aggiornato",
     "gis.polygonPanel.dateUnavailable":"Data non disponibile",
     "gis.polygonPanel.editNameInvalid":"Nome non valido.",
+    "gis.polygonPanel.editCloseDirty":"Prima di chiudere, scegli Salva oppure Annulla per le modifiche in corso.",
+    "gis.polygonPanel.drawCloseDirty":"Prima di chiudere, termina oppure annulla il disegno in corso.",
     "gis.polygonPanel.editDeleteVertex":"Elimina vertice {0}",
     "gis.polygonPanel.editInsertVertex":"Aggiungi vertice sul lato {0}",
     "gis.polygonPanel.editMaxVertices":"Numero massimo di vertici raggiunto.",
@@ -21879,6 +21881,8 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Updated",
     "gis.polygonPanel.dateUnavailable":"Date unavailable",
     "gis.polygonPanel.editNameInvalid":"Invalid name.",
+    "gis.polygonPanel.editCloseDirty":"Save or cancel the current changes before closing.",
+    "gis.polygonPanel.drawCloseDirty":"Finish or cancel the current drawing before closing.",
     "gis.polygonPanel.editDeleteVertex":"Delete vertex {0}",
     "gis.polygonPanel.editInsertVertex":"Add vertex on side {0}",
     "gis.polygonPanel.editMaxVertices":"Maximum number of vertices reached.",
@@ -24099,6 +24103,8 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Mis à jour",
     "gis.polygonPanel.dateUnavailable":"Date indisponible",
     "gis.polygonPanel.editNameInvalid":"Nom non valide.",
+    "gis.polygonPanel.editCloseDirty":"Enregistrez ou annulez les modifications avant de fermer.",
+    "gis.polygonPanel.drawCloseDirty":"Terminez ou annulez le dessin avant de fermer.",
     "gis.polygonPanel.editDeleteVertex":"Supprimer le sommet {0}",
     "gis.polygonPanel.editInsertVertex":"Ajouter un sommet sur le côté {0}",
     "gis.polygonPanel.editMaxVertices":"Nombre maximal de sommets atteint.",
@@ -26104,7 +26110,7 @@ function mapWptDocDragCleanup(){
 }
 function mapWptDocDragMove(ev){
   const d = mapWptDocDrag;
-  if (!d || ev.pointerId !== d.pid) return;
+  if (!d || ev.pointerId !== d.pid || state.polygonDrawMode) return;
   const dx = ev.clientX - d.sx, dy = ev.clientY - d.sy;
   if (!d.moved && Math.hypot(dx, dy) > 3) d.moved = true;
   if (!d.moved){
@@ -26355,10 +26361,11 @@ function mapPolyEditDocDragMove(ev){
       return;
     }
   }
-  const ll = mapClientToLatLonMap(d.root, d.markerLat, d.markerLon, d.z, ev.clientX, ev.clientY);
+  const snapped = isDraft ? polygonSnapDraftWaypoint(d.root,ev.clientX,ev.clientY) : null;
+  const ll = snapped || mapClientToLatLonMap(d.root, d.markerLat, d.markerLon, d.z, ev.clientX, ev.clientY);
   if (ll && Number.isFinite(ll.lat) && Number.isFinite(ll.lon)){
     const applied = isDraft
-      ? polygonApplyDraggedDraftVertex(d.idx, ll.lat, ll.lon)
+      ? polygonApplyDraggedDraftVertex(d.idx, ll.lat, ll.lon, !!snapped)
       : polygonApplyDraggedVertex(d.idx, ll.lat, ll.lon);
     if (applied){
       if (mapPolyEditDocDragRaf) cancelAnimationFrame(mapPolyEditDocDragRaf);
@@ -26781,10 +26788,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A";
-const APP_BUILD_DETAIL = "Dettagli ATM09 leggibili e link esterni con consenso esplicito.";
+const APP_BUILD_ID = "GIS-POLYGON-WAYPOINT-INTERACTION-A";
+const APP_BUILD_DETAIL = "Priorita disegno poligoni, snap waypoint e chiusura protetta.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 325;
+const APP_BUILD_NUM = 326;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -72591,6 +72598,27 @@ function buildWaypointTooltipText(p){
 }
 
 /** Standalone map waypoints overlay (no polyline; drag / right-click like track). */
+/* Drawing-only, read-only snap to the actual on-screen waypoint hit centres.
+ * No projection approximation, no new waypoint, no global snapping. */
+function polygonSnapDraftWaypoint(root,clientX,clientY){
+  if(!state.polygonDrawMode || !root || !Number.isFinite(clientX) || !Number.isFinite(clientY))return null;
+  const map=root.querySelector(".tile-map");
+  if(!map)return null;
+  const r=map.getBoundingClientRect();
+  if(clientX<r.left||clientX>r.right||clientY<r.top||clientY>r.bottom)return null;
+  const byId=new Map((Array.isArray(state.mapWaypoints)?state.mapWaypoints:[]).filter(Boolean).map(p=>[String(p.id),p]));
+  let best=null,bestDist=16*16;
+  for(const g of map.querySelectorAll(".waypoints-overlay .wpt-handle")){
+    const p=byId.get(String(g.dataset.id)),hit=g.querySelector("circle");
+    if(!p||!hit||!Number.isFinite(p.lat)||!Number.isFinite(p.lon))continue;
+    const box=hit.getBoundingClientRect(),x=box.left+box.width/2,y=box.top+box.height/2;
+    if(!(box.width>0&&box.height>0)||x<r.left||x>r.right||y<r.top||y>r.bottom)continue;
+    const d=(x-clientX)**2+(y-clientY)**2;
+    if(d<=bestDist && (!best||d<bestDist)){best={lat:p.lat,lon:p.lon};bestDist=d;}
+  }
+  return best;
+}
+
 function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
   if (!tileMap) return;
   const old = tileMap.querySelector(".waypoints-overlay");
@@ -72636,8 +72664,9 @@ function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
     const g = document.createElementNS(ns, "g");
     g.setAttribute("class", "wpt-handle");
     g.dataset.id = p.id;
-    g.style.cursor = "grab";
-    g.style.pointerEvents = "auto";
+    const drawing = !!state.polygonDrawMode;
+    g.style.cursor = drawing ? "inherit" : "grab";
+    g.style.pointerEvents = drawing ? "none" : "auto";
 
     const ttl = document.createElementNS(ns, "title");
     ttl.textContent = buildWaypointTooltipText(p) + (hintDrag ? "\n—\n" + hintDrag : "");
@@ -72648,7 +72677,7 @@ function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
     hit.setAttribute("cy", cy.toFixed(1));
     hit.setAttribute("r", "16");
     hit.setAttribute("fill", "transparent");
-    hit.setAttribute("pointer-events", "all");
+    hit.setAttribute("pointer-events", drawing ? "none" : "all");
 
     const meta = p.meta || {};
     let iconRaw = String(meta.icon || "hq").toLowerCase();
@@ -72684,6 +72713,7 @@ function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
   }
 
   svg.addEventListener("pointerdown", (ev) => {
+    if(state.polygonDrawMode)return;
     const h = ev.target && ev.target.closest && ev.target.closest(".wpt-handle");
     if (!h) return;
     if (workbenchIsPickModeActive()){
@@ -72720,6 +72750,7 @@ function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
     try { h.style.cursor = "grabbing"; } catch(_){}
   });
   svg.addEventListener("contextmenu", (ev) => {
+    if(state.polygonDrawMode)return;
     const h = ev.target && ev.target.closest && ev.target.closest(".wpt-handle");
     if (!h) return;
     ev.preventDefault();
@@ -75658,7 +75689,8 @@ function attachPanHandlers(root, lat, lon, zoom){
       if (state.polygonDrawMode && !drag.moved && cx != null && cy != null
           && !(typeof mapPolyEditDocDrag !== "undefined" && mapPolyEditDocDrag && mapPolyEditDocDrag.source === "draft")){
         const zPick = state.mapZoom || zoom;
-        const pick = mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
+        const snapped = polygonSnapDraftWaypoint(root,cx,cy);
+        const pick = snapped || mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
         if (pick && Number.isFinite(pick.lat) && Number.isFinite(pick.lon)){
           const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
           const prev = state._polygonDraftLastClick;
@@ -75667,7 +75699,7 @@ function attachPanHandlers(root, lat, lon, zoom){
             polygonFinishDraw();
           } else {
             if (!Array.isArray(state._polygonDraftVertices)) state._polygonDraftVertices = [];
-            state._polygonDraftVertices.push([normalizeLon(pick.lon), pick.lat]);
+            state._polygonDraftVertices.push([snapped ? snapped.lon : normalizeLon(pick.lon), pick.lat]);
             polygonHideDrawErr();
             state._polygonDraftLastClick = { ts: now, x: cx, y: cy };
             renderPolygonPanelList();
@@ -84986,11 +85018,6 @@ function gisInit(){
         try { polygonCancelInlineRename(); } catch(_){}
         return;
       }
-      if (typeof polygonIsEditing === "function" && polygonIsEditing()){
-        ev.preventDefault();
-        try { polygonEditCancelHandler(); } catch(_){}
-        return;
-      }
       ev.preventDefault();
       if (typeof closePolygonPanel === "function") closePolygonPanel();
       return;
@@ -88532,7 +88559,18 @@ function closePolygonPanel(){
   const dlg = document.getElementById("polygonPanel");
   if (!state.polygonPanelOpen && !(dlg && dlg.open)) return;
   const wasEditing = polygonIsEditing();
+  if(wasEditing && state._polyEdit.dirty){
+    if(gisPanelIsMinimized("polygonPanel"))gisRestoreMinimizedPanel("polygonPanel");
+    polygonShowEditBarErr(t("gis.polygonPanel.editCloseDirty"));
+    return false;
+  }
+  if(state.polygonDrawMode && Array.isArray(state._polygonDraftVertices) && state._polygonDraftVertices.length){
+    if(gisPanelIsMinimized("polygonPanel"))gisRestoreMinimizedPanel("polygonPanel");
+    polygonShowDrawErr(t("gis.polygonPanel.drawCloseDirty"));
+    return false;
+  }
   if (wasEditing){ try { polygonEditCancelHandler(); } catch(_){} }
+  if(polygonIsEditing())return false;
   try { polygonCloseVertexCoordModal(); } catch(_){}
   try { mapPolyMoveDocDragCleanup(); } catch(_){}
   try { mapPolyEditDocDragCleanup(); } catch(_){}
@@ -88926,14 +88964,14 @@ function polygonApplyDraggedVertex(idx, lat, lon){
   return true;
 }
 /** Apply lat/lon to draft ring only (FIX4; no gisPolygons persist). */
-function polygonApplyDraggedDraftVertex(idx, lat, lon){
+function polygonApplyDraggedDraftVertex(idx, lat, lon, exactSnap = false){
   if (!state.polygonDrawMode) return false;
   const verts = state._polygonDraftVertices;
   if (!Array.isArray(verts)) return false;
   const i = Number(idx);
   if (!Number.isFinite(i) || i < 0 || i >= verts.length) return false;
   const la = Math.max(-90, Math.min(90, lat));
-  const lo = normalizeLon(lon);
+  const lo = exactSnap && Number.isFinite(lon) && lon >= -180 && lon <= 180 ? lon : normalizeLon(lon);
   if (!Number.isFinite(la) || !Number.isFinite(lo)) return false;
   verts[i] = [lo, la];
   return true;
@@ -89996,7 +90034,8 @@ function polygonRemoveLastDraftPoint(){
   renderPolygonPanelList();
 }
 function polygonStartDraw(){
-  if (state.polygonDrawMode) return;
+  if (state.polygonDrawMode || mapWptDocDrag) return;
+  hideWptMapContextMenu();
   try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   ensureGisState();
   polygonHideDrawErr();
