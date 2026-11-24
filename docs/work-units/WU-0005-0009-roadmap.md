@@ -639,7 +639,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **D** | Legenda ATM09 esterna | **CLOSED / PASS** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — IMPL-A + FIX1 + FIX2 · LIVE `67d9cc7` / **200** · E–H **NOT OPENED** |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **CLOSED / PASS** → [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) — FIX4 LIVE `9820c8a` / **205** · QA operatore PASS · finito Regola H · F–H **NOT OPENED** |
 | **F** | Workspace due legende a destra | **CLOSED / PASS** → `GIS-WORKSPACE-LEGENDS-F-BATCH1` + **FIX1** + **FIX2** LIVE `1e37e56` / **217** · QA operatore PASS · finito Regola H |
-| **G** | Global minimized-panel dock / modal layout manager | **OPEN** → [`WU-0021`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A…G-D + HISTORY-A **CLOSED / PASS** · LIVE `7196b30` / **214** |
+| **G** | Global minimized-panel dock / modal layout manager | **CLOSED / PASS** secondo WU-HOT-HEADER di [WU-0021](WU-0021-gis-panel-minimized-dock-manager.md); G-A…G-D + HISTORY-A e workspace F chiusi; nessun nuovo blocco G autorizzato. Allineamento 24/11/2026. |
 | **H** | Branding TMART GIS tool | **CLOSED / PASS** → [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) — FIX1 LIVE `508dd03` / **207** · QA operatore PASS · finito Regola H · G **NOT OPENED** |
 
 #### 1. Azione «Aggiorna» unificata
@@ -788,7 +788,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)** | Lista coordinate vertici (edit + drawing) + no auto-minimize + draft verts trascinabili | **CLOSED / PASS** LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21) |
 | **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorita drawing, snap waypoint e close protetto | **CLOSED / QA_OPERATORE_PASS** - LIVE **326** - 24/11/2026 - [ricevuta](../orchestrator/evidence/2026-11-24-qa326-closure/REPORT.md); maintenance-only |
-| **GIS-WAYPOINT-COORD-UX-A** | Lifecycle pannello Waypoint e map-click | **Build327 LIVE / ABQA 90/90 PASS / QA OPERATORE PENDING** - [QA LIVE](../orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REPORT.md); baseline coordinate invariata |
+| **GIS-WAYPOINT-COORD-UX-A** | Lifecycle pannello Waypoint e map-click | **CLOSED / QA_OPERATORE_PASS** - LIVE **327** - 24/11/2026 - [ricevuta](../orchestrator/evidence/2026-11-24-qa327-closure/REPORT.md); baseline coordinate invariata |
 | **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
 | **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **CONSUMED / CLOSED** LIVE **255** tip `0a4b52b…` · FIX2 QA PASS · Regola H |
 | **GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A** | Select formato editor WP riscrive `#wpFieldCoord` (stessa posizione; no mutazione) | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
@@ -993,7 +993,7 @@ Evidence: [`../orchestrator/inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTI
 
 #### GIS-WAYPOINT-COORD-UX-A
 
-**Stato:** **Build327 LIVE / DEPLOY PASS / ABQA 90/90 PASS / QA OPERATORE PENDING**. [Rapporto](../orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REPORT.md). [Review](../orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REVIEW.md). Storico:  Audit runtime build **238**. **Non** aperto.
+**Stato:** **CLOSED / QA_OPERATORE_PASS** - Build327 LIVE, 24/11/2026, [ricevuta](../orchestrator/evidence/2026-11-24-qa327-closure/REPORT.md). [Rapporto](../orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REPORT.md). [Review](../orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REVIEW.md). Storico:  Audit runtime build **238**. **Non** aperto.
 
 **Coord UX — BASELINE (NON rifare):** `COORD-MODAL-FORMAT-COPY-A (+ FIX1)` **CLOSED / PASS** — `#waypointListCoordFormat`, `formatWaypointListCoordinates`, copy lista/editor, `parseWaypointEditorCoordText` → **`autoDetect`**, `state.mapWaypoints[]` canonico, `saveStore`.
 
