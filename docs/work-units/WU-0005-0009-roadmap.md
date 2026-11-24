@@ -787,7 +787,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
 | **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)** | Lista coordinate vertici (edit + drawing) + no auto-minimize + draft verts trascinabili | **CLOSED / PASS** LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21) |
 | **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
-| **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
+| **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorita drawing, snap waypoint e close protetto | **Build326 CANDIDATE QA/REVIEW PASS / DEPLOY PENDING** - [review](../orchestrator/evidence/2026-11-24-polygon-waypoint-326/REVIEW.md); maintenance-only |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
 | **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
 | **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **CONSUMED / CLOSED** LIVE **255** tip `0a4b52b…` · FIX2 QA PASS · Regola H |
@@ -979,7 +979,7 @@ Evidence backlog: [`../orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-CO
 
 #### GIS-POLYGON-WAYPOINT-INTERACTION-A
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). **Non** aperto. **FRONTIER non toccato**.
+**Stato:** **Build326 CANDIDATE QA/REVIEW PASS / DEPLOY PENDING**. [Review](../orchestrator/evidence/2026-11-24-polygon-waypoint-326/REVIEW.md). Storico:  **Non** aperto. **FRONTIER non toccato**.
 
 **Requisiti (sintesi):**
 
