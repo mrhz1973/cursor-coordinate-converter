@@ -4,12 +4,12 @@
 
 | Campo | Stato |
 | --- | --- |
-| Runtime LIVE | Build329 TRACK-NEW-MODE-UNIFIED-A, source 6f50e0c4a7495172b31ff35adc481fecbdf57266, blob e0e337d86e97b56d6514a5cc963173b37b9920a7, SHA256 2d5371cbd446424a0db98d0d907631b651e964c181ffa2d7ca8d02f43e7c52b2, 11.374.056 byte; VPS checkout 2b56bd8226a0aa37d6caa8a9e147d356c33d815e al deploy, HTTP/HTTPS200 byte/SHA verificati; ABQA HTTPS LIVE116/116 PASS; QA operatore PENDING. |
-| Ultimo CLOSED | Build328 GIS-POLYGON-PRESET-SHAPES-A; QA operatore PASS 24/11/2026 |
-| Gate riusati | Build329 candidato116/116, review63/63, deploy e ABQA HTTPS LIVE116/116 PASS. |
-| Bundle runtime attivo | TRACK-NEW-MODE-UNIFIED-A - OPEN / QA operatore PENDING |
-| NEXT | QA TRACK-NEW-MODE-UNIFIED-A PASS operatore; poi chiusura Regola H. |
-| Residui | P0 autorizzato non applicato; DTM HOLD; P4 Build329 LIVE QA operatore PENDING; review esterna post-hoc PENDING. |
+| Runtime LIVE | Build329 TRACK-NEW-MODE-UNIFIED-A, source 6f50e0c4a7495172b31ff35adc481fecbdf57266, blob e0e337d86e97b56d6514a5cc963173b37b9920a7, SHA256 2d5371cbd446424a0db98d0d907631b651e964c181ffa2d7ca8d02f43e7c52b2, 11.374.056 byte; deploy tecnico e ABQA HTTPS LIVE 116/116 PASS; QA operatore PASS; CLOSED. |
+| Ultimo CLOSED | Build329 TRACK-NEW-MODE-UNIFIED-A; QA operatore PASS 24/11/2026 |
+| Gate riusati | Deploy PASS, review63/63, ABQA HTTPS LIVE116/116 PASS |
+| Bundle runtime attivo | Nessuno |
+| NEXT | BLOCKED_PREREQUISITES: P1/P2/P3/P4 CLOSED. P0 autorizzato non applicato: sorgente archivio effettivo da identificare, backup completo verificato e inventario istanze scriventi; DTM 5/10m ground truth HOLD. Nessuna nuova Build330 candidata. Resto Oggetti GIS FROZEN / maintenance-only. Non riaprire blocchi gia chiusi. |
+| Residui | P0 autorizzato non applicato; DTM HOLD; P1/P2/P3/P4 CLOSED; review esterna post-hoc PENDING. |
 
 [Build325 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=74f2a0a5) - [Ricevuta](evidence/2026-11-24-qa325-closure/REPORT.md)
 
@@ -26,3 +26,5 @@
 [QA328 CLOSED](evidence/2026-11-24-qa328-closure/REPORT.md)
 
 [Build329 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=2d5371cb) - [QA](evidence/2026-11-24-track-new-unified-329/REPORT.md)
+
+[QA329 CLOSED](evidence/2026-11-24-qa329-closure/REPORT.md)
