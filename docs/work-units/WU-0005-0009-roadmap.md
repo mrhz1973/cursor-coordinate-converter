@@ -784,7 +784,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilita tipografica + link sicuri (Rule/Regola) | **CLOSED / QA_OPERATORE_PASS** - LIVE **325** - 24/11/2026 - [ricevuta](../orchestrator/evidence/2026-11-24-qa325-closure/REPORT.md); WU-0013 non riaperta |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
-| **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
+| **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato/rettangolo/triangolo) | **OPEN / CONTRACT_READY** - [contratto](../orchestrator/evidence/2026-11-24-polygon-preset-contract/CONTRACT.md); sblocco solo questo blocco, resto GIS Objects FROZEN |
 | **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)** | Lista coordinate vertici (edit + drawing) + no auto-minimize + draft verts trascinabili | **CLOSED / PASS** LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21) |
 | **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorita drawing, snap waypoint e close protetto | **CLOSED / QA_OPERATORE_PASS** - LIVE **326** - 24/11/2026 - [ricevuta](../orchestrator/evidence/2026-11-24-qa326-closure/REPORT.md); maintenance-only |
@@ -945,7 +945,7 @@ Requisito: alla **chiusura completa** del modal D-Flight non deve restare visibi
 
 #### GIS-POLYGON-PRESET-SHAPES-A
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Audit runtime build **238**. **Non** aperto. **Oggetti GIS FROZEN** — apertura futura richiede decisione prodotto di sblocco.
+**Stato:** **OPEN / CONTRACT_READY** (24/11/2026). [Decisione e contratto](../orchestrator/evidence/2026-11-24-polygon-preset-contract/CONTRACT.md). Storico:  Audit runtime build **238**. **Non** aperto. **Oggetti GIS FROZEN** — apertura futura richiede decisione prodotto di sblocco.
 
 **Gap reale:** assenti primitive/UX per creare quadrato, rettangolo, triangolo. Solo freehand click-vertices (`polygonStartDraw` / `_polygonDraftVertices`).
 
