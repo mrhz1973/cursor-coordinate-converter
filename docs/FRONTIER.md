@@ -4,22 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Build328 candidata qualificata; Build327 LIVE/CLOSED; GIS-POLYGON-PRESET-SHAPES-A aperto. Oggetti GIS altrimenti FROZEN. |
+| **WORKSTREAM ATTIVO** | Build328 LIVE, deploy/review/ABQA PASS; GIS-POLYGON-PRESET-SHAPES-A OPEN / QA operatore PENDING; Build327 ultimo CLOSED; resto Oggetti GIS FROZEN. P0 non applicato. |
 | **WU ATTIVA** | — (nessuna WU attiva). |
 | **BLOCCO ATTIVO** | GIS-POLYGON-PRESET-SHAPES-A - Build328 DELICATO / STANDARD_RUNTIME_BUNDLE. |
-| **STATO BLOCCO** | OPEN / CANDIDATE_QA_PASS / REVIEW_GPT_SOSTITUTIVA_PASS / DEPLOY_PENDING. |
-| **GATE CORRENTE** | Candidato168/168; review55/55 PASS. [Review Build328](orchestrator/evidence/2026-11-24-polygon-preset-328/REVIEW.md) - [evidenza](orchestrator/evidence/2026-11-24-polygon-preset-328/review.json). NEXT deploy GIS-only. |
-| **RUNTIME LIVE** | Build327 GIS-WAYPOINT-COORD-UX-A, source c2676056cb828ba6f96aa0a3bb8c484417c6ecb9, blob 2abebd508f151436e82d3d3c4592a0f60271b117, SHA256 2b9e3c354f8179b0aabeb16b65abc8bc03604fc98ec2bf3bcd56c6b6a917ab3d, 11.363.953 byte; deploy tecnico e ABQA HTTPS LIVE 90/90 PASS; QA operatore PASS; CLOSED. |
-| **RUNTIME CANDIDATE** | Build328 source e5149b18868ce84807ce7ae9bbffd68c7142ff5b, blob 81482a17cfd4bd5a9672a48b261b7395b08260cf, SHA256 d75946314623e7d14ad1edf6a119160b0286e2a56b0a0155cf6fa751bd5139f2, 11.374.036 byte; candidato168/168, review55/55 PASS. |
+| **STATO BLOCCO** | OPEN / DEPLOY_TECHNICAL_PASS / REVIEW_GPT_SOSTITUTIVA_PASS / AUTOMATED_BROWSER_QA_PASS / QA_OPERATORE_PENDING. |
+| **GATE CORRENTE** | QA FINALE CHATGPT - PENDING: Build328 ABQA HTTPS LIVE168/168 PASS. [Build328 LIVE QA](orchestrator/evidence/2026-11-24-polygon-preset-328/REPORT.md) - [evidenza](orchestrator/evidence/2026-11-24-polygon-preset-328/evidence.json). |
+| **RUNTIME LIVE** | Build328 GIS-POLYGON-PRESET-SHAPES-A, source e5149b18868ce84807ce7ae9bbffd68c7142ff5b, blob 81482a17cfd4bd5a9672a48b261b7395b08260cf, SHA256 d75946314623e7d14ad1edf6a119160b0286e2a56b0a0155cf6fa751bd5139f2, 11.374.036 byte; VPS checkout 33055d36fb28844fd8326e3f76cd97c45db04015 al deploy, HTTP/HTTPS200 byte/SHA verificati; ABQA HTTPS LIVE168/168 PASS; QA operatore PENDING. |
+| **RUNTIME CANDIDATE** | Nessun candidato distinto dal LIVE. Build328 candidato168/168, review55/55 e ABQA LIVE168/168 PASS; QA operatore PENDING. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-WAYPOINT-COORD-UX-A — Build327, QA operatore PASS registrato 24/11/2026; [QA327 CLOSED](orchestrator/evidence/2026-11-24-qa327-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa327-closure/evidence.json). |
-| **NEXT** | Deploy GIS-only con backup e readback HTTP/HTTPS; ABQA LIVE; QA operatore. Nessun altro sblocco GIS Objects. |
+| **NEXT** | QA umana breve Build328: scelta Forma, tre click, anteprima, chiusura esplicita, modifica ordinaria. Attestazione QA GIS-POLYGON-PRESET-SHAPES-A PASS operatore prima della Regola H. P0 non applicato; DTM HOLD; P4 FUTURO. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P0 secondario APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: copie qualificate, autorizzazione acquisita; controllo dell’archivio interno richiesto non disponibile, backup corrente atteso e inventario istanze scriventi incompleto. Caricamento operatore già confermato; archivio interno non identificato e backup completo origine non attestato. Compatibilità mobile/iPad riaperta; P4 SOLO FUTURO. |
 | **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 recupero qualificato sulle copie](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
-| **SVILUPPO TELEFONO** | Build327 ABQA LIVE90/90 PASS su viewport Edge emulati desktop1440/tablet768/phone390/phone320, minimize/restore ove necessario; QA operatore PASS, device/browser/ora della prova non specificati. Nessuna qualifica universale. |
-| **ACCESSO / DEPLOY** | Build327 LIVE, backup Build326 /var/backups/goi-gis-runtime/prebuild327-I63fo3cP verificato, goi-gis-app active al deploy; HTTP/HTTPS200 byte/SHA concordi; QA browser90/90 e operatore PASS. Nessun nuovo deploy per chiusura. [Build327 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=2b9e3c35). |
-| **EVIDENCE** | [Review Build328](orchestrator/evidence/2026-11-24-polygon-preset-328/REVIEW.md) - [evidenza](orchestrator/evidence/2026-11-24-polygon-preset-328/review.json) - [Contratto](orchestrator/evidence/2026-11-24-polygon-preset-contract/CONTRACT.md) - [QA327 CLOSED](orchestrator/evidence/2026-11-24-qa327-closure/REPORT.md). |
+| **SVILUPPO TELEFONO** | Build328 ABQA HTTPS LIVE168/168 PASS su viewport Edge emulati desktop1440/tablet768/phone390/phone320; minimize/restore ove necessario; nessuna qualifica universale o device fisici. |
+| **ACCESSO / DEPLOY** | Build328 LIVE; backup Build327 /var/backups/goi-gis-runtime/prebuild328-FKIhEwsn verificato; goi-gis-app active; primo HTTP ERR in avvio, retry200 e HTTPS200 PASS, 11.374.036 byte SHA d75946314623e7d14ad1edf6a119160b0286e2a56b0a0155cf6fa751bd5139f2. [Build328 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=d7594631). QA operatore PENDING. |
+| **EVIDENCE** | [Build328 LIVE QA](orchestrator/evidence/2026-11-24-polygon-preset-328/REPORT.md) - [evidenza](orchestrator/evidence/2026-11-24-polygon-preset-328/evidence.json) - [Review](orchestrator/evidence/2026-11-24-polygon-preset-328/REVIEW.md) - [Contratto](orchestrator/evidence/2026-11-24-polygon-preset-contract/CONTRACT.md) - [QA327 CLOSED](orchestrator/evidence/2026-11-24-qa327-closure/REPORT.md). |
+
+## Build328 — deploy e ABQA LIVE PASS, operatore PENDING (24 novembre 2026)
+
+GIS-POLYGON-PRESET-SHAPES-A; candidato168/168, review55/55, deploy e ABQA LIVE168/168 PASS. [Build328 LIVE QA](orchestrator/evidence/2026-11-24-polygon-preset-328/REPORT.md) - [evidenza](orchestrator/evidence/2026-11-24-polygon-preset-328/evidence.json). Build327 ultimo CLOSED; resto Oggetti GIS FROZEN.
 
 ## Build327 — QA operatore PASS / CLOSED (24/11/2026)
 
