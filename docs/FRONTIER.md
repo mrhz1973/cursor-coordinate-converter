@@ -4,22 +4,22 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Build328 CLOSED / QA_OPERATORE_PASS. Nessun nuovo bundle runtime aperto. Resto Oggetti GIS FROZEN; P0 non applicato. |
+| **WORKSTREAM ATTIVO** | P4 autorizzato operatore: Build329 menu unificato Nuova traccia; Build328 LIVE/CLOSED. P0 non applicato; resto Oggetti GIS FROZEN. |
 | **WU ATTIVA** | — (nessuna WU attiva). |
-| **BLOCCO ATTIVO** | — (nessun bundle runtime attivo; ultimo CLOSED GIS-POLYGON-PRESET-SHAPES-A Build328). |
-| **STATO BLOCCO** | CLOSED / QA_OPERATORE_PASS — Build328; deploy, review sostitutiva e ABQA PASS riusati secondo Regola H. |
-| **GATE CORRENTE** | Build328 CLOSED con attestazione operatore QA GIS-POLYGON-PRESET-SHAPES-A PASS operatore. [QA328 CLOSED](orchestrator/evidence/2026-11-24-qa328-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa328-closure/evidence.json). Decisione prodotto/prerequisito richiesto per residui individuati. |
+| **BLOCCO ATTIVO** | TRACK-NEW-MODE-UNIFIED-A - Build329 DELICATO / STANDARD_RUNTIME_BUNDLE. |
+| **STATO BLOCCO** | OPEN / CONTRACT_READY / IMPLEMENTATION_PENDING. |
+| **GATE CORRENTE** | Autorizzazione operatore «ok vai avanti» a proposta P4 Build329; [contratto](orchestrator/evidence/2026-11-24-track-new-unified-contract/CONTRACT.md). |
 | **RUNTIME LIVE** | Build328 GIS-POLYGON-PRESET-SHAPES-A, source e5149b18868ce84807ce7ae9bbffd68c7142ff5b, blob 81482a17cfd4bd5a9672a48b261b7395b08260cf, SHA256 d75946314623e7d14ad1edf6a119160b0286e2a56b0a0155cf6fa751bd5139f2, 11.374.036 byte; deploy tecnico e ABQA HTTPS LIVE 168/168 PASS; QA operatore PASS; CLOSED. |
 | **RUNTIME CANDIDATE** | Nessun candidato distinto dal LIVE. Build328 candidato168/168, review55/55, ABQA LIVE168/168 e QA operatore PASS. Nessuna Build329 candidata. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-POLYGON-PRESET-SHAPES-A — Build328, QA operatore PASS registrato 24/11/2026; [QA328 CLOSED](orchestrator/evidence/2026-11-24-qa328-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa328-closure/evidence.json). |
-| **NEXT** | DECISION_REQUIRED: P4 Menu Nuova traccia rimane SOLO FUTURO, riapertura solo con autorizzazione esplicita. P0 autorizzato non applicato: identificazione archivio sorgente, backup verificato e inventario istanze scriventi ancora necessari. DTM ground truth HOLD. Nessuna Build329 aperta; resto Oggetti GIS FROZEN / maintenance-only. |
-| **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P0 secondario APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: copie qualificate, autorizzazione acquisita; controllo dell’archivio interno richiesto non disponibile, backup corrente atteso e inventario istanze scriventi incompleto. Caricamento operatore già confermato; archivio interno non identificato e backup completo origine non attestato. Compatibilità mobile/iPad riaperta; P4 SOLO FUTURO. |
+| **NEXT** | Implementare TRACK-NEW-MODE-UNIFIED-A secondo contratto in ramo isolato; review e QA prima del deploy. |
+| **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P4 riaperto solo per menu unificato. P0 APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: archivio interno non identificato, backup origine e inventario istanze scriventi ancora necessari. Compatibilita mobile/iPad riaperta. |
 | **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 recupero qualificato sulle copie](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
 | **SVILUPPO TELEFONO** | Build328 ABQA LIVE168/168 PASS su viewport Edge emulati desktop1440/tablet768/phone390/phone320; minimize/restore ove necessario; QA operatore PASS, device/browser/ora della prova non specificati. Nessuna qualifica universale. |
 | **ACCESSO / DEPLOY** | Build328 LIVE, backup Build327 /var/backups/goi-gis-runtime/prebuild328-FKIhEwsn verificato, goi-gis-app active al deploy; HTTP/HTTPS200 byte/SHA concordi; QA browser168/168 e operatore PASS. Nessun nuovo deploy per chiusura. [Build328 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=d7594631). |
-| **EVIDENCE** | [QA328 CLOSED](orchestrator/evidence/2026-11-24-qa328-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa328-closure/evidence.json) - [QA LIVE](orchestrator/evidence/2026-11-24-polygon-preset-328/REPORT.md) - [Review](orchestrator/evidence/2026-11-24-polygon-preset-328/REVIEW.md) - [Contratto](orchestrator/evidence/2026-11-24-polygon-preset-contract/CONTRACT.md). |
+| **EVIDENCE** | [Contratto Build329](orchestrator/evidence/2026-11-24-track-new-unified-contract/CONTRACT.md) - [QA328 CLOSED](orchestrator/evidence/2026-11-24-qa328-closure/REPORT.md). |
 
 ## Build328 — QA operatore PASS / CLOSED (24/11/2026)
 

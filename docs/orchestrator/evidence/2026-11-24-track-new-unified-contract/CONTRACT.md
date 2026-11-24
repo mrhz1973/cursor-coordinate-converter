@@ -1,0 +1,9 @@
+# Build329 — P4 TRACK-NEW-MODE-UNIFIED-A
+
+Autorizzazione operatore: «ok vai avanti» in risposta alla proposta esplicita Build329, P4 Menu unificato Nuova traccia. Supera il rinvio solo per P4. Base Build328 CLOSED, HEAD 795416035821372c1dbc2fb088166aff3d4e06ea, SHA256 d75946314623e7d14ad1edf6a119160b0286e2a56b0a0155cf6fa751bd5139f2.
+
+Perimetro: un solo pulsante Nuova traccia nella toolbar corrente, quattro scelte Per punti, Con pennello, Pianifica percorso - GraphHopper, Pianifica percorso - OpenRouteService. Riutilizzare trackStartNew, trackBrushRequestActivate e le azioni del selettore provider preesistente; nessun nuovo algoritmo, richiesta di routing, dati o provider. Apertura del planner soltanto, nessun calcolo automatico. Rimuovere il gruppo duplicato e i suoi listener/CSS dedicati, non i motori.
+
+Conservare protezione brush/bozze e conferme, dati canonici, forceOffline, OPSEC strict e opt-in rete. Il pulsante unificato conserva il blocco esistente durante brush attivo, inclusi i due planner; nessuna scorciatoia di aggiramento. Le scelte planner non-GIS sono disabilitate (openRoutingPlannerPanel già richiede GIS). Menu chiuso dopo scelta, Esc/click esterno, navigazione tastiera frecce/Home/End, focus ripristinato su Esc. Responsive con etichette intere e scorrimento se necessario, IT/EN/FR.
+
+Categoria DELICATO per dispatch e ciclo bozze, non sviluppo motori. Acceptance: quattro voci, nessun comando doppio, menu e focus desktop/touch, avvio punti e brush attraverso handler esistenti, protezione bozza non salvata, apertura dei due pannelli provider senza calcolo, nessuna nuova richiesta automatica, blocco brush, nessuna mutazione archivi. Test browser con fixture sintetiche e richieste secondarie bloccate; non testare servizi reali o percorsi esterni. Review raw@FULL_SHA, deploy GIS-only con backup, ABQA LIVE, QA operatore. P0/DTM/altro Oggetti GIS invariati.
