@@ -22,7 +22,9 @@ Gate: MATRICE tab/pannello x colonna x ordinamento x resize x checkbox x azioni,
 
 Per GPX/KML/GeoJSON solo XY, pulsante esplicito Calcola quote da terreno nella funzione Profilo. Utilizzare provider/dataset gia autorizzati con consenso rete esplicito, o DTM offline disponibile; niente fetch silenzioso in OPSEC strict/offline. Nel runtime esiste fetchElevation che consulta Open-Meteo Elevation soltanto quando internetApiFetchAllowed; NON assumere che GraphHopper sia il DEM. Mostrare la provenienza in chiaro: Quote originali Garmin/GPX/KML oppure Profilo calcolato da provider X, risoluzione/copertura/limiti quando noti. Mantenere quote originali e quelle stimate distinte, missing data espliciti, geometry hash e sanitizer, test rollback/reload. Precisione DTM terreno 5-10 m rimane HOLD fino a prova indipendente; non promettere accuratezza dei tratti brevi.
 
-## P4 - Menu Nuova traccia (Build329 CANDIDATE QA/REVIEW PASS / DEPLOY PENDING)
+## P4 - Menu Nuova traccia (Build329 LIVE / ABQA 116/116 PASS / QA OPERATORE PENDING)
+
+[QA LIVE](../evidence/2026-11-24-track-new-unified-329/REPORT.md).
 
 [Review Build329](../evidence/2026-11-24-track-new-unified-329/REVIEW.md).
 
