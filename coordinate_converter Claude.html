@@ -5413,7 +5413,12 @@ body.gis-mode .tools-drawer.gis-panel-minimized{visibility:hidden;pointer-events
   top:calc(100% + 4px);
   left:0;
   z-index:40;
-  min-width:200px;
+  min-width:0;
+  width:min(300px, calc(100vw - 40px));
+  max-width:calc(100vw - 40px);
+  max-height:min(280px, 55vh);
+  overflow-y:auto;
+  box-sizing:border-box;
   display:flex;
   flex-direction:column;
   gap:4px;
@@ -5427,12 +5432,11 @@ body.gis-mode .tools-drawer.gis-panel-minimized{visibility:hidden;pointer-events
 .track-new-mode-menu .track-new-mode-item{
   justify-content:flex-start;
   width:100%;
+  min-height:40px;
+  flex-shrink:0;
+  white-space:normal;
+  overflow-wrap:anywhere;
   text-align:left;
-}
-@media (max-width:560px){
-  .track-new-mode-menu{
-    min-width:min(100vw - 32px, 240px);
-  }
 }
 .track-toolbar #btnTrackNew .track-new-plus{
   display:inline-flex; align-items:center; justify-content:center;
@@ -11009,14 +11013,6 @@ dialog.track-modal.app-modal{
 .routing-route-preview-line.is-dashed{
   stroke-dasharray:6 6;
 }
-.routing-open-split{ display:inline-flex; align-items:stretch; }
-.routing-open-split #btnRoutingPlannerOpen{
-  border-top-right-radius:0; border-bottom-right-radius:0;
-}
-.routing-open-split #btnRoutingServiceMenu{
-  border-top-left-radius:0; border-bottom-left-radius:0;
-  margin-left:-1px; padding-inline:8px; min-width:2rem;
-}
 @media (max-width:480px){
   .routing-point-row{ grid-template-columns:18px 24px minmax(0,1fr); }
   .routing-point-row-main{ grid-template-columns:18px 24px minmax(0,1fr); }
@@ -12265,8 +12261,7 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   #trackSimpleUi .track-current-actions #trackSaveNeedPoints{flex-basis:100%;margin:0;}
   #trackSimpleUi .track-current-tools > .track-toolbar{margin:6px 0;gap:6px;}
   #trackSimpleUi .track-current-tools .track-toolbar-sep{display:none;}
-  #trackSimpleUi #btnTrackNew, #trackSimpleUi #btnRoutingPlannerOpen,
-  #trackSimpleUi #btnRoutingServiceMenu{background:var(--panel2);color:var(--text-primary);border:1px solid var(--border);box-shadow:none;}
+  #trackSimpleUi #btnTrackNew{background:var(--panel2);color:var(--text-primary);border:1px solid var(--border);box-shadow:none;}
   #trackSimpleUi .track-details{margin:10px 0 0;border:1px solid var(--border);border-radius:8px;padding:0 10px;}
   #trackSimpleUi .track-details > summary{padding:9px 0;font-size:.84rem;font-weight:600;cursor:pointer;color:var(--muted);}
   #trackSimpleUi .track-details[open] > summary{color:var(--text-primary);}
@@ -14457,21 +14452,8 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
             <div id="trackNewModeMenu" class="track-new-mode-menu" role="menu" hidden>
               <button type="button" class="btn btn-sm track-new-mode-item" role="menuitem" data-track-new-mode="points" data-i18n="track.new.modePoints">Per punti</button>
               <button type="button" class="btn btn-sm track-new-mode-item" role="menuitem" data-track-new-mode="brush" data-i18n="track.new.modeBrush">Con pennello</button>
-            </div>
-          </div>
-          <div class="track-new-wrap routing-open-wrap">
-            <div class="routing-open-split">
-              <button type="button" id="btnRoutingPlannerOpen" class="btn btn-sm btn-primary btn-routing-open"
-                      data-i18n="routing.open" data-i18n-tip="routing.openTip" data-i18n-aria="routing.open">Pianifica percorso</button>
-              <button type="button" id="btnRoutingServiceMenu" class="btn btn-sm btn-primary routing-open-caret"
-                      aria-haspopup="menu" aria-expanded="false" aria-controls="routingServiceMenu"
-                      data-i18n-tip="routing.serviceMenu" data-i18n-aria="routing.serviceMenu">▾</button>
-            </div>
-            <div id="routingServiceMenu" class="track-new-mode-menu routing-service-menu" role="menu" hidden>
-              <button type="button" class="btn btn-sm track-new-mode-item" role="menuitem"
-                      data-routing-service="graphhopper" data-i18n="routing.serviceGraphHopper">GraphHopper</button>
-              <button type="button" class="btn btn-sm track-new-mode-item" role="menuitem"
-                      data-routing-service="ors" data-i18n="routing.serviceOrs">OpenRouteService</button>
+              <button type="button" class="btn btn-sm track-new-mode-item" role="menuitem" data-track-new-mode="graphhopper" data-i18n="track.new.modeGraphhopper">Pianifica percorso - GraphHopper</button>
+              <button type="button" class="btn btn-sm track-new-mode-item" role="menuitem" data-track-new-mode="ors" data-i18n="track.new.modeOrs">Pianifica percorso - OpenRouteService</button>
             </div>
           </div>
           <button type="button" id="btnTrackAddCurrent" class="btn btn-sm" data-i18n="track.addCurrent" data-i18n-tip="tip.trackAddCurrent">➕ Aggiungi punto convertito</button>
@@ -18339,6 +18321,8 @@ const I18N = {
     "track.new":"Nuova traccia",
     "track.new.modePoints":"Per punti",
     "track.new.modeBrush":"Con pennello",
+    "track.new.modeGraphhopper":"Pianifica percorso - GraphHopper",
+    "track.new.modeOrs":"Pianifica percorso - OpenRouteService",
     "tip.trackNewMenu":"Scegli come creare una nuova traccia",
     "track.styleSection":"Stile",
     "track.editUnifiedTitle":"Modifica traccia",
@@ -20957,6 +20941,8 @@ const I18N = {
     "track.new":"New track",
     "track.new.modePoints":"By points",
     "track.new.modeBrush":"With brush",
+    "track.new.modeGraphhopper":"Plan route - GraphHopper",
+    "track.new.modeOrs":"Plan route - OpenRouteService",
     "tip.trackNewMenu":"Choose how to create a new track",
     "track.styleSection":"Style",
     "track.editUnifiedTitle":"Edit track",
@@ -23279,6 +23265,8 @@ const I18N = {
     "track.new":"Nouvelle trace",
     "track.new.modePoints":"Par points",
     "track.new.modeBrush":"Au pinceau",
+    "track.new.modeGraphhopper":"Planifier un itinéraire - GraphHopper",
+    "track.new.modeOrs":"Planifier un itinéraire - OpenRouteService",
     "tip.trackNewMenu":"Choisir comment créer une nouvelle trace",
     "track.styleSection":"Style",
     "track.styleResetOne":"Restaurer la valeur par défaut pour cet attribut",
@@ -26851,10 +26839,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-POLYGON-PRESET-SHAPES-A";
-const APP_BUILD_DETAIL = "Forme predefinite orientabili: quadrato, rettangolo e triangolo.";
+const APP_BUILD_ID = "TRACK-NEW-MODE-UNIFIED-A";
+const APP_BUILD_DETAIL = "Nuova traccia: punti, pennello e due pianificatori in un solo menu.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 328;
+const APP_BUILD_NUM = 329;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -66563,12 +66551,51 @@ function trackNewModeMenuClose(opts){
     }
   }
 }
+/* Fit the existing dropdown inside the actual visible scroll/viewport area. */
+function trackNewModeMenuFit(){
+  const btn=document.getElementById("btnTrackNew"),menu=document.getElementById("trackNewModeMenu");
+  if(!btn||!menu||menu.hidden)return false;
+  const wrap=menu.parentElement;
+  if(!wrap)return false;
+  const ar=btn.getBoundingClientRect(),wr=wrap.getBoundingClientRect(),vv=window.visualViewport;
+  let left=(vv?vv.offsetLeft:0)+4,top=(vv?vv.offsetTop:0)+4;
+  let right=(vv?vv.offsetLeft+vv.width:window.innerWidth)-4,bottom=(vv?vv.offsetTop+vv.height:window.innerHeight)-4;
+  for(let p=wrap.parentElement;p&&p!==document.body;p=p.parentElement){
+    const css=getComputedStyle(p),r=p.getBoundingClientRect();
+    if(/^(auto|scroll|hidden|clip)$/.test(css.overflowX)&&p.clientWidth>0){
+      left=Math.max(left,r.left+p.clientLeft);right=Math.min(right,r.left+p.clientLeft+p.clientWidth);
+    }
+    if(/^(auto|scroll|hidden|clip)$/.test(css.overflowY)&&p.clientHeight>0){
+      top=Math.max(top,r.top+p.clientTop);bottom=Math.min(bottom,r.top+p.clientTop+p.clientHeight);
+    }
+  }
+  const width=Math.min(300,Math.floor(right-left)),below=Math.floor(bottom-ar.bottom-4),above=Math.floor(ar.top-top-4);
+  const available=Math.max(below,above);
+  if(width<100||available<48||ar.right<=left||ar.left>=right||ar.bottom<=top||ar.top>=bottom){
+    trackNewModeMenuClose({focusBtn:false});return false;
+  }
+  menu.style.width=width+"px";
+  menu.style.maxWidth=width+"px";
+  menu.style.left=(Math.min(Math.max(ar.left,left),right-width)-wr.left-wrap.clientLeft)+"px";
+  menu.style.maxHeight=Math.min(280,available)+"px";
+  const height=menu.getBoundingClientRect().height;
+  const y=below>=height?ar.bottom+4:above>=height?ar.top-height-4:below>=above?ar.bottom+4:ar.top-height-4;
+  menu.style.top=(y-wr.top-wrap.clientTop)+"px";
+  return true;
+}
+
 function trackNewModeMenuOpen(){
   const btn = document.getElementById("btnTrackNew");
   const menu = document.getElementById("trackNewModeMenu");
   if (!btn || !menu) return;
+  const gis = document.body.classList.contains("gis-mode");
+  for(const item of menu.querySelectorAll("[data-track-new-mode]")){
+    const mode=item.getAttribute("data-track-new-mode");
+    item.disabled=!gis&&(mode==="graphhopper"||mode==="ors");
+  }
   menu.hidden = false;
   btn.setAttribute("aria-expanded", "true");
+  if(!trackNewModeMenuFit())return;
   try {
     const first = menu.querySelector("[data-track-new-mode]");
     if (first) first.focus();
@@ -66580,12 +66607,24 @@ function trackNewModeMenuToggle(){
 }
 function trackNewModeChoose(mode){
   trackNewModeMenuClose({ focusBtn: false });
+  // Retain the existing new-track mutation guard for all four entries.
+  if(trackBrushBlocksTrackMutation()){
+    trackBrushNotifyBlocked();
+    return;
+  }
   if (mode === "brush"){
     trackBrushRequestActivate();
     return;
   }
   if (mode === "points"){
     trackStartNew();
+    return;
+  }
+  if((mode==="graphhopper"||mode==="ors")&&document.body.classList.contains("gis-mode")){
+    // Same selection path as the former separate routing service menu.
+    routingEnsureState().service = routingNormalizeService(mode);
+    try { routingInvalidateRoutePreview(); } catch(_){}
+    openRoutingPlannerPanel(mode);
   }
 }
 
@@ -83447,13 +83486,27 @@ function bindUI(){
       menu._trackNewMenuBound = true;
       menu.addEventListener("click", (ev) => {
         const item = ev.target && ev.target.closest && ev.target.closest("[data-track-new-mode]");
-        if (!item) return;
+        if (!item || item.disabled) return;
         ev.preventDefault();
         trackNewModeChoose(item.getAttribute("data-track-new-mode"));
+      });
+      menu.addEventListener("keydown", (ev) => {
+        if(!["ArrowUp","ArrowDown","Home","End"].includes(ev.key))return;
+        const items=Array.from(menu.querySelectorAll("[data-track-new-mode]:not(:disabled)"));
+        if(!items.length)return;
+        const i=items.indexOf(document.activeElement);
+        const n=ev.key==="Home"?0:ev.key==="End"?items.length-1:ev.key==="ArrowUp"?(i<=0?items.length-1:i-1):(i+1)%items.length;
+        ev.preventDefault();ev.stopPropagation();items[n].focus();
       });
     }
     if (!document._trackNewMenuDocBound){
       document._trackNewMenuDocBound = true;
+      window.addEventListener("resize",trackNewModeMenuFit,{passive:true});
+      window.visualViewport?.addEventListener("resize",trackNewModeMenuFit,{passive:true});
+      document.addEventListener("scroll", (ev) => {
+        const m=document.getElementById("trackNewModeMenu");
+        if(m&&!m.hidden&&ev.target!==m&&!m.contains(ev.target))trackNewModeMenuFit();
+      },true);
       document.addEventListener("click", (ev) => {
         if (!trackNewModeMenuIsOpen()) return;
         const wrap = document.querySelector(".track-new-wrap");
@@ -102748,7 +102801,6 @@ function closeRoutingPlannerPanel(){
     const r = state._routing;
     restoreTrack = !!(r && r._trackMinimizedByPlanner && !r._plannerCommitted);
   } catch(_){}
-  try { routingServiceMenuClose({ focusBtn: false }); } catch(_){}
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("routingPlannerPanel"); } catch(_){}
   routingClearOpenLayout();
   routingFullCleanup();
@@ -102827,79 +102879,9 @@ function openRoutingPlannerPanel(service){
   try { routingSyncModeRowUi(); } catch(_){}
   return true;
 }
-function routingServiceMenuIsOpen(){
-  const menu = document.getElementById("routingServiceMenu");
-  return !!(menu && !menu.hidden);
-}
-function routingServiceMenuClose(opts){
-  opts = opts || {};
-  const menu = document.getElementById("routingServiceMenu");
-  const btn = document.getElementById("btnRoutingServiceMenu");
-  if (menu) menu.hidden = true;
-  if (btn){
-    btn.setAttribute("aria-expanded", "false");
-    if (opts.focusBtn){ try { btn.focus(); } catch(_){} }
-  }
-}
-function routingServiceMenuOpen(){
-  const menu = document.getElementById("routingServiceMenu");
-  const btn = document.getElementById("btnRoutingServiceMenu");
-  if (!menu || !btn) return;
-  menu.hidden = false;
-  btn.setAttribute("aria-expanded", "true");
-  try {
-    const first = menu.querySelector("[data-routing-service]");
-    if (first) first.focus();
-  } catch(_){}
-}
-function routingServiceMenuToggle(){
-  if (routingServiceMenuIsOpen()) routingServiceMenuClose({ focusBtn: true });
-  else routingServiceMenuOpen();
-}
 function wireRoutingPlannerOnce(){
   if (wireRoutingPlannerOnce._done) return;
   wireRoutingPlannerOnce._done = true;
-  const openBtn = document.getElementById("btnRoutingPlannerOpen");
-  if (openBtn) openBtn.addEventListener("click", (ev) => {
-    ev.preventDefault();
-    routingServiceMenuClose({ focusBtn: false });
-    openRoutingPlannerPanel("graphhopper");
-  });
-  const menuBtn = document.getElementById("btnRoutingServiceMenu");
-  if (menuBtn) menuBtn.addEventListener("click", (ev) => {
-    ev.preventDefault();
-    ev.stopPropagation();
-    routingServiceMenuToggle();
-  });
-  const menu = document.getElementById("routingServiceMenu");
-  if (menu && !menu._routingMenuBound){
-    menu._routingMenuBound = true;
-    menu.addEventListener("click", (ev) => {
-      const item = ev.target && ev.target.closest && ev.target.closest("[data-routing-service]");
-      if (!item) return;
-      ev.preventDefault();
-      const svc = item.getAttribute("data-routing-service") || "graphhopper";
-      routingServiceMenuClose({ focusBtn: false });
-      routingEnsureState().service = routingNormalizeService(svc);
-      try { routingInvalidateRoutePreview(); } catch(_){}
-      openRoutingPlannerPanel(svc);
-    });
-  }
-  if (!wireRoutingPlannerOnce._menuDocBound){
-    wireRoutingPlannerOnce._menuDocBound = true;
-    document.addEventListener("pointerdown", (ev) => {
-      if (!routingServiceMenuIsOpen()) return;
-      const wrap = document.querySelector(".routing-open-wrap");
-      if (wrap && wrap.contains(ev.target)) return;
-      routingServiceMenuClose({ focusBtn: false });
-    }, true);
-    document.addEventListener("keydown", (ev) => {
-      if (ev.key !== "Escape" || !routingServiceMenuIsOpen()) return;
-      ev.preventDefault();
-      ev.stopPropagation();
-      routingServiceMenuClose({ focusBtn: true });
-    }, true);
-  }
   const closeBtn = document.getElementById("routingPlannerPanelClose");
   if (closeBtn) closeBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
