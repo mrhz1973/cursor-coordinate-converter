@@ -2797,6 +2797,17 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   padding-bottom:8px;
   border-bottom:1px solid rgba(128,128,128,.15);
 }
+/* Preset controls live only in the existing polygon panel. */
+#polygonPanel .polygon-preset-choice{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0;
+}
+#polygonPanel #polygonPresetShape{max-width:100%;min-width:0;}
+#polygonPanel #polygonPresetStatus{
+  margin:6px 0;padding:7px 9px;border:1px solid var(--border);border-radius:6px;
+  font-size:12px;line-height:1.4;overflow-wrap:anywhere;
+}
+#polygonPanel #polygonPresetStatus[hidden]{display:none!important;}
+
 .polygon-panel .polygon-panel-footer,
 .polygon-panel .app-modal-foot.polygon-panel-footer{
   flex:0 0 auto;
@@ -16046,6 +16057,7 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
                placeholder="Nome automatico se vuoto" />
       </div>
     </div>
+    <p id="polygonPresetStatus" class="hint" role="status" aria-live="polite" hidden></p>
     <div id="polygonPanelDraftInfo" class="poly-draft-info" role="status" aria-live="polite" hidden></div>
     <details id="polygonPanelEditVertsWrap" class="poly-edit-verts-wrap" open hidden>
       <summary data-i18n="gis.polygonPanel.editVerticesList">Coordinate vertici</summary>
@@ -16068,6 +16080,15 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
     <div id="polygonPanelList" class="poly-list-wrap"></div>
     </div>
     <div class="app-modal-foot polygon-panel-footer" role="group">
+      <label class="polygon-preset-choice">
+        <span data-i18n="gis.polygonPanel.presetLabel">Forma</span>
+        <select id="polygonPresetShape" class="btn btn-sm" data-i18n-aria="gis.polygonPanel.presetLabel">
+          <option value="free" data-i18n="gis.polygonPanel.presetFree">Libero</option>
+          <option value="square" data-i18n="gis.polygonPanel.presetSquare">Quadrato</option>
+          <option value="rectangle" data-i18n="gis.polygonPanel.presetRectangle">Rettangolo</option>
+          <option value="triangle" data-i18n="gis.polygonPanel.presetTriangle">Triangolo</option>
+        </select>
+      </label>
       <button type="button" class="btn btn-sm btn-primary" id="polygonPanelNewBtn"
               onclick="polygonStartDraw()"
               data-i18n="gis.polygonPanel.newPolygon" data-i18n-tip="gis.polygonPanel.newPolygonDisabled"
@@ -19482,6 +19503,20 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Aggiornato",
     "gis.polygonPanel.dateUnavailable":"Data non disponibile",
     "gis.polygonPanel.editNameInvalid":"Nome non valido.",
+    "gis.polygonPanel.presetLabel":"Forma",
+    "gis.polygonPanel.presetFree":"Libero",
+    "gis.polygonPanel.presetSquare":"Quadrato",
+    "gis.polygonPanel.presetRectangle":"Rettangolo",
+    "gis.polygonPanel.presetTriangle":"Triangolo",
+    "gis.polygonPanel.presetStart":"Primo punto: scegli l'inizio del lato sulla mappa. Forme nella proiezione cartografica.",
+    "gis.polygonPanel.presetEnd":"Secondo punto: scegli l'estremità del lato per impostare dimensione e orientamento.",
+    "gis.polygonPanel.presetSquareSide":"Terzo punto: scegli da quale parte del lato sviluppare il quadrato.",
+    "gis.polygonPanel.presetHeight":"Terzo punto: imposta l'altezza perpendicolare del rettangolo.",
+    "gis.polygonPanel.presetTriangle0":"Scegli il primo vertice del triangolo.",
+    "gis.polygonPanel.presetTriangle1":"Scegli il secondo vertice del triangolo.",
+    "gis.polygonPanel.presetTriangle2":"Scegli il terzo vertice del triangolo.",
+    "gis.polygonPanel.presetReady":"Anteprima pronta: Chiudi poligono per salvare, oppure Rimuovi ultimo punto per correggere. Modifica dei vertici dopo il salvataggio.",
+    "gis.polygonPanel.presetInvalid":"Punti troppo vicini, allineati o fuori dalla proiezione supportata. Scegli un altro punto.",
     "gis.polygonPanel.editCloseDirty":"Prima di chiudere, scegli Salva oppure Annulla per le modifiche in corso.",
     "gis.polygonPanel.drawCloseDirty":"Prima di chiudere, termina oppure annulla il disegno in corso.",
     "gis.polygonPanel.editDeleteVertex":"Elimina vertice {0}",
@@ -21881,6 +21916,20 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Updated",
     "gis.polygonPanel.dateUnavailable":"Date unavailable",
     "gis.polygonPanel.editNameInvalid":"Invalid name.",
+    "gis.polygonPanel.presetLabel":"Shape",
+    "gis.polygonPanel.presetFree":"Freehand",
+    "gis.polygonPanel.presetSquare":"Square",
+    "gis.polygonPanel.presetRectangle":"Rectangle",
+    "gis.polygonPanel.presetTriangle":"Triangle",
+    "gis.polygonPanel.presetStart":"First point: choose the start of a side on the map. Shapes use the map projection.",
+    "gis.polygonPanel.presetEnd":"Second point: choose the end of the side to set size and orientation.",
+    "gis.polygonPanel.presetSquareSide":"Third point: choose the side on which to build the square.",
+    "gis.polygonPanel.presetHeight":"Third point: set the perpendicular height of the rectangle.",
+    "gis.polygonPanel.presetTriangle0":"Choose the first triangle vertex.",
+    "gis.polygonPanel.presetTriangle1":"Choose the second triangle vertex.",
+    "gis.polygonPanel.presetTriangle2":"Choose the third triangle vertex.",
+    "gis.polygonPanel.presetReady":"Preview ready: finish to save, or remove the last point to correct. Edit vertices after saving.",
+    "gis.polygonPanel.presetInvalid":"Points too close, collinear or outside the supported projection. Choose another point.",
     "gis.polygonPanel.editCloseDirty":"Save or cancel the current changes before closing.",
     "gis.polygonPanel.drawCloseDirty":"Finish or cancel the current drawing before closing.",
     "gis.polygonPanel.editDeleteVertex":"Delete vertex {0}",
@@ -24103,6 +24152,20 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Mis à jour",
     "gis.polygonPanel.dateUnavailable":"Date indisponible",
     "gis.polygonPanel.editNameInvalid":"Nom non valide.",
+    "gis.polygonPanel.presetLabel":"Forme",
+    "gis.polygonPanel.presetFree":"Libre",
+    "gis.polygonPanel.presetSquare":"Carré",
+    "gis.polygonPanel.presetRectangle":"Rectangle",
+    "gis.polygonPanel.presetTriangle":"Triangle",
+    "gis.polygonPanel.presetStart":"Premier point : choisissez le début du côté sur la carte. Formes dans la projection cartographique.",
+    "gis.polygonPanel.presetEnd":"Deuxième point : choisissez la fin du côté pour la dimension et l’orientation.",
+    "gis.polygonPanel.presetSquareSide":"Troisième point : choisissez de quel côté construire le carré.",
+    "gis.polygonPanel.presetHeight":"Troisième point : définissez la hauteur perpendiculaire du rectangle.",
+    "gis.polygonPanel.presetTriangle0":"Choisissez le premier sommet du triangle.",
+    "gis.polygonPanel.presetTriangle1":"Choisissez le deuxième sommet du triangle.",
+    "gis.polygonPanel.presetTriangle2":"Choisissez le troisième sommet du triangle.",
+    "gis.polygonPanel.presetReady":"Aperçu prêt : terminez pour enregistrer ou retirez le dernier point pour corriger. Modifiez les sommets après l’enregistrement.",
+    "gis.polygonPanel.presetInvalid":"Points trop proches, alignés ou hors de la projection prise en charge. Choisissez un autre point.",
     "gis.polygonPanel.editCloseDirty":"Enregistrez ou annulez les modifications avant de fermer.",
     "gis.polygonPanel.drawCloseDirty":"Terminez ou annulez le dessin avant de fermer.",
     "gis.polygonPanel.editDeleteVertex":"Supprimer le sommet {0}",
@@ -26788,10 +26851,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-WAYPOINT-COORD-UX-A";
-const APP_BUILD_DETAIL = "Waypoint: nessuna chiusura involontaria dal contenitore in GIS.";
+const APP_BUILD_ID = "GIS-POLYGON-PRESET-SHAPES-A";
+const APP_BUILD_DETAIL = "Forme predefinite orientabili: quadrato, rettangolo e triangolo.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 327;
+const APP_BUILD_NUM = 328;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -75692,6 +75755,11 @@ function attachPanHandlers(root, lat, lon, zoom){
         const snapped = polygonSnapDraftWaypoint(root,cx,cy);
         const pick = snapped || mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
         if (pick && Number.isFinite(pick.lat) && Number.isFinite(pick.lon)){
+          if(polygonPresetAddAnchor(snapped?snapped.lon:normalizeLon(pick.lon),pick.lat)){
+            if(ev.cancelable)ev.preventDefault();
+            try{ev.stopPropagation();}catch(_){}
+            return;
+          }
           const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
           const prev = state._polygonDraftLastClick;
           const isDbl = !!(prev && (now - prev.ts) < 400 && Math.hypot(cx - prev.x, cy - prev.y) < 12);
@@ -88966,7 +89034,7 @@ function polygonApplyDraggedVertex(idx, lat, lon){
 }
 /** Apply lat/lon to draft ring only (FIX4; no gisPolygons persist). */
 function polygonApplyDraggedDraftVertex(idx, lat, lon, exactSnap = false){
-  if (!state.polygonDrawMode) return false;
+  if (!state.polygonDrawMode||_polygonPresetDraw) return false;
   const verts = state._polygonDraftVertices;
   if (!Array.isArray(verts)) return false;
   const i = Number(idx);
@@ -89388,7 +89456,7 @@ function renderPolygonEditVertsList(){
     row.appendChild(num);
     row.appendChild(coord);
     row.appendChild(copyBtn);
-    row.appendChild(modBtn);
+    if(!(src.mode==="draft"&&_polygonPresetDraw))row.appendChild(modBtn);
     vertsEl.appendChild(row);
   }
 }
@@ -89575,7 +89643,7 @@ function polygonCloseVertexCoordModal(){
 function polygonOpenVertexCoordModal(vertexIndex){
   if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return false;
   const src = polygonGetVertexCoordRingSource();
-  if (!src || !Array.isArray(src.ring)) return false;
+  if (!src || !Array.isArray(src.ring) || (src.mode==="draft"&&_polygonPresetDraw)) return false;
   if (src.mode === "edit"){
     const ed = state._polyEdit;
     if (!ed || ed.moveMode) return false;
@@ -89633,7 +89701,7 @@ function polygonApplyVertexCoordModal(){
     return false;
   }
   if (mode === "draft"){
-    if (!state.polygonDrawMode || !Array.isArray(state._polygonDraftVertices)) return false;
+    if (!state.polygonDrawMode || _polygonPresetDraw || !Array.isArray(state._polygonDraftVertices)) return false;
     if (!Number.isFinite(idx) || idx < 0 || idx >= state._polygonDraftVertices.length) return false;
     state._polygonDraftVertices[idx] = [v.lon, v.lat];
     polygonHideVertexCoordModalErr();
@@ -90026,6 +90094,7 @@ function polygonSyncRemoveLastPointUi(){
 }
 function polygonRemoveLastDraftPoint(){
   if (!state.polygonDrawMode) return;
+  if(polygonPresetUndo())return;
   const verts = state._polygonDraftVertices;
   if (!Array.isArray(verts) || verts.length === 0) return;
   verts.pop();
@@ -90034,8 +90103,92 @@ function polygonRemoveLastDraftPoint(){
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
 }
+/* Preset construction is transient, scoped to an ordinary polygon draft.
+ * Coordinates are [lon,lat]; shapes are regular in Web Mercator, not geodesic.
+ * No new feature type, schema, archive path or map tool. */
+let _polygonPresetDraw = null;
+function polygonPresetSelected(){
+  const v=document.getElementById("polygonPresetShape")?.value || "free";
+  return ["square","rectangle","triangle"].includes(v)?v:"free";
+}
+function polygonPresetBuild(kind,anchors){
+  if(!["square","rectangle","triangle"].includes(kind)||!Array.isArray(anchors)||anchors.length!==3)return null;
+  if(!anchors.every(p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&p[0]>=-180&&p[0]<=180&&Math.abs(p[1])<=85.05))return null;
+  const origin=anchors[0][0];
+  const projected=anchors.map(p=>[lonToTileX(origin,0)+lonShortestDelta(origin,p[0])/360,latToTileY(p[1],0)]);
+  const [a,b,c]=projected;
+  const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy);
+  // Minimum edge/height guards in the canonical projected world.
+  if(!Number.isFinite(len)||len<1e-8||len>=.5)return null;
+  const nx=-dy/len,ny=dx/len,height=(c[0]-a[0])*nx+(c[1]-a[1])*ny;
+  if(!Number.isFinite(height)||Math.abs(height)<1e-8)return null;
+  let pts;
+  if(kind==="triangle")pts=projected;
+  else{
+    const d=kind==="square"?Math.sign(height)*len:height;
+    pts=[a,b,[b[0]+nx*d,b[1]+ny*d],[a[0]+nx*d,a[1]+ny*d]];
+  }
+  // The existing map and polygon renderer are not a wrapped polygon renderer.
+  // Fail closed rather than silently producing a ring across the world.
+  if(pts.some(p=>!p.every(Number.isFinite)||p[0]<0||p[0]>=1||p[1]<0||p[1]>1))return null;
+  const ring=pts.map((p,i)=>i<2?anchors[i].slice():kind==="triangle"?anchors[i].slice():[normalizeLon(tileX2Lon(p[0],0)),tileY2Lat(p[1],0)]);
+  if(ring.some(p=>!p.every(Number.isFinite)||Math.abs(p[1])>85.05))return null;
+  const clean=gisSanitizeGeometry({type:"Polygon",coordinates:[ring]}, "polygon");
+  if(!clean||clean.coordinates[0].length!==ring.length+1)return null;
+  return ring;
+}
+function polygonPresetAddAnchor(lon,lat){
+  const d=_polygonPresetDraw;
+  if(!state.polygonDrawMode||!d)return false;
+  if(d.anchors.length>=3)return true; // explicit Finish or Undo only
+  if(!Number.isFinite(lon)||!Number.isFinite(lat)||Math.abs(lat)>85.05||lon < -180||lon > 180){
+    polygonShowDrawErr(t("gis.polygonPanel.presetInvalid"));return true;
+  }
+  const p=[lon,lat],next=[...d.anchors,p];
+  if(next.length===2){
+    const a=next[0],dx=lonShortestDelta(a[0],p[0])/360,dy=latToTileY(p[1],0)-latToTileY(a[1],0);
+    if(Math.hypot(dx,dy)<1e-8||Math.abs(p[0]-a[0])>=180){
+      polygonShowDrawErr(t("gis.polygonPanel.presetInvalid"));return true;
+    }
+  }
+  const ring=next.length===3?polygonPresetBuild(d.kind,next):next;
+  if(!ring){polygonShowDrawErr(t("gis.polygonPanel.presetInvalid"));return true;}
+  d.anchors=next;
+  state._polygonDraftVertices=ring.map(p=>p.slice());
+  state._polygonDraftLastClick=null;
+  polygonHideDrawErr();
+  renderPolygonPanelList();
+  refreshTileMapForTrackUi();
+  return true;
+}
+function polygonPresetUndo(){
+  const d=_polygonPresetDraw;
+  if(!d||!state.polygonDrawMode)return false;
+  if(!d.anchors.length)return true;
+  d.anchors.pop();
+  state._polygonDraftVertices=d.anchors.map(p=>p.slice());
+  state._polygonDraftLastClick=null;
+  polygonHideDrawErr();
+  refreshTileMapForTrackUi();renderPolygonPanelList();
+  return true;
+}
+function polygonPresetSyncUi(){
+  const sel=document.getElementById("polygonPresetShape"),msg=document.getElementById("polygonPresetStatus");
+  if(!sel||!msg)return;
+  sel.disabled=!!state.polygonDrawMode||polygonIsEditing();
+  const d=state.polygonDrawMode?_polygonPresetDraw:null,kind=d?d.kind:polygonPresetSelected();
+  msg.hidden=kind==="free"||(!d&&!!state.polygonDrawMode);
+  if(msg.hidden){msg.textContent="";return;}
+  const n=d?d.anchors.length:0;
+  const key=n>=3?"presetReady":kind==="triangle"?"presetTriangle"+n:kind==="square"&&n===2?"presetSquareSide":n===2?"presetHeight":n===1?"presetEnd":"presetStart";
+  msg.textContent=t("gis.polygonPanel."+key);
+}
+
 function polygonStartDraw(){
   if (state.polygonDrawMode || mapWptDocDrag) return;
+  const preset=polygonPresetSelected();
+  if(preset!=="free"&&polygonIsEditing())return;
+  _polygonPresetDraw=preset==="free"?null:{kind:preset,anchors:[]};
   hideWptMapContextMenu();
   try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   ensureGisState();
@@ -90065,6 +90218,7 @@ function polygonCancelDraw(){
   try { mapPolyEditDocDragCleanup(); } catch(_){}
   try { polygonCloseVertexCoordModal(); } catch(_){}
   polygonHideDrawErr();
+  _polygonPresetDraw=null;
   state.polygonDrawMode = false;
   state._polygonDraftVertices = [];
   state._polygonDraftLastClick = null;
@@ -90078,6 +90232,11 @@ function polygonCancelDraw(){
 }
 function polygonFinishDraw(){
   if (!state.polygonDrawMode) return;
+  if(_polygonPresetDraw){
+    const ring=polygonPresetBuild(_polygonPresetDraw.kind,_polygonPresetDraw.anchors);
+    if(!ring){polygonShowDrawErr(t("gis.polygonPanel.presetInvalid"));return;}
+    state._polygonDraftVertices=ring;
+  }
   const verts = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices : [];
   if (verts.length < 3){ polygonCancelDraw(); return; }
   ensureGisState();
@@ -90106,6 +90265,7 @@ function polygonFinishDraw(){
   }
   try { mapPolyEditDocDragCleanup(); } catch(_){}
   try { polygonCloseVertexCoordModal(); } catch(_){}
+  _polygonPresetDraw=null;
   state.polygonDrawMode = false;
   state._polygonDraftVertices = [];
   state._polygonDraftLastClick = null;
@@ -90170,8 +90330,8 @@ function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
     g.setAttribute("class", "poly-edit-handle" + (i === dragIdx ? " is-grabbing" : ""));
     g.setAttribute("data-index", String(i));
     g.setAttribute("data-vertex-source", "draft");
-    g.style.cursor = (i === dragIdx) ? "grabbing" : "grab";
-    g.style.pointerEvents = "auto";
+    g.style.cursor = _polygonPresetDraw ? "inherit" : (i === dragIdx) ? "grabbing" : "grab";
+    g.style.pointerEvents = _polygonPresetDraw ? "none" : "auto";
     g.style.touchAction = "none";
     if (handleHint) g.setAttribute("aria-label", handleHint);
     const hit = document.createElementNS(ns, "circle");
@@ -90180,7 +90340,7 @@ function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
     hit.setAttribute("cy", p.y.toFixed(1));
     hit.setAttribute("r", "18");
     hit.setAttribute("fill", "transparent");
-    hit.setAttribute("pointer-events", "all");
+    hit.setAttribute("pointer-events", _polygonPresetDraw ? "none" : "all");
     const vis = document.createElementNS(ns, "circle");
     vis.setAttribute("cx", p.x.toFixed(1));
     vis.setAttribute("cy", p.y.toFixed(1));
@@ -90689,6 +90849,7 @@ function polygonToggleVisibility(id){
 function polygonWirePanelBarsOnce(){
   if (state._polyPanelBarsWired) return;
   state._polyPanelBarsWired = true;
+  document.getElementById("polygonPresetShape")?.addEventListener("change",polygonPresetSyncUi);
   const dOk = document.getElementById("polygonPanelDeleteConfirm");
   const dCancel = document.getElementById("polygonPanelDeleteCancel");
   if (dOk) dOk.addEventListener("click", (ev) => {
@@ -104429,7 +104590,8 @@ function renderPolygonPanelList(){
   const finBtn = document.getElementById("polygonPanelFinishBtn");
   const canBtn = document.getElementById("polygonPanelCancelBtn");
   const dv = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices.length : 0;
-  if (finBtn) finBtn.hidden = !(state.polygonDrawMode && dv >= 3);
+  if (finBtn) finBtn.hidden = !(state.polygonDrawMode && dv >= 3 && (!_polygonPresetDraw || _polygonPresetDraw.anchors.length===3));
+  polygonPresetSyncUi();
   if (canBtn) canBtn.hidden = !state.polygonDrawMode;
   polygonSyncRemoveLastPointUi();
   const geoBtn = document.getElementById("polygonPanelExportGeoJsonBtn");
