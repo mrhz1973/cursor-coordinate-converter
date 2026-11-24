@@ -8,7 +8,7 @@
 | Ultimo CLOSED | Build329 TRACK-NEW-MODE-UNIFIED-A; QA operatore PASS 24/11/2026 |
 | Gate riusati | Deploy PASS, review63/63, ABQA HTTPS LIVE116/116 PASS |
 | Bundle runtime attivo | Nessuno |
-| NEXT | BLOCKED_PREREQUISITES: P1/P2/P3/P4 CLOSED. P0 autorizzato non applicato: sorgente archivio effettivo da identificare, backup completo verificato e inventario istanze scriventi; DTM 5/10m ground truth HOLD. Nessuna nuova Build330 candidata. Resto Oggetti GIS FROZEN / maintenance-only. Non riaprire blocchi gia chiusi. |
+| NEXT | P0 AGENT_BROWSER_CONTEXT_UNAVAILABLE riconfermato; ripristinare accesso al browser effettivo, verificare backup e inventario. [Verifica](evidence/2026-11-25-p0-origin-context-recheck/REPORT.md). DTM HOLD. Nessuna nuova build. |
 | Residui | P0 autorizzato non applicato; DTM HOLD; P1/P2/P3/P4 CLOSED; review esterna post-hoc PENDING. |
 
 [Build325 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=74f2a0a5) - [Ricevuta](evidence/2026-11-24-qa325-closure/REPORT.md)
