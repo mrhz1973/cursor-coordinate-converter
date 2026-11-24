@@ -4,22 +4,22 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Build326 CLOSED / QA_OPERATORE_PASS; prosecuzione backlog autorizzata. P0 non applicato. |
+| **WORKSTREAM ATTIVO** | Build327 candidata qualificata; Build326 LIVE/CLOSED; GIS-WAYPOINT-COORD-UX-A aperto. P0 non applicato. |
 | **WU ATTIVA** | — (nessuna WU attiva). |
-| **BLOCCO ATTIVO** | — (nessun bundle runtime attivo; ultimo CLOSED GIS-POLYGON-WAYPOINT-INTERACTION-A Build326). |
-| **STATO BLOCCO** | CLOSED / QA_OPERATORE_PASS — Build326; deploy, review e ABQA PASS riusati secondo Regola H. |
-| **GATE CORRENTE** | Build326 CLOSED con attestazione esatta QA GIS-POLYGON-WAYPOINT-INTERACTION-A PASS operatore. [QA326 CLOSED](orchestrator/evidence/2026-11-24-qa326-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa326-closure/evidence.json). NEXT GIS-WAYPOINT-COORD-UX-A. |
+| **BLOCCO ATTIVO** | GIS-WAYPOINT-COORD-UX-A - Build327 DELICATO / STANDARD_RUNTIME_BUNDLE. |
+| **STATO BLOCCO** | OPEN / CANDIDATE_QA_PASS / REVIEW_GPT_SOSTITUTIVA_PASS / DEPLOY_PENDING. |
+| **GATE CORRENTE** | Candidato90/90; review40/40 PASS. [Review Build327](orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REVIEW.md) - [evidenza](orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/review.json). NEXT deploy GIS-only. |
 | **RUNTIME LIVE** | Build326 GIS-POLYGON-WAYPOINT-INTERACTION-A, source 4d6ad9acebca9b55c54f8d43002b9a06b9351649, blob 3ca15ede15344b191a7d42c7c059c808b2f86b1e, SHA256 d0ac176347f521938c86ef0d4de62228174f54e428988ffeee497cf1c2ce3333, 11.363.821 byte; deploy tecnico e ABQA HTTPS LIVE 88/88 PASS; QA operatore PASS; CLOSED. |
-| **RUNTIME CANDIDATE** | Nessun candidato distinto dal LIVE. Build326 candidato88/88, review36/36, ABQA LIVE88/88 e QA operatore PASS. |
+| **RUNTIME CANDIDATE** | Build327 source c2676056cb828ba6f96aa0a3bb8c484417c6ecb9, blob 2abebd508f151436e82d3d3c4592a0f60271b117, SHA256 2b9e3c354f8179b0aabeb16b65abc8bc03604fc98ec2bf3bcd56c6b6a917ab3d, 11.363.953 byte; candidato90/90, review40/40 PASS. |
 | **ULTIMO BLOCCO CHIUSO** | GIS-POLYGON-WAYPOINT-INTERACTION-A — Build326, QA operatore PASS registrato 24/11/2026; [QA326 CLOSED](orchestrator/evidence/2026-11-24-qa326-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa326-closure/evidence.json). |
-| **NEXT** | Audit mirato GIS-WAYPOINT-COORD-UX-A (lifecycle pannello Waypoint e click mappa); non rifare COORD-MODAL-FORMAT-COPY-A. Oggetti GIS maintenance-only. P0 non applicato; DTM HOLD; P4 FUTURO. |
+| **NEXT** | Deploy GIS-only con backup e readback HTTP/HTTPS, ABQA LIVE, QA operatore. Coordinate baseline invariata. |
 | **RICHIESTE CHAT49 ANCORA APERTE** | P1/P2/P3 CLOSED. P0 secondario APERTO / APPLICATION_AUTHORIZED_NOT_EXECUTED: copie qualificate, autorizzazione acquisita; controllo dell’archivio interno richiesto non disponibile, backup corrente atteso e inventario istanze scriventi incompleto. Caricamento operatore già confermato; archivio interno non identificato e backup completo origine non attestato. Compatibilità mobile/iPad riaperta; P4 SOLO FUTURO. |
 | **BACKLOG OPERATORE 16/11** | [Backlog originale](orchestrator/backlog/2026-11-16-operatore-tracce-tabelle-quote-url.md) - [Audit P2](orchestrator/evidence/2026-11-18-table-uniformity-p2-audit/AUDIT.md) - [Matrice P2 finale](orchestrator/evidence/2026-11-18-all-remaining-p2-316/MATRIX.md). P2/P3 CLOSED; [P0 recupero qualificato sulle copie](orchestrator/evidence/2026-11-21-edge-owned-roundtrip/REPORT.md); P4 FUTURO. |
 | **DTM / ACCURATEZZA** | Ground truth del percorso originale e precisione sul terreno DTM5/10m ancora HOLD; QA operatore Build302 e antecedenti separate. Quote GPX/KML conservate non attestano precisione topografica. |
 | **LIMITI QUOTE** | Quote importate originali conservate e non sovrascritte; lacune completabili in addon terrainFill separato, DTM locale 5m o Open-Meteo GLO-90 90m con opt-in. Stime non esportate come quote originali; nessun dislivello totale misto né pendenza tra fonti diverse. Accuratezza DTM5/10m HOLD. |
 | **SVILUPPO TELEFONO** | Build326 ABQA LIVE88/88 PASS su viewport Edge emulati desktop1440/tablet768/phone390/phone320; minimizzazione manuale Poligoni su phone; QA operatore PASS, device/browser/ora del test non specificati. Nessuna qualifica universale. |
 | **ACCESSO / DEPLOY** | Build326 LIVE, backup Build325 /var/backups/goi-gis-runtime/prebuild326-tHhLA2xF verificato, goi-gis-app active al deploy; HTTP/HTTPS200 byte/SHA concordi; QA browser88/88 e operatore PASS. Nessun nuovo deploy per chiusura. [Build326 LIVE](https://ionos-n8n-new.tailc01234.ts.net/gis?v=d0ac1763). |
-| **EVIDENCE** | [QA326 CLOSED](orchestrator/evidence/2026-11-24-qa326-closure/REPORT.md) - [attestazione](orchestrator/evidence/2026-11-24-qa326-closure/evidence.json) - [QA LIVE](orchestrator/evidence/2026-11-24-polygon-waypoint-326/REPORT.md) - [Review](orchestrator/evidence/2026-11-24-polygon-waypoint-326/REVIEW.md) - [Roadmap](work-units/WU-0005-0009-roadmap.md). |
+| **EVIDENCE** | [Review Build327](orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REVIEW.md) - [evidenza](orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/review.json) - [QA326 CLOSED](orchestrator/evidence/2026-11-24-qa326-closure/REPORT.md). |
 
 ## Build326 — QA operatore PASS / CLOSED (24/11/2026)
 

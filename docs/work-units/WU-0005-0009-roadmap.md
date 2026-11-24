@@ -788,7 +788,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)** | Lista coordinate vertici (edit + drawing) + no auto-minimize + draft verts trascinabili | **CLOSED / PASS** LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21) |
 | **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorita drawing, snap waypoint e close protetto | **CLOSED / QA_OPERATORE_PASS** - LIVE **326** - 24/11/2026 - [ricevuta](../orchestrator/evidence/2026-11-24-qa326-closure/REPORT.md); maintenance-only |
-| **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
+| **GIS-WAYPOINT-COORD-UX-A** | Lifecycle pannello Waypoint e map-click | **Build327 CANDIDATE QA/REVIEW PASS / DEPLOY PENDING** - [review](../orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REVIEW.md); baseline coordinate invariata |
 | **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
 | **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **CONSUMED / CLOSED** LIVE **255** tip `0a4b52b…` · FIX2 QA PASS · Regola H |
 | **GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A** | Select formato editor WP riscrive `#wpFieldCoord` (stessa posizione; no mutazione) | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
@@ -993,7 +993,7 @@ Evidence: [`../orchestrator/inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTI
 
 #### GIS-WAYPOINT-COORD-UX-A
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Audit runtime build **238**. **Non** aperto.
+**Stato:** **Build327 CANDIDATE QA/REVIEW PASS / DEPLOY PENDING**. [Review](../orchestrator/evidence/2026-11-24-waypoint-lifecycle-327/REVIEW.md). Storico:  Audit runtime build **238**. **Non** aperto.
 
 **Coord UX — BASELINE (NON rifare):** `COORD-MODAL-FORMAT-COPY-A (+ FIX1)` **CLOSED / PASS** — `#waypointListCoordFormat`, `formatWaypointListCoordinates`, copy lista/editor, `parseWaypointEditorCoordText` → **`autoDetect`**, `state.mapWaypoints[]` canonico, `saveStore`.
 
