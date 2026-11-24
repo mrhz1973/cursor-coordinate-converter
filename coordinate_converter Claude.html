@@ -26788,10 +26788,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-POLYGON-WAYPOINT-INTERACTION-A";
-const APP_BUILD_DETAIL = "Priorita disegno poligoni, snap waypoint e chiusura protetta.";
+const APP_BUILD_ID = "GIS-WAYPOINT-COORD-UX-A";
+const APP_BUILD_DETAIL = "Waypoint: nessuna chiusura involontaria dal contenitore in GIS.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 326;
+const APP_BUILD_NUM = 327;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -84175,7 +84175,7 @@ function gisInit(){
     });
   }
 
-  // Waypoint modal: close via X / Esc / backdrop. When the modal is
+  // Waypoint: X / Esc; backdrop dismissal only outside GIS. When the modal is
   // closed by any of those paths, also clear `state.activeTab` so the
   // topbar pill goes inactive (mirrors deactivateTab semantics).
   const wmClose = document.getElementById("waypointModalClose");
@@ -84187,7 +84187,8 @@ function gisInit(){
   if (wm){
     wm.addEventListener("cancel", (ev) => { ev.preventDefault(); handleWpClose(); });
     wm.addEventListener("click", (ev) => {
-      if (ev.target === wm) handleWpClose();
+      // GIS floating surface is not a backdrop; test current mode at event time.
+      if (!document.body.classList.contains("gis-mode") && ev.target === wm) handleWpClose();
     });
   }
   const wpMin = document.querySelector('[data-role="waypointmodal-minimize"]');
